@@ -29,14 +29,14 @@ I contenuti caricati potranno includere:
 ## 📁 Struttura del Repository
 
 ```text
-agriTrace/
+sofing/
 │
 ├── README.md               # Questo file: descrizione del progetto e struttura
 ├── .gitignore              # File per escludere cartelle e file non tracciati
 │
 ├── model/                  # Modello concettuale e progettuale
 │   └── visual-paradigm/    # Contiene il file .vpp e altri file generati/esportati
-│       ├── agriTrace.vpp
+│       ├── ProvaPush.vpp
 │       └── diagrammi/, immagini/, ecc.
 │
 ├── code/                   # Codice applicativo completo
@@ -47,8 +47,8 @@ agriTrace/
 │       └── (placeholder iniziale o progetto completo)
 │
 ├── postman/                # Collezioni Postman per testare le API
-│   ├── agriTrace-collection.json
-│   └── agriTrace-environment.json
+│   ├── sofing-collection.json
+│   └── sofing-environment.json
 │
 ├── docs/                   # Documentazione tecnica e funzionale
 │   ├── requisiti.md
