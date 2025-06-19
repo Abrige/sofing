@@ -1,0 +1,6 @@
+Sistema OSM
+OSM è un sistema esterno che viene interrogato via API 
+o utilizzato via librerie front-end (es. Leaflet, OpenLayers).
+
+Condivisione Social
+Non serve una tabella per i social, La condivisione sui social avviene lato front-end, tramite link o pulsanti di condivisione (es. su Facebook, X/Twitter, Instagram).
