@@ -1,0 +1,66 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.3'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'it.unicam.cs'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(24)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    // Spring core
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Spring Data JPA + Hibernate
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // H2 database (in-memory)
+    runtimeOnly 'com.h2database:h2'
+
+    // Swagger/OpenAPI via Springdoc
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+
+    // Devtools per auto-reload
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // Lombok (facoltativo, ma utile per DTO/Entity)
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Validazione per DTO (es. @Valid)
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Sicurezza base (login, ruoli, protezione endpoint)
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // JWT per autenticazione stateless
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // per serializzazione JSON
+
+    // OAuth2 Resource Server (per validare token OAuth2/JWT e integrazioni future)
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+
+    // Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // Test per la sicurezza
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

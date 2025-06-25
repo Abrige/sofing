@@ -1,0 +1,51 @@
+# ====================================
+# Script files
+# ====================================
+/gradlew text eol=lf
+/gradlew.bat text eol=crlf
+*.sh text eol=lf
+*.bat text eol=crlf
+
+# ====================================
+# Java source files and resources
+# ====================================
+*.java text
+*.properties text
+*.yml text
+*.yaml text
+*.xml text
+*.json text
+*.sql text
+
+# ====================================
+# Binary files
+# ====================================
+*.jar binary
+*.war binary
+*.ear binary
+*.class binary
+
+# ====================================
+# Images
+# ====================================
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg text
+
+# ====================================
+# Frontend files
+# ====================================
+*.css text
+*.js text
+*.ts text
+*.tsx text
+*.jsx text
+
+# ====================================
+# Other common text files
+# ====================================
+*.md text
+*.txt text
