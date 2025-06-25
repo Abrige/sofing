@@ -1,36 +1,34 @@
-> **🌾 Piattaforma digitale per la tracciabilità e valorizzazione della filiera agricola locale — produzione, trasformazione, vendita e promozione geolocalizzata dei prodotti tipici.**
+# 🌾 Piattaforma Filiera Agricola Locale
 
-# 🧺 Piattaforma di Digitalizzazione e Valorizzazione della Filiera Agricola Locale
+> **Web application per la gestione, tracciabilità e valorizzazione dei prodotti agricoli territoriali**
 
-**Anno accademico 2024/2025 – Ingegneria del Software**
+Progetto sviluppato per il corso di **Ingegneria del Software – A.A. 2024/2025**
 
-Questa repository contiene il progetto di una piattaforma digitale pensata per supportare la **gestione**, la **valorizzazione** e la **tracciabilità** dei prodotti agricoli di un territorio comunale.
+Questa piattaforma digitale nasce con l'obiettivo di supportare la **gestione**, la **tracciabilità** e la **valorizzazione** della filiera agricola di un territorio comunale. È progettata per fornire strumenti utili agli attori locali (produttori, trasformatori, distributori, curatori, organizzatori di eventi) e offrire ai cittadini un'esperienza informativa e interattiva.
 
-L’obiettivo è costruire un ecosistema digitale che metta in connessione i diversi attori della filiera — produttori, trasformatori, distributori e consumatori — valorizzando la qualità, la provenienza e l’identità territoriale dei prodotti locali.
+La web application consente di caricare, consultare e condividere informazioni su prodotti locali, pratiche agricole, certificazioni di qualità, eventi e molto altro, il tutto geolocalizzato e integrato in una **mappa interattiva**. Inoltre, include funzionalità di marketplace e promozione territoriale.
 
 ## 🚜 Funzionalità principali
 
-La piattaforma consente di:
-
-- 📦 Caricare, visualizzare e condividere informazioni sulla filiera agricola
-- 🔍 Tracciare i prodotti lungo tutto il ciclo produttivo
-- 🗺️ Visualizzare i punti della filiera su una **mappa interattiva**
-- 🧾 Inserire dati su **certificazioni**, **metodi di coltivazione** e **processi di trasformazione**
-- 🛒 Vendere i prodotti tramite un **marketplace integrato**
-- 🎪 Organizzare eventi e fiere locali con tour e degustazioni
+- 📦 Caricamento e gestione dei contenuti lungo la filiera agricola  
+- 🔍 Tracciabilità completa del ciclo di vita dei prodotti  
+- 🗺️ Visualizzazione geolocalizzata su una **mappa interattiva**  
+- 🧾 Inserimento di **certificazioni**, **metodi di coltivazione** e **processi di trasformazione**  
+- 🛒 Vendita diretta tramite un **marketplace**  
+- 🎪 Organizzazione e promozione di eventi locali (fiere, tour, degustazioni)
 
 ## 🧑‍🌾 Attori coinvolti
 
-- **Produttore**: inserisce dati sui propri prodotti e li vende nel marketplace  
-- **Trasformatore**: carica le fasi di trasformazione e certificazioni  
-- **Distributore di Tipicità**: propone singoli prodotti e pacchetti gastronomici  
-- **Curatore**: verifica e approva i contenuti caricati  
-- **Animatore della Filiera**: organizza fiere, visite ed eventi locali  
-- **Acquirente**: scopre e acquista prodotti, prenota eventi  
-- **Utente Generico**: esplora informazioni e contenuti  
-- **Gestore della Piattaforma**: gestisce autorizzazioni e accrediti  
-- **Sistemi Social**: integrazione per la condivisione di contenuti  
-- **Sistema OSM**: fornisce mappe e geolocalizzazione dei punti della filiera
+- **Produttore**: carica dati sui propri prodotti e li mette in vendita  
+- **Trasformatore**: descrive i processi di trasformazione e collega i prodotti ai produttori  
+- **Distributore di Tipicità**: propone prodotti singoli o in pacchetti gastronomici  
+- **Curatore**: verifica e approva i contenuti prima della pubblicazione  
+- **Animatore della Filiera**: organizza fiere, visite aziendali, tour di degustazione  
+- **Acquirente**: acquista prodotti, partecipa a eventi, consulta le informazioni  
+- **Utente Generico**: accede liberamente per conoscere il territorio e i prodotti  
+- **Gestore della Piattaforma**: gestisce aspetti amministrativi e autorizzazioni  
+- **Sistemi Social**: permettono la condivisione dei contenuti creati  
+- **Sistema OSM**: fornisce il supporto cartografico per la mappa della filiera
   
 ---
 
