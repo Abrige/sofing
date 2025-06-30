@@ -25,7 +25,7 @@ dependencies {
     // Spring Data JPA + Hibernate
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-    // H2 database (in-memory)
+    // H2 database
     runtimeOnly 'com.h2database:h2'
 
     // Swagger/OpenAPI via Springdoc
