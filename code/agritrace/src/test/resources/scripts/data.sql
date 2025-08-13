@@ -1,0 +1,5 @@
+INSERT INTO CERTIFICATIONS (ID, NAME, DESCRIPTION, ISSUING_BODY, IS_ACTIVE)
+VALUES (1, 'Bio', 'Certificazione biologica', 'Organo Bio', TRUE);
+
+INSERT INTO CERTIFICATIONS (ID, NAME, DESCRIPTION, ISSUING_BODY, IS_ACTIVE)
+VALUES (2, 'FairTrade', 'Certificazione commercio equo', 'Organo Fair', FALSE);
