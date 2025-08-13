@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @Setter
 @Entity
 @Table(name = "PRODUCT_CERTIFICATION")
-public class ProductsCertification {
+public class ProductCertification {
     @Id
     @Column(name = "ID", nullable = false)
     private Integer id;

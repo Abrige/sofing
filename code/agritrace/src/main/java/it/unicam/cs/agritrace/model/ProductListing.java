@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @Setter
 @Entity
 @Table(name = "PRODUCT_LISTINGS")
-public class ProductsListing {
+public class ProductListing {
     @Id
     @Column(name = "ID", nullable = false)
     private Integer id;
@@ -45,11 +45,10 @@ public class ProductsListing {
     @Column(name = "UNIT_OF_MEASURE")
     private String unitOfMeasure;
 
-/*
- TODO [Reverse Engineering] create field to map the 'IS_ACTIVE' column
- Available actions: Define target Java type | Uncomment as is | Remove column mapping
-    @ColumnDefault("1")
-    @Column(name = "IS_ACTIVE", columnDefinition = "TINYINT not null")
-    private Object isActive;
-*/
+    @NotNull
+    @ColumnDefault("TRUE")
+    @Convert(disableConversion = true)
+    @Column(name = "IS_ACTIVE", nullable = false)
+    private Boolean isActive = false;
+
 }

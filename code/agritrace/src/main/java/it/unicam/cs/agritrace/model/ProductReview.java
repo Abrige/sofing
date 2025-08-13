@@ -2,18 +2,17 @@ package it.unicam.cs.agritrace.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.math.BigDecimal;
-
 @Getter
 @Setter
 @Entity
-@Table(name = "ORDER_ITEMS")
-public class OrderItem {
+@Table(name = "PRODUCT_REVIEWS")
+public class ProductReview {
     @Id
     @Column(name = "ID", nullable = false)
     private Integer id;
@@ -21,25 +20,21 @@ public class OrderItem {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
-    @JoinColumn(name = "ORDER_ID", nullable = false)
-    private Order order;
+    @JoinColumn(name = "PRODUCT_ID", nullable = false)
+    private Product product;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
-    @JoinColumn(name = "PRODUCT_LISTING_ID", nullable = false)
-    private ProductListing productListing;
+    @JoinColumn(name = "USER_ID", nullable = false)
+    private User user;
 
     @NotNull
-    @Column(name = "QUANTITY", nullable = false)
-    private Integer quantity;
+    @Column(name = "RATING", nullable = false)
+    private Integer rating;
 
-    @NotNull
-    @Column(name = "UNIT_PRICE", nullable = false, precision = 19)
-    private BigDecimal unitPrice;
-
-    @NotNull
-    @Column(name = "TOTAL_PRICE", nullable = false, precision = 19)
-    private BigDecimal totalPrice;
+    @Size(max = 255)
+    @Column(name = "COMMENT")
+    private String comment;
 
 }

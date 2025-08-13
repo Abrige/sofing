@@ -6,10 +6,14 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -64,10 +68,23 @@ public class Request {
     @Column(name = "REVIEWED_AT")
     private Instant reviewedAt;
 
-/*
- TODO [Reverse Engineering] create field to map the 'PAYLOAD' column
- Available actions: Define target Java type | Uncomment as is | Remove column mapping
-    @Column(name = "PAYLOAD", columnDefinition = "JSON not null")
-    private Object payload;
-*/
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "PAYLOAD", columnDefinition = "json", nullable = false)
+    private Map<String, Map<String, Object>> payload = new HashMap<>();
+    /* ESEMPIO:
+    {
+        "name": {
+        "old": "Pomodoro Ciliegino",
+        "new": "Pomodoro Datterino"
+        },
+        "description": {
+        "old": "Coltivato in serra",
+        "new": "Coltivato in campo aperto"
+        },
+        "cultivation_method_id": {
+        "old": 1,
+        "new": 3
+        }
+    }
+    */
 }

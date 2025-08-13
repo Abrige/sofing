@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -54,11 +55,10 @@ public class Event {
     @JoinColumn(name = "LOCATION_ID", nullable = false)
     private Location location;
 
-/*
- TODO [Reverse Engineering] create field to map the 'IS_ACTIVE' column
- Available actions: Define target Java type | Uncomment as is | Remove column mapping
-    @ColumnDefault("1")
-    @Column(name = "IS_ACTIVE", columnDefinition = "TINYINT not null")
-    private Object isActive;
-*/
+    @NotNull
+    @ColumnDefault("TRUE")
+    @Convert(disableConversion = true)
+    @Column(name = "IS_ACTIVE", nullable = false)
+    private Boolean isActive = false;
+
 }

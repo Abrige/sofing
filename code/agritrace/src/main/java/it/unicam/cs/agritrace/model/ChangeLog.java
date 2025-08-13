@@ -6,16 +6,21 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import com.fasterxml.jackson.databind.JsonNode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "CHANGELOGS")
-public class Changelog {
+@Table(name = "CHANGE_LOGS")
+public class ChangeLog {
     @Id
     @Column(name = "ID", nullable = false)
     private Integer id;
@@ -47,10 +52,22 @@ public class Changelog {
     @Column(name = "CHANGED_TYPE", nullable = false)
     private String changedType;
 
-/*
- TODO [Reverse Engineering] create field to map the 'CHANGES' column
- Available actions: Define target Java type | Uncomment as is | Remove column mapping
-    @Column(name = "CHANGES", columnDefinition = "JSON not null")
-    private Object changes;
-*/
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Map<String, Map<String, Object>> changes = new HashMap<>(); // doppia mappa perchè si parla di JSON annidati
+    /* ESEMPIO:
+    {
+      "name": {
+        "old": "Pomodoro Ciliegino",
+        "new": "Pomodoro Datterino"
+      },
+      "description": {
+        "old": "Coltivato in serra",
+        "new": "Coltivato in campo aperto"
+      },
+      "cultivation_method_id": {
+        "old": 1,
+        "new": 3
+      }
+    }
+    */
 }

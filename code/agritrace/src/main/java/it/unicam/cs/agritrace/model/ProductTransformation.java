@@ -11,7 +11,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Setter
 @Entity
 @Table(name = "PRODUCT_TRANSFORMATIONS")
-public class ProductsTransformation {
+public class ProductTransformation {
     @Id
     @Column(name = "ID", nullable = false)
     private Integer id;

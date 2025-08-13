@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -52,11 +53,10 @@ public class User {
     @JoinColumn(name = "ROLE_ID", nullable = false)
     private UserRole role;
 
-/*
- TODO [Reverse Engineering] create field to map the 'IS_DELETED' column
- Available actions: Define target Java type | Uncomment as is | Remove column mapping
-    @ColumnDefault("0")
-    @Column(name = "IS_DELETED", columnDefinition = "TINYINT not null")
-    private Object isDeleted;
-*/
+    @NotNull
+    @ColumnDefault("FALSE")
+    @Convert(disableConversion = true)
+    @Column(name = "IS_DELETED", nullable = false)
+    private Boolean isDeleted = false;
+
 }

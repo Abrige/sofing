@@ -12,7 +12,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Setter
 @Entity
 @Table(name = "PRODUCT_CATEGORIES")
-public class ProductsCategory {
+public class ProductCategory {
     @Id
     @Column(name = "ID", nullable = false)
     private Integer id;
@@ -30,6 +30,6 @@ public class ProductsCategory {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "PARENT_ID", nullable = false)
-    private ProductsCategory parent;
+    private ProductCategory parent;
 
 }
