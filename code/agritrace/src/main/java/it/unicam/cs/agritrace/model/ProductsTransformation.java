@@ -10,7 +10,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Getter
 @Setter
 @Entity
-@Table(name = "PRODUCTS_TRANSFORMATIONS")
+@Table(name = "PRODUCT_TRANSFORMATIONS")
 public class ProductsTransformation {
     @Id
     @Column(name = "ID", nullable = false)

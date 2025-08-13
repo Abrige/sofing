@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Entity
-@Table(name = "PRODUCTS_CERTIFICATIONS")
+@Table(name = "PRODUCT_CERTIFICATION")
 public class ProductsCertification {
     @Id
     @Column(name = "ID", nullable = false)

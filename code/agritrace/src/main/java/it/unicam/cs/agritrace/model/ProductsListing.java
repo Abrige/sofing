@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Entity
-@Table(name = "PRODUCTS_LISTINGS")
+@Table(name = "PRODUCT_LISTINGS")
 public class ProductsListing {
     @Id
     @Column(name = "ID", nullable = false)
