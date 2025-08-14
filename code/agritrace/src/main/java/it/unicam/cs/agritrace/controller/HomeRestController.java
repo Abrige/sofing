@@ -20,6 +20,6 @@ public class HomeRestController {
     // ritorna tutte le aziende
     @GetMapping("/companies")
     public List<Company> companies() {
-        companyRepository.findAll();
+        return companyRepository.findAll();
     }
 }
