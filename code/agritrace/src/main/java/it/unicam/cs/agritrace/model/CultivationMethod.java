@@ -7,12 +7,16 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 @Entity
 @Table(name = "CULTIVATION_METHODS")
 public class CultivationMethod {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
@@ -30,5 +34,8 @@ public class CultivationMethod {
     @Convert(disableConversion = true)
     @Column(name = "IS_ACTIVE", nullable = false)
     private Boolean isActive = false;
+
+    @OneToMany(mappedBy = "cultivationMethod")
+    private Set<Product> products = new LinkedHashSet<>();
 
 }

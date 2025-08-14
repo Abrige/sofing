@@ -13,6 +13,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Table(name = "USER_COMPANY")
 public class UserCompany {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 

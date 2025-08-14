@@ -10,6 +10,8 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -17,6 +19,7 @@ import java.math.BigDecimal;
 @Table(name = "TYPICAL_PACKAGES")
 public class TypicalPackage {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
@@ -44,5 +47,8 @@ public class TypicalPackage {
     @Convert(disableConversion = true)
     @Column(name = "IS_ACTIVE", nullable = false)
     private Boolean isActive = false;
+
+    @OneToMany(mappedBy = "typicalPackage")
+    private Set<TypicalPackagesItem> typicalPackagesItems = new LinkedHashSet<>();
 
 }

@@ -7,12 +7,16 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 @Entity
 @Table(name = "CERTIFICATIONS")
 public class Certification {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
@@ -25,15 +29,21 @@ public class Certification {
     @Column(name = "DESCRIPTION")
     private String description;
 
-    @Size(max = 255) // validatore lato Java
-    @NotNull // validatore lato Java
-    @Column(name = "ISSUING_BODY", nullable = false) // vincolo sul db
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "ISSUING_BODY", nullable = false)
     private String issuingBody;
 
     @NotNull
     @ColumnDefault("TRUE")
     @Convert(disableConversion = true)
     @Column(name = "IS_ACTIVE", nullable = false)
-    private Boolean isActive = true;
+    private Boolean isActive = false;
+
+    @OneToMany(mappedBy = "certification")
+    private Set<CompanyCertification> companyCertifications = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "certification")
+    private Set<ProductCertification> productCertifications = new LinkedHashSet<>();
 
 }

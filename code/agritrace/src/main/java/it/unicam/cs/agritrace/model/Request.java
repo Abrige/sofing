@@ -6,14 +6,10 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 
 @Getter
 @Setter
@@ -21,6 +17,7 @@ import java.util.Map;
 @Table(name = "REQUESTS")
 public class Request {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
@@ -45,12 +42,6 @@ public class Request {
     @Column(name = "REQUEST_TYPE", nullable = false)
     private String requestType;
 
-    @Size(max = 255)
-    @NotNull
-    @ColumnDefault("'pending'")
-    @Column(name = "STATUS", nullable = false)
-    private String status;
-
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
@@ -65,26 +56,18 @@ public class Request {
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "CREATED_AT", nullable = false)
     private Instant createdAt;
+
     @Column(name = "REVIEWED_AT")
     private Instant reviewedAt;
+    @Size(max = 10)
+    @ColumnDefault("'pending'")
+    @Column(name = "STATUS", length = 10)
+    private String status;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "PAYLOAD", columnDefinition = "json", nullable = false)
-    private Map<String, Map<String, Object>> payload = new HashMap<>();
-    /* ESEMPIO:
-    {
-        "name": {
-        "old": "Pomodoro Ciliegino",
-        "new": "Pomodoro Datterino"
-        },
-        "description": {
-        "old": "Coltivato in serra",
-        "new": "Coltivato in campo aperto"
-        },
-        "cultivation_method_id": {
-        "old": 1,
-        "new": 3
-        }
-    }
-    */
+/*
+ TODO [Reverse Engineering] create field to map the 'PAYLOAD' column
+ Available actions: Define target Java type | Uncomment as is | Remove column mapping
+    @Column(name = "PAYLOAD", columnDefinition = "JSON not null")
+    private Object payload;
+*/
 }

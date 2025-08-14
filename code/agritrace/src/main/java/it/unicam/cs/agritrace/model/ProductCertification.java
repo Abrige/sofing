@@ -16,6 +16,7 @@ import java.time.LocalDate;
 @Table(name = "PRODUCT_CERTIFICATION")
 public class ProductCertification {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 

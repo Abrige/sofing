@@ -9,12 +9,16 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 @Entity
 @Table(name = "PRODUCTS")
 public class Product {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
@@ -50,5 +54,23 @@ public class Product {
     @Convert(disableConversion = true)
     @Column(name = "IS_DELETED", nullable = false)
     private Boolean isDeleted = false;
+
+    @OneToMany(mappedBy = "product")
+    private Set<ProductionStep> productionSteps = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "product")
+    private Set<ProductCertification> productCertifications = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "product")
+    private Set<ProductListing> productListings = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "product")
+    private Set<ProductReview> productReviews = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "outputProduct")
+    private Set<ProductTransformation> productTransformations = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "product")
+    private Set<TypicalPackagesItem> typicalPackagesItems = new LinkedHashSet<>();
 
 }

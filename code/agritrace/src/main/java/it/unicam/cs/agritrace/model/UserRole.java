@@ -7,12 +7,16 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 @Entity
 @Table(name = "USER_ROLES")
 public class UserRole {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
@@ -30,5 +34,8 @@ public class UserRole {
     @Size(max = 255)
     @Column(name = "DESCRIPTION")
     private String description;
+
+    @OneToMany(mappedBy = "role")
+    private Set<User> users = new LinkedHashSet<>();
 
 }

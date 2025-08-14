@@ -10,6 +10,8 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -17,6 +19,7 @@ import java.time.LocalDate;
 @Table(name = "EVENTS")
 public class Event {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
@@ -60,5 +63,8 @@ public class Event {
     @Convert(disableConversion = true)
     @Column(name = "IS_ACTIVE", nullable = false)
     private Boolean isActive = false;
+
+    @OneToMany(mappedBy = "event")
+    private Set<EventPartecipant> eventPartecipants = new LinkedHashSet<>();
 
 }

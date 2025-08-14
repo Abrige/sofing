@@ -9,6 +9,8 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -16,6 +18,7 @@ import java.time.LocalDate;
 @Table(name = "PRODUCTION_STEPS")
 public class ProductionStep {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
@@ -51,5 +54,8 @@ public class ProductionStep {
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "LOCATION_ID")
     private Location location;
+
+    @OneToMany(mappedBy = "step")
+    private Set<ProductTransformation> productTransformations = new LinkedHashSet<>();
 
 }

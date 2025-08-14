@@ -12,6 +12,8 @@ import org.hibernate.annotations.OnDeleteAction;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -19,6 +21,7 @@ import java.time.LocalDate;
 @Table(name = "ORDERS")
 public class Order {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
@@ -57,5 +60,8 @@ public class Order {
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "DELIVERY_LOCATION_ID", nullable = false)
     private Location deliveryLocation;
+
+    @OneToMany(mappedBy = "order")
+    private Set<OrderItem> orderItems = new LinkedHashSet<>();
 
 }
