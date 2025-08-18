@@ -11,15 +11,4 @@ import java.util.List;
 @RestController
 public class HomeRestController {
 
-    private final CompanyRepository companyRepository;
-
-    public HomeRestController(CompanyRepository companyRepository) {
-        this.companyRepository = companyRepository;
-    }
-
-    // ritorna tutte le aziende
-    @GetMapping("/companies")
-    public List<Company> companies() {
-        return companyRepository.findAll();
-    }
 }
