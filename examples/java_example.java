@@ -116,3 +116,12 @@ public class OrderService {
         return orderRepository.save(order);
     }
 }
+
+    {
+        "name": "Pomodori"
+        "description": "pomodori buonissimi"
+        "category_id": 2,
+        "cultivation_method_id": 1,
+        "harvest_season_id": 3,
+        "producer_id": 3
+    }

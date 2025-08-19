@@ -10,8 +10,8 @@ import org.hibernate.annotations.ColumnDefault;
 @Getter
 @Setter
 @Entity
-@Table(name = "CERTIFICATIONS")
-public class Certification {
+@Table(name = "USER_ROLES")
+public class UserRole {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
@@ -22,19 +22,13 @@ public class Certification {
     @Column(name = "NAME", nullable = false)
     private String name;
 
+    @NotNull
+    @ColumnDefault("TRUE")
+    @Column(name = "IS_ACTIVE", nullable = false)
+    private Boolean isActive = true;
+
     @Size(max = 255)
     @Column(name = "DESCRIPTION")
     private String description;
-
-    @Size(max = 255)
-    @NotNull
-    @Column(name = "ISSUING_BODY", nullable = false)
-    private String issuingBody;
-
-    @NotNull
-    @ColumnDefault("TRUE")
-    @Convert(disableConversion = true)
-    @Column(name = "IS_ACTIVE", nullable = false)
-    private Boolean isActive = false;
 
 }

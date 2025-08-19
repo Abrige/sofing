@@ -1,0 +1,34 @@
+package it.unicam.cs.agritrace.enums;
+
+public enum StatusType {
+    NEW(1, "new"),
+    PENDING(2, "pending"),
+    SHIPPED(3, "shipped"),
+    DELIVERED(4, "delivered"),
+    CANCELLED(5, "cancelled"),
+    REJECTED(6, "rejected"),
+    DECLINED(7, "declined");
+
+    private final int id;
+    private final String name;
+
+    StatusType(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public static StatusType fromId(int id) {
+        for (StatusType s : values()) {
+            if (s.id == id) return s;
+        }
+        throw new IllegalArgumentException("Invalid StatusType id: " + id);
+    }
+}
