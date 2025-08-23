@@ -11,5 +11,4 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
   // trova tutti i prodotti cancellati con la soft delete
   List<Product> findByIsDeletedIsTrue();
   Product findByName(String name);
-
 }

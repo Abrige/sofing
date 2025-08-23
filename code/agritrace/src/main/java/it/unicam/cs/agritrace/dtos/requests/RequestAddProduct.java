@@ -1,6 +1,6 @@
-package it.unicam.cs.agritrace.dto;
+package it.unicam.cs.agritrace.dtos.requests;
 
-public record ProductRequestDto(String name,
+public record RequestAddProduct(String name,
                                 String description,
                                 Integer categoryId,
                                 Integer cultivationMethodId,
