@@ -31,4 +31,13 @@ public enum StatusType {
         }
         throw new IllegalArgumentException("Invalid StatusType id: " + id);
     }
+    public static int fromName(String name) {
+        for (StatusType s : values()) {
+            if (s.name.equalsIgnoreCase(name)) {
+                return s.id;
+            }
+        }
+        throw new IllegalArgumentException("Invalid StatusType name: " + name);
+    }
+
 }

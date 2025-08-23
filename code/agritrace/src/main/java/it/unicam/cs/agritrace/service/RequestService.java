@@ -1,45 +1,71 @@
 package it.unicam.cs.agritrace.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.unicam.cs.agritrace.dto.ProductRequestDto;
 import it.unicam.cs.agritrace.enums.StatusType;
 import it.unicam.cs.agritrace.model.*;
-import it.unicam.cs.agritrace.repository.ProductRepository;
-import it.unicam.cs.agritrace.repository.RequestRepository;
-import it.unicam.cs.agritrace.repository.StatusRepository;
+import it.unicam.cs.agritrace.repository.*;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class RequestService {
 
-    private final RequestRepository requestRepository;
-    private final ProductRepository productRepository;
-    private final StatusRepository statusRepository;
+    private RequestRepository requestRepository;
+    private ProductRepository productRepository;
+    private StatusRepository statusRepository;
+    private UserRepository userRepository;
+    private DbTableRepository dbTableRepository;
+    private ObjectMapper objectMapper;
 
     public RequestService(RequestRepository requestRepository,
                           ProductRepository productRepository,
-                          StatusRepository statusRepository) {
+                          StatusRepository statusRepository,
+                          UserRepository userRepository,
+                          DbTableRepository dbTableRepository,
+                          ObjectMapper objectMapper) {
         this.requestRepository = requestRepository;
         this.productRepository = productRepository;
         this.statusRepository = statusRepository;
+        this.userRepository = userRepository;
+        this.dbTableRepository = dbTableRepository;
+        this.objectMapper = objectMapper;
     }
 
-    public Request createProductRequest(User requester, DbTable targetTable, String payload) {
-        Request request = new Request();
-        request.setRequester(requester);
-        request.setTargetTable(targetTable);
-        request.setRequestType("c"); // create
-        request.setPayload(payload);
+    public Request createProductRequest(User requester, ProductRequestDto dto) {
+        try {
+            // Serializzo DTO in JSON con formato "new"
+            Map<String, Object> payloadMap = new HashMap<>();
+            payloadMap.put("name", dto.name());
+            payloadMap.put("description", dto.description());
+            payloadMap.put("category_id", dto.categoryId());
+            payloadMap.put("cultivation_method_id", dto.cultivationMethodId());
+            payloadMap.put("harvest_season_id", dto.harvestSeasonId());
+            payloadMap.put("producer_id", dto.producerId());
 
-        // niente setStatus() → il DB mette automaticamente PENDING
+            String payloadJson = objectMapper.writeValueAsString(payloadMap);
 
-        return requestRepository.save(request);
+            Request request = new Request();
+            request.setRequester(requester);
+            request.setTargetTable(dbTableRepository.findById(20).orElseThrow());
+            request.setTargetId(null);
+            request.setRequestType("c");
+            request.setPayload(payloadJson);
+            request.setCreatedAt(Instant.now());
+            request.setStatus(statusRepository.findById(StatusType.fromName("pending")).orElseThrow());
+
+            return requestRepository.save(request);
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Errore serializzazione JSON", e);
+        }
     }
 
+    /*
     public Product approveRequest(Integer requestId, User curator) throws IOException {
         Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new IllegalArgumentException("Request not found: " + requestId));
@@ -88,4 +114,6 @@ public class RequestService {
 
         return requestRepository.save(request);
     }
+
+     */
 }

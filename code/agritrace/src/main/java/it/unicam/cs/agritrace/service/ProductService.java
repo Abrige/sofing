@@ -15,6 +15,7 @@ public class ProductService {
     @Autowired
     private UserRepository userRepository;
 
+    /*
     public Product addProduct(Product product) {
 
         product.setApprovalStatus(ProductApprovalStatus.PENDING);
@@ -38,4 +39,6 @@ public class ProductService {
     public List<Product> getPendingProducts() {
         return productRepository.findByApprovalStatus(ProductApprovalStatus.PENDING);
     }
+
+     */
 }

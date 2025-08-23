@@ -56,7 +56,7 @@ public class Request {
 
     @NotNull
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "CREATED_AT", nullable = false)
+    @Column(name = "CREATED_AT", updatable = false, insertable = false, nullable = false)
     private Instant createdAt;
 
     @Column(name = "REVIEWED_AT")
