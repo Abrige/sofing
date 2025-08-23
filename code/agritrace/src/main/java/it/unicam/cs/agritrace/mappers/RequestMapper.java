@@ -1,37 +1,15 @@
 package it.unicam.cs.agritrace.mappers;
 
-<<<<<<< HEAD
-import it.unicam.cs.agritrace.dtos.responses.ResponseRequest;
-import it.unicam.cs.agritrace.model.Request;
-=======
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.unicam.cs.agritrace.dtos.responses.ResponseRequest;
 import it.unicam.cs.agritrace.model.Request;
 import it.unicam.cs.agritrace.model.User;
->>>>>>> origin/main
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 import java.util.List;
-<<<<<<< HEAD
-
-import it.unicam.cs.agritrace.dtos.responses.ResponseRequest;
-
-@Mapper(componentModel = "spring")
-public interface RequestMapper {
-
-    @Mapping(source = "requester.id", target = "requesterId")
-    @Mapping(source = "targetTable.id", target = "targetTableId")
-    @Mapping(source = "curator.id", target = "curatorId")
-    @Mapping(source = "status.id", target = "statusId")
-    ResponseRequest toDto(Request request);
-
-    List<ResponseRequest> toDtoList(List<Request> requests);
-=======
 import java.util.Map;
-
-import it.unicam.cs.agritrace.dtos.responses.ResponseRequest;
-import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring", imports = {com.fasterxml.jackson.databind.ObjectMapper.class, java.util.Map.class})
 public interface RequestMapper {
@@ -56,5 +34,4 @@ public interface RequestMapper {
     default String userToName(User user) {
         return user != null ? user.getUsername() : null;
     }
->>>>>>> origin/main
 }
