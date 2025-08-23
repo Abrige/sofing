@@ -5,27 +5,23 @@ import it.unicam.cs.agritrace.model.Request;
 import it.unicam.cs.agritrace.model.User;
 import it.unicam.cs.agritrace.repository.UserRepository;
 import it.unicam.cs.agritrace.service.RequestService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
-@Controller
+@RequiredArgsConstructor
+@RestController
 public class ProductController {
 
     private RequestService requestService;
     private UserRepository userRepository;
 
-    public ProductController(RequestService requestService,
-                             UserRepository userRepository) {
-        this.requestService = requestService;
-        this.userRepository = userRepository;
-    }
-
-    @PostMapping("/addproduct")
+    @PostMapping("/createproduct")
     public ResponseEntity<?> addProduct(@RequestBody RequestAddProduct requestAddProduct) {
         try {
             // 🔹 Recupero un utente fittizio con id=1

@@ -1,17 +1,16 @@
 package it.unicam.cs.agritrace.dtos.responses;
 
 import java.time.Instant;
+import java.util.Map;
 
 public record ResponseRequest(
         Integer id,
-        Integer requesterId,
-        Integer targetTableId,
-        Integer targetId,
+        String requesterUsername,
+        String curatorName,
+        String statusName,
         String requestType,
-        Integer curatorId,
-        String decisionNotes,
         Instant createdAt,
         Instant reviewedAt,
-        Integer statusId,
-        String payload
+        String decisionNotes,
+        Map<String,Object> payload
 ) {}
