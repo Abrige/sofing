@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
-@RequiredArgsConstructor
 @RestController
 public class ProductController {
 
@@ -30,6 +29,7 @@ public class ProductController {
     private RequestService requestService;
     private UserRepository userRepository;
 
+<<<<<<< Updated upstream
 <<<<<<< HEAD
     public ProductController(RequestService requestService,
                              UserRepository userRepository,
@@ -41,6 +41,14 @@ public class ProductController {
 
     @PostMapping("/addproduct")
 =======
+=======
+    public ProductController(RequestService requestService,
+                             UserRepository userRepository) {
+        this.requestService = requestService;
+        this.userRepository = userRepository;
+    }
+
+>>>>>>> Stashed changes
     @PostMapping("/createproduct")
 >>>>>>> origin/main
     public ResponseEntity<?> addProduct(@RequestBody RequestAddProduct requestAddProduct) {
