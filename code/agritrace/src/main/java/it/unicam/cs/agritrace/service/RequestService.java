@@ -9,6 +9,7 @@ import it.unicam.cs.agritrace.mappers.RequestMapper;
 import it.unicam.cs.agritrace.model.*;
 import it.unicam.cs.agritrace.repository.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -71,7 +72,8 @@ public class RequestService {
         }
     }
 
-    public List<ResponseRequest> getAllDtos() {
+    @Transactional(readOnly = true)
+    public List<ResponseRequest> getAllRequests() {
         return mapper.toDtoList(requestRepository.findAll());
     }
 
