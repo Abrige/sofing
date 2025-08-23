@@ -6,19 +6,9 @@ import it.unicam.cs.agritrace.model.User;
 import it.unicam.cs.agritrace.repository.UserRepository;
 import it.unicam.cs.agritrace.service.ProductService;
 import it.unicam.cs.agritrace.service.RequestService;
-<<<<<<< HEAD
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-=======
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
->>>>>>> origin/main
 
 import java.util.Optional;
 
@@ -29,28 +19,7 @@ public class ProductController {
     private RequestService requestService;
     private UserRepository userRepository;
 
-<<<<<<< Updated upstream
-<<<<<<< HEAD
-    public ProductController(RequestService requestService,
-                             UserRepository userRepository,
-                             ProductService productService) {
-        this.requestService = requestService;
-        this.userRepository = userRepository;
-        this.productService = productService;
-    }
-
-    @PostMapping("/addproduct")
-=======
-=======
-    public ProductController(RequestService requestService,
-                             UserRepository userRepository) {
-        this.requestService = requestService;
-        this.userRepository = userRepository;
-    }
-
->>>>>>> Stashed changes
     @PostMapping("/createproduct")
->>>>>>> origin/main
     public ResponseEntity<?> addProduct(@RequestBody RequestAddProduct requestAddProduct) {
         try {
             // 🔹 Recupero un utente fittizio con id=1
