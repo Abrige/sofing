@@ -2,14 +2,17 @@ package it.unicam.cs.agritrace.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.unicam.cs.agritrace.dto.ProductRequestDto;
+import it.unicam.cs.agritrace.dtos.requests.RequestAddProduct;
+import it.unicam.cs.agritrace.dtos.responses.ResponseRequest;
 import it.unicam.cs.agritrace.enums.StatusType;
+import it.unicam.cs.agritrace.mappers.RequestMapper;
 import it.unicam.cs.agritrace.model.*;
 import it.unicam.cs.agritrace.repository.*;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -21,22 +24,25 @@ public class RequestService {
     private UserRepository userRepository;
     private DbTableRepository dbTableRepository;
     private ObjectMapper objectMapper;
+    private final RequestMapper mapper;
 
-    public RequestService(RequestRepository requestRepository,
-                          ProductRepository productRepository,
-                          StatusRepository statusRepository,
-                          UserRepository userRepository,
+    public RequestService(RequestMapper mapper,
+                          ObjectMapper objectMapper,
                           DbTableRepository dbTableRepository,
-                          ObjectMapper objectMapper) {
-        this.requestRepository = requestRepository;
-        this.productRepository = productRepository;
-        this.statusRepository = statusRepository;
-        this.userRepository = userRepository;
-        this.dbTableRepository = dbTableRepository;
+                          UserRepository userRepository,
+                          StatusRepository statusRepository,
+                          ProductRepository productRepository,
+                          RequestRepository requestRepository) {
+        this.mapper = mapper;
         this.objectMapper = objectMapper;
+        this.dbTableRepository = dbTableRepository;
+        this.userRepository = userRepository;
+        this.statusRepository = statusRepository;
+        this.productRepository = productRepository;
+        this.requestRepository = requestRepository;
     }
 
-    public Request createProductRequest(User requester, ProductRequestDto dto) {
+    public Request createProductRequest(User requester, RequestAddProduct dto) {
         try {
             // Serializzo DTO in JSON con formato "new"
             Map<String, Object> payloadMap = new HashMap<>();
@@ -63,6 +69,10 @@ public class RequestService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Errore serializzazione JSON", e);
         }
+    }
+
+    public List<ResponseRequest> getAllDtos() {
+        return mapper.toDtoList(requestRepository.findAll());
     }
 
     /*

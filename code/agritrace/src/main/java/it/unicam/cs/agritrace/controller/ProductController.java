@@ -1,14 +1,10 @@
 package it.unicam.cs.agritrace.controller;
 
-import it.unicam.cs.agritrace.dto.ProductRequestDto;
-import it.unicam.cs.agritrace.model.Product;
+import it.unicam.cs.agritrace.dtos.requests.RequestAddProduct;
 import it.unicam.cs.agritrace.model.Request;
 import it.unicam.cs.agritrace.model.User;
 import it.unicam.cs.agritrace.repository.UserRepository;
 import it.unicam.cs.agritrace.service.RequestService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -30,7 +26,7 @@ public class ProductController {
     }
 
     @PostMapping("/addproduct")
-    public ResponseEntity<?> addProduct(@RequestBody ProductRequestDto productRequestDto) {
+    public ResponseEntity<?> addProduct(@RequestBody RequestAddProduct requestAddProduct) {
         try {
             // 🔹 Recupero un utente fittizio con id=1
             Optional<User> maybeUser = userRepository.findById(1);
@@ -44,7 +40,7 @@ public class ProductController {
             User fakeUser = maybeUser.get();
 
             // 🔹 Creo la request
-            Request request = requestService.createProductRequest(fakeUser, productRequestDto);
+            Request request = requestService.createProductRequest(fakeUser, requestAddProduct);
 
             // 🔹 Restituisco il risultato con 201 Created
             return ResponseEntity.status(HttpStatus.CREATED).body(null);
