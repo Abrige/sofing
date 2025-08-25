@@ -117,11 +117,27 @@ public class OrderService {
     }
 }
 
-    {
-        "name": "Pomodori"
-        "description": "pomodori buonissimi"
-        "category_id": 2,
-        "cultivation_method_id": 1,
-        "harvest_season_id": 3,
-        "producer_id": 3
-    }
+    
+
+// Cancellazione di un prodotto
+{
+    "productToDeleteId": 1
+}
+
+// Update di un prodotto
+{
+    "productToUpdateId": 1,
+    "name": "nuovonuome",
+    "description": "nuovodescrizione",
+    .....
+}
+
+
+// Aggiunta di un prodotto al marketplace
+{
+    "product_id": 1,
+    "seller_id": 1,
+    "price": 100.0,
+    "quantity": 10,
+    "unity_of_measure": "kg"
+} 
