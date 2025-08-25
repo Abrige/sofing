@@ -144,15 +144,22 @@ public class OrderService {
 
 // Esempio di pacchetto
 {
-    "packet_id": 1,
     "name":"blablabla",
     "description": "balblablblabl",
     "price": 100.0,
-    "produce_id": 1,
+    "producer_id": 1,
     "items": [
         {
-            "productId": 2,
+            "product_id": 3,
             "quantity": 5
+        },
+        {
+            "product_id": 4,
+            "quantity": 5
+        },
+        {
+            "productId": 6,
+            "quantity": 10
         }
     ]
 }
