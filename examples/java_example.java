@@ -141,3 +141,18 @@ public class OrderService {
     "quantity": 10,
     "unity_of_measure": "kg"
 } 
+
+// Esempio di pacchetto
+{
+    "packet_id": 1,
+    "name":"blablabla",
+    "description": "balblablblabl",
+    "price": 100.0,
+    "produce_id": 1,
+    "items": [
+        {
+            "productId": 2,
+            "quantity": 5
+        }
+    ]
+}
