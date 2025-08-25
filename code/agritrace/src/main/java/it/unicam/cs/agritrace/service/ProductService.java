@@ -1,16 +1,23 @@
 package it.unicam.cs.agritrace.service;
 
+import it.unicam.cs.agritrace.dtos.responses.ResponseRequest;
+import it.unicam.cs.agritrace.mappers.RequestMapper;
 import it.unicam.cs.agritrace.model.Product;
 import it.unicam.cs.agritrace.model.User;
 import it.unicam.cs.agritrace.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
+    private final RequestMapper mapper;
 
-    public ProductService(ProductRepository productRepository) {
+
+    public ProductService(ProductRepository productRepository, RequestMapper mapper) {
         this.productRepository = productRepository;
+        this.mapper = mapper;
     }
 
     public void deleteProduct(int productId) {
