@@ -1,6 +1,7 @@
 package it.unicam.cs.agritrace.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.unicam.cs.agritrace.dtos.requests.ProductCreationRequest;
 import it.unicam.cs.agritrace.dtos.responses.ProductCreationResponse;
@@ -11,6 +12,7 @@ import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.mappers.RequestMapper;
 import it.unicam.cs.agritrace.model.*;
 import it.unicam.cs.agritrace.repository.*;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,10 @@ import java.util.Map;
 @Service
 public class RequestService {
 
+    private final ProductCategoryRepository productCategoryRepository;
+    private final CultivationMethodRepository cultivationMethodRepository;
+    private final HarvestSeasonRepository harvestSeasonRepository;
+    private final CompanyRepository companyRepository;
     private RequestRepository requestRepository;
     private ProductRepository productRepository;
     private final StatusRepository statusRepository;
@@ -35,7 +41,7 @@ public class RequestService {
                           UserRepository userRepository,
                           StatusRepository statusRepository,
                           ProductRepository productRepository,
-                          RequestRepository requestRepository) {
+                          RequestRepository requestRepository, ProductCategoryRepository productCategoryRepository, CultivationMethodRepository cultivationMethodRepository, HarvestSeasonRepository harvestSeasonRepository, CompanyRepository companyRepository) {
         this.requestMapper = requestMapper;
         this.objectMapper = objectMapper;
         this.dbTableRepository = dbTableRepository;
@@ -43,6 +49,10 @@ public class RequestService {
         this.statusRepository = statusRepository;
         this.productRepository = productRepository;
         this.requestRepository = requestRepository;
+        this.productCategoryRepository = productCategoryRepository;
+        this.cultivationMethodRepository = cultivationMethodRepository;
+        this.harvestSeasonRepository = harvestSeasonRepository;
+        this.companyRepository = companyRepository;
     }
 
     public ProductCreationResponse createProductRequest(ProductCreationRequest dto) {
@@ -100,6 +110,55 @@ public class RequestService {
         }
         return requestMapper.toDtoList(entities);
     }
+
+    public void approveRequest(int id, User curator) throws JsonProcessingException {
+        Request request = requestRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Request with id="+id+" not found"));
+
+        // Recupero stato "SHIPPED" (o "APPROVED" se lo rinomini) dal DB usando enum
+        Status approvedStatus = statusRepository.findById(StatusType.SHIPPED.getId())
+                .orElseThrow(() -> new IllegalStateException("Missing status: " + StatusType.SHIPPED));
+        request.setCurator(curator);
+        request.setStatus(approvedStatus);
+        request.setReviewedAt(Instant.now());
+        requestRepository.save(request);
+        //TODO
+        if ("c".equals(request.getRequestType())) {
+            // ad esempio: creare un record in Product
+            // Creazione reale del prodotto dal payload JSON
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode data = mapper.readTree(request.getPayload());
+
+            Product product = new Product();
+            product.setName(data.get("name").asText());
+            product.setDescription(data.get("description").asText());
+            product.setCategory(productCategoryRepository.findById(data.get("category_id").asInt())
+                    .orElseThrow(() -> new IllegalArgumentException("Categoria non trovata")));
+            product.setCultivationMethod(cultivationMethodRepository.findById(data.get("cultivation_method_id").asInt())
+                    .orElseThrow(() -> new IllegalArgumentException("Metodo di coltivazione non trovato")));
+            product.setHarvestSeason(harvestSeasonRepository.findById(data.get("harvest_season_id").asInt())
+                    .orElseThrow(() -> new IllegalArgumentException("Stagione di Raccolta non trovata")));
+            // product.setIsDeleted(false); DEFAULT VALUE
+            product.setProducer(companyRepository.findById(data.get("producer_id").asInt())
+                    .orElseThrow(() -> new IllegalArgumentException("Produttore non trovato")));
+            Product savedProduct = productRepository.save(product);
+            request.setTargetId(savedProduct.getId());
+            requestRepository.save(request);
+        }
+        //TODO notifica al curatore
+    }
+    public void rejectRequest(int id, User curator, String reason) {
+        Request request = requestRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Request with id="+id+" not found"));
+        Status status = statusRepository.findById(StatusType.SHIPPED.getId())
+                .orElseThrow(()-> new IllegalStateException("Missing status: " + StatusType.SHIPPED));
+        request.setStatus(status);
+        request.setCurator(curator);
+        request.setReviewedAt(Instant.now());
+        request.setDecisionNotes(reason);
+        requestRepository.save(request);
+        //TODO notifica al curatore
+    }
 }
 
 
@@ -108,13 +167,12 @@ public class RequestService {
         Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new IllegalArgumentException("Request not found: " + requestId));
 
-        request.setCurator(curator);
-        request.setReviewedAt(LocalDateTime.now().toInstant(ZoneOffset.UTC));
-
         // Recupero stato "SHIPPED" (o "APPROVED" se lo rinomini) dal DB usando enum
         Status approvedStatus = statusRepository.findById(StatusType.SHIPPED.getId())
                 .orElseThrow(() -> new IllegalStateException("Missing status: " + StatusType.SHIPPED));
 
+        request.setCurator(curator);
+        request.setReviewedAt(LocalDateTime.now().toInstant(ZoneOffset.UTC));
         request.setStatus(approvedStatus);
 
         // Creazione reale del prodotto dal payload JSON
