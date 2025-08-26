@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/package")
 public class PackageController {
@@ -21,10 +23,8 @@ public class PackageController {
         PackageResponse created = packageService.createPackage(request);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
-//TODO
-//    @PostMapping("/{id}/approve")
-//    public ResponseEntity<PackageResponse> approvePackage(@PathVariable Long id) {
-//        PackageResponse approved = packageService.approvePackage(id);
-//        return ResponseEntity.ok(approved);
-//    }
+    @RequestMapping("/packages")
+    public ResponseEntity<List<PackageResponse>> getAllPackages() {
+        return new ResponseEntity<>(packageService.getPackages(), HttpStatus.OK);
+    }
 }

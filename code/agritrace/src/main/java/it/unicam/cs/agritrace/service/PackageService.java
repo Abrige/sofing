@@ -46,7 +46,7 @@ public class PackageService {
 //            }
 //            Product prod = productRepository.getById(product.productId());
 //        }
-            // Step 4: crea pacchetto e stato = "IN_ATTESA"
+            //TODO stato = "IN_ATTESA"
             TypicalPackage pkg = new TypicalPackage();
             pkg.setName(request.name());
             pkg.setDescription(request.description());
@@ -69,5 +69,9 @@ public class PackageService {
             pkg.setTypicalPackageItems(packageItemsList);
             packageRepository.save(pkg);
             return new PackageResponse(pkg);
+    }
+
+    public List<PackageResponse> getPackages() {
+        return packageRepository.findAll().stream().map(PackageResponse::new).toList();
     }
 }
