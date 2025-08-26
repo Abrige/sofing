@@ -1,24 +1,24 @@
 package it.unicam.cs.agritrace.controller;
 
-import it.unicam.cs.agritrace.repository.RequestRepository;
+import it.unicam.cs.agritrace.dtos.responses.ResponseRequest;
 import it.unicam.cs.agritrace.service.RequestService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+import java.util.List;
+
+@RestController
 public class RequestController {
-    private final RequestService requestService;
-    private RequestRepository requestRepository;
 
-    public RequestController(RequestRepository requestRepository,
-                             RequestService requestService) {
-        this.requestRepository = requestRepository;
+    private final RequestService requestService;
+
+    public RequestController(RequestService requestService) {
         this.requestService = requestService;
     }
 
     @GetMapping("/requests")
-    public ResponseEntity<?> requests() {
+    public ResponseEntity<List<ResponseRequest>> requests() {
         return ResponseEntity.ok(requestService.getAllRequests());
     }
 }

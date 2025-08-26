@@ -2,6 +2,7 @@ package it.unicam.cs.agritrace.mappers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.unicam.cs.agritrace.dtos.responses.ResponseRequest;
+import it.unicam.cs.agritrace.exceptions.PayloadParsingException;
 import it.unicam.cs.agritrace.model.Request;
 import it.unicam.cs.agritrace.model.User;
 import org.mapstruct.Mapper;
@@ -26,7 +27,7 @@ public interface RequestMapper {
         try {
             return new ObjectMapper().readValue(json, Map.class);
         } catch (Exception e) {
-            return Map.of(); // fallback vuoto se il payload non è valido
+            throw new PayloadParsingException("Invalid JSON payload: ", e);
         }
     }
 

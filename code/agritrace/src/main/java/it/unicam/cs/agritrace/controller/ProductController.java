@@ -2,96 +2,73 @@ package it.unicam.cs.agritrace.controller;
 
 import it.unicam.cs.agritrace.dtos.ProductDTO;
 import it.unicam.cs.agritrace.dtos.requests.RequestAddProduct;
-import it.unicam.cs.agritrace.exceptions.ProductNotFoundException;
-import it.unicam.cs.agritrace.model.Product;
+import it.unicam.cs.agritrace.dtos.responses.ProductRequestResponse;
 import it.unicam.cs.agritrace.model.Request;
-import it.unicam.cs.agritrace.model.User;
-import it.unicam.cs.agritrace.repository.ProductRepository;
-import it.unicam.cs.agritrace.repository.UserRepository;
 import it.unicam.cs.agritrace.service.ProductService;
 import it.unicam.cs.agritrace.service.RequestService;
-import jakarta.websocket.server.PathParam;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @RestController
+@RequestMapping("api/products")
+@Slf4j
 public class ProductController {
 
-    private final ProductRepository productRepository;
-    private ProductService productService;
-    private RequestService requestService;
-    private UserRepository userRepository;
+    private final ProductService productService;
+    private final RequestService requestService;
 
-    public ProductController(ProductRepository productRepository, ProductService productService, RequestService requestService, UserRepository userRepository) {
-        this.productRepository = productRepository;
+    public ProductController(ProductService productService,
+                             RequestService requestService) {
         this.productService = productService;
         this.requestService = requestService;
-        this.userRepository = userRepository;
     }
 
-    @GetMapping(value="/product/{id}")
-    public ResponseEntity<ProductDTO> getProduct(@PathVariable int id) throws ProductNotFoundException {
-        return productRepository.findById(id)
-                .map(product -> new ResponseEntity<>(new ProductDTO(product), HttpStatus.OK))
-                .orElseThrow(ProductNotFoundException::new);
+    // POST /api/products/{id}
+    @GetMapping(value="/{id}")
+    public ResponseEntity<ProductDTO> getProduct(@PathVariable int id) {
+        log.info("Fetching product with id={}", id);
+        ProductDTO product = productService.getProductById(id); // delega al service
+        return ResponseEntity.ok(product);
     }
 
-    @GetMapping(value="/products")
+    // GET /api/products
+    @GetMapping
     public ResponseEntity<List<ProductDTO>> getProducts(){
-        List<ProductDTO> prodotti = productRepository.findAll()
-                .stream()
-                .map(ProductDTO::new)
-                .toList();
-        if (prodotti.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(prodotti, HttpStatus.OK);
-    }
-
-    @PostMapping("/create-product")
-    public ResponseEntity<?> addProduct(@RequestBody RequestAddProduct requestAddProduct) {
-        try {
-            // 🔹 Recupero un utente fittizio con id=1
-            Optional<User> maybeUser = userRepository.findById(1);
-
-            if (maybeUser.isEmpty()) {
-                // Se non esiste, restituisco un 404 esplicito
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("Fake user with id=1 not found. Insert it in DB first.");
-            }
-
-            User fakeUser = maybeUser.get();
-
-            // 🔹 Creo la request
-            Request request = requestService.createProductRequest(fakeUser, requestAddProduct);
-
-            // 🔹 Restituisco il risultato con 201 Created
-            return ResponseEntity.status(HttpStatus.CREATED).body(null);
-
-        } catch (Exception e) {
-            // 🔹 Catch generico per evitare 500 non gestiti
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Errore durante la creazione del product request: " + e.getMessage());
-        }
-    }
-
-    @DeleteMapping("/delete-product/{id}")
-    public ResponseEntity<?> deleteProduct(@PathVariable int id) {
-        try {
-            productService.deleteProduct(id);
+        log.info("Fetching all products");
+        List<ProductDTO> products = productService.getAllProducts();
+        if (products.isEmpty()) {
             return ResponseEntity.noContent().build();
-
         }
-        catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Errore durante la cancellazione del prodotto: " + e.getMessage());
-        }
+        return ResponseEntity.ok(products);
     }
 
+    // POST /api/products
+    @PostMapping
+    public ResponseEntity<ProductRequestResponse> addProduct(@RequestBody RequestAddProduct requestAddProduct) {
+        log.info("Creating new product request: {}", requestAddProduct);
 
+        Request created = requestService.createProductRequest(requestAddProduct);
 
+        // DTO di ritorno
+        ProductRequestResponse response = new ProductRequestResponse(
+                created.getId(),
+                created.getStatus().getName(),
+                created.getCreatedAt()
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    // DELETE /api/products/{id}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable int id) {
+        log.info("Deleting product with id={}", id);
+        productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
+    }
 }

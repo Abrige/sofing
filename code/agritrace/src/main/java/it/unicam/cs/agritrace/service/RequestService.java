@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.unicam.cs.agritrace.dtos.requests.RequestAddProduct;
 import it.unicam.cs.agritrace.dtos.responses.ResponseRequest;
 import it.unicam.cs.agritrace.enums.StatusType;
+import it.unicam.cs.agritrace.exceptions.PayloadParsingException;
+import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.mappers.RequestMapper;
 import it.unicam.cs.agritrace.model.*;
 import it.unicam.cs.agritrace.repository.*;
@@ -43,39 +45,62 @@ public class RequestService {
         this.requestRepository = requestRepository;
     }
 
-    public Request createProductRequest(User requester, RequestAddProduct dto) {
+    public Request createProductRequest(RequestAddProduct dto) {
+
+        // 🔹 Recupero l'utente fittizio con id=1
+        User requester = userRepository.findById(1)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Fake user with id=1 not found. Insert it in DB first."));
+
         try {
-            // Serializzo DTO in JSON con formato "new"
-            Map<String, Object> payloadMap = new HashMap<>();
-            payloadMap.put("name", dto.name());
-            payloadMap.put("description", dto.description());
-            payloadMap.put("category_id", dto.categoryId());
-            payloadMap.put("cultivation_method_id", dto.cultivationMethodId());
-            payloadMap.put("harvest_season_id", dto.harvestSeasonId());
-            payloadMap.put("producer_id", dto.producerId());
+            // 🔹 Serializzo DTO in JSON
+            Map<String, Object> payloadMap = Map.of(
+                    "name", dto.name(),
+                    "description", dto.description(),
+                    "category_id", dto.categoryId(),
+                    "cultivation_method_id", dto.cultivationMethodId(),
+                    "harvest_season_id", dto.harvestSeasonId(),
+                    "producer_id", dto.producerId()
+            );
 
             String payloadJson = objectMapper.writeValueAsString(payloadMap);
 
+            // 🔹 Recupero tabella target
+            var targetTable = dbTableRepository.findById(20)
+                    .orElseThrow(() -> new ResourceNotFoundException("Target table with id=20 not found"));
+
+            // 🔹 Recupero status pending
+            var status = statusRepository.findById(StatusType.fromName("pending"))
+                    .orElseThrow(() -> new ResourceNotFoundException("Status 'pending' not found"));
+
+            // 🔹 Creo la Request
             Request request = new Request();
             request.setRequester(requester);
-            request.setTargetTable(dbTableRepository.findById(20).orElseThrow());
+            request.setTargetTable(targetTable);
             request.setTargetId(null);
             request.setRequestType("c");
             request.setPayload(payloadJson);
             request.setCreatedAt(Instant.now());
-            request.setStatus(statusRepository.findById(StatusType.fromName("pending")).orElseThrow());
+            request.setStatus(status);
 
+            // 🔹 Salvo e ritorno la request creata
             return requestRepository.save(request);
 
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Errore serializzazione JSON", e);
+            // 🔹 Eccezione specifica per problemi di serializzazione
+            throw new PayloadParsingException("Errore serializzazione JSON per product request", e);
         }
     }
 
     @Transactional(readOnly = true)
     public List<ResponseRequest> getAllRequests() {
-        return mapper.toDtoList(requestRepository.findAll());
+        List<Request> entities = requestRepository.findAll();
+        if (entities.isEmpty()) {
+            throw new ResourceNotFoundException("No requests found");
+        }
+        return mapper.toDtoList(entities);
     }
+
 
     /*
     public Product approveRequest(Integer requestId, User curator) throws IOException {
