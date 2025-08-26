@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.unicam.cs.agritrace.enums.StatusType;
 import it.unicam.cs.agritrace.model.*;
 import it.unicam.cs.agritrace.repository.*;
-import it.unicam.cs.agritrace.dtos.requests.RequestAddProduct;
+import it.unicam.cs.agritrace.dtos.requests.ProductCreationRequest;
 import it.unicam.cs.agritrace.service.RequestService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,7 +57,7 @@ class RequestServiceTest {
     @Test
     void testCreateProductRequest() throws Exception {
         // creo DTO fittizio
-        RequestAddProduct dto = new RequestAddProduct(
+        ProductCreationRequest dto = new ProductCreationRequest(
                 "Mela Golden",
                 "Mela dolce e croccante",
                 3,

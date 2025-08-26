@@ -2,7 +2,8 @@ package it.unicam.cs.agritrace.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.unicam.cs.agritrace.dtos.requests.RequestAddProduct;
+import it.unicam.cs.agritrace.dtos.requests.ProductCreationRequest;
+import it.unicam.cs.agritrace.dtos.responses.ProductCreationResponse;
 import it.unicam.cs.agritrace.dtos.responses.ResponseRequest;
 import it.unicam.cs.agritrace.enums.StatusType;
 import it.unicam.cs.agritrace.exceptions.PayloadParsingException;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,20 +23,20 @@ public class RequestService {
 
     private RequestRepository requestRepository;
     private ProductRepository productRepository;
-    private StatusRepository statusRepository;
-    private UserRepository userRepository;
-    private DbTableRepository dbTableRepository;
-    private ObjectMapper objectMapper;
-    private final RequestMapper mapper;
+    private final StatusRepository statusRepository;
+    private final UserRepository userRepository;
+    private final DbTableRepository dbTableRepository;
+    private final ObjectMapper objectMapper;
+    private final RequestMapper requestMapper;
 
-    public RequestService(RequestMapper mapper,
+    public RequestService(RequestMapper requestMapper,
                           ObjectMapper objectMapper,
                           DbTableRepository dbTableRepository,
                           UserRepository userRepository,
                           StatusRepository statusRepository,
                           ProductRepository productRepository,
                           RequestRepository requestRepository) {
-        this.mapper = mapper;
+        this.requestMapper = requestMapper;
         this.objectMapper = objectMapper;
         this.dbTableRepository = dbTableRepository;
         this.userRepository = userRepository;
@@ -45,15 +45,16 @@ public class RequestService {
         this.requestRepository = requestRepository;
     }
 
-    public Request createProductRequest(RequestAddProduct dto) {
-
+    public ProductCreationResponse createProductRequest(ProductCreationRequest dto) {
+        // TODO controllare se il prodotto esiste già e in tal caso non fare la request ma lanciare un errore??
         // 🔹 Recupero l'utente fittizio con id=1
         User requester = userRepository.findById(1)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Fake user with id=1 not found. Insert it in DB first."));
 
+        // 🔹 Serializzo payload
+        String payloadJson;
         try {
-            // 🔹 Serializzo DTO in JSON
             Map<String, Object> payloadMap = Map.of(
                     "name", dto.name(),
                     "description", dto.description(),
@@ -62,35 +63,34 @@ public class RequestService {
                     "harvest_season_id", dto.harvestSeasonId(),
                     "producer_id", dto.producerId()
             );
-
-            String payloadJson = objectMapper.writeValueAsString(payloadMap);
-
-            // 🔹 Recupero tabella target
-            var targetTable = dbTableRepository.findById(20)
-                    .orElseThrow(() -> new ResourceNotFoundException("Target table with id=20 not found"));
-
-            // 🔹 Recupero status pending
-            var status = statusRepository.findById(StatusType.fromName("pending"))
-                    .orElseThrow(() -> new ResourceNotFoundException("Status 'pending' not found"));
-
-            // 🔹 Creo la Request
-            Request request = new Request();
-            request.setRequester(requester);
-            request.setTargetTable(targetTable);
-            request.setTargetId(null);
-            request.setRequestType("c");
-            request.setPayload(payloadJson);
-            request.setCreatedAt(Instant.now());
-            request.setStatus(status);
-
-            // 🔹 Salvo e ritorno la request creata
-            return requestRepository.save(request);
-
+            payloadJson = objectMapper.writeValueAsString(payloadMap);
         } catch (JsonProcessingException e) {
-            // 🔹 Eccezione specifica per problemi di serializzazione
             throw new PayloadParsingException("Errore serializzazione JSON per product request", e);
         }
+
+        // 🔹 Recupero tabella target e status
+        var targetTable = dbTableRepository.findById(20)
+                .orElseThrow(() -> new ResourceNotFoundException("Target table with id=20 not found"));
+        var status = statusRepository.findById(StatusType.fromName("pending"))
+                .orElseThrow(() -> new ResourceNotFoundException("Status 'pending' not found"));
+
+        // 🔹 Creo la request
+        Request request = new Request();
+        request.setRequester(requester);
+        request.setTargetTable(targetTable);
+        request.setTargetId(null);
+        request.setRequestType("c");
+        request.setPayload(payloadJson);
+        request.setCreatedAt(Instant.now());
+        request.setStatus(status);
+
+        // 🔹 Salvo
+        Request created = requestRepository.save(request);
+
+        // 🔹 Ritorno direttamente il DTO
+        return requestMapper.toProductCreationResponse(created);
     }
+
 
     @Transactional(readOnly = true)
     public List<ResponseRequest> getAllRequests() {
@@ -98,8 +98,9 @@ public class RequestService {
         if (entities.isEmpty()) {
             throw new ResourceNotFoundException("No requests found");
         }
-        return mapper.toDtoList(entities);
+        return requestMapper.toDtoList(entities);
     }
+}
 
 
     /*
@@ -153,4 +154,3 @@ public class RequestService {
     }
 
      */
-}

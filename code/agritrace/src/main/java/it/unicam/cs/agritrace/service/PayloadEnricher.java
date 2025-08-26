@@ -1,6 +1,6 @@
 package it.unicam.cs.agritrace.service;
 
-import it.unicam.cs.agritrace.dtos.RawPayload;
+import it.unicam.cs.agritrace.dtos.common.RawPayload;
 import it.unicam.cs.agritrace.model.ProductCategory;
 import it.unicam.cs.agritrace.model.User;
 import it.unicam.cs.agritrace.repository.CultivationMethodRepository;

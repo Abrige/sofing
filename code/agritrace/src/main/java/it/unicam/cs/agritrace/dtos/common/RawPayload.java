@@ -1,4 +1,4 @@
-package it.unicam.cs.agritrace.dtos;
+package it.unicam.cs.agritrace.dtos.common;
 
 import java.util.Map;
 

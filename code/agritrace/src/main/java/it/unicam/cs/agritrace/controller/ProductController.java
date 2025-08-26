@@ -1,9 +1,8 @@
 package it.unicam.cs.agritrace.controller;
 
-import it.unicam.cs.agritrace.dtos.ProductDTO;
-import it.unicam.cs.agritrace.dtos.requests.RequestAddProduct;
-import it.unicam.cs.agritrace.dtos.responses.ProductRequestResponse;
-import it.unicam.cs.agritrace.model.Request;
+import it.unicam.cs.agritrace.dtos.common.ProductDTO;
+import it.unicam.cs.agritrace.dtos.requests.ProductCreationRequest;
+import it.unicam.cs.agritrace.dtos.responses.ProductCreationResponse;
 import it.unicam.cs.agritrace.service.ProductService;
 import it.unicam.cs.agritrace.service.RequestService;
 import lombok.extern.slf4j.Slf4j;
@@ -49,18 +48,9 @@ public class ProductController {
 
     // POST /api/products
     @PostMapping
-    public ResponseEntity<ProductRequestResponse> addProduct(@RequestBody RequestAddProduct requestAddProduct) {
-        log.info("Creating new product request: {}", requestAddProduct);
-
-        Request created = requestService.createProductRequest(requestAddProduct);
-
-        // DTO di ritorno
-        ProductRequestResponse response = new ProductRequestResponse(
-                created.getId(),
-                created.getStatus().getName(),
-                created.getCreatedAt()
-        );
-
+    public ResponseEntity<ProductCreationResponse> createProduct(@RequestBody ProductCreationRequest productCreationRequest) {
+        log.info("Creating new product request: {}", productCreationRequest);
+        ProductCreationResponse response = requestService.createProductRequest(productCreationRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

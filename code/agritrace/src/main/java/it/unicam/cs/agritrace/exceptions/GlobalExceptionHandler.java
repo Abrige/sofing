@@ -1,6 +1,6 @@
 package it.unicam.cs.agritrace.exceptions;
 
-import it.unicam.cs.agritrace.dtos.ApiError;
+import it.unicam.cs.agritrace.dtos.errors.ApiError;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

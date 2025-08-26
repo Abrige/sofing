@@ -1,12 +1,9 @@
 package it.unicam.cs.agritrace.service;
 
-import it.unicam.cs.agritrace.dtos.ProductDTO;
-import it.unicam.cs.agritrace.dtos.responses.ResponseRequest;
+import it.unicam.cs.agritrace.dtos.common.ProductDTO;
 import it.unicam.cs.agritrace.exceptions.ProductNotFoundException;
 import it.unicam.cs.agritrace.mappers.ProductMapper;
-import it.unicam.cs.agritrace.mappers.RequestMapper;
 import it.unicam.cs.agritrace.model.Product;
-import it.unicam.cs.agritrace.model.User;
 import it.unicam.cs.agritrace.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 

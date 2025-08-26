@@ -1,6 +1,6 @@
 package it.unicam.cs.agritrace.mappers;
 
-import it.unicam.cs.agritrace.dtos.ProductDTO;
+import it.unicam.cs.agritrace.dtos.common.ProductDTO;
 import it.unicam.cs.agritrace.model.Product;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
