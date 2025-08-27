@@ -230,7 +230,7 @@ create table PUBLIC.EVENT_PARTECIPANTS
     CREATED_AT     TIMESTAMP default CURRENT_TIMESTAMP not null,
     PARTECIPANT_ID INTEGER                             not null,
     INVITER_ID     INTEGER                             not null,
-    STATUS_ID      INTEGER   default 1                 not null,
+    STATUS_ID      INTEGER   default 2                 not null,
     RESPONDED_AT   TIMESTAMP,
     constraint PK_EVENT_PARTECIPANTS
         primary key (ID),
@@ -394,7 +394,7 @@ create table PUBLIC.REQUESTS
     REQUESTER_ID    INTEGER                             not null,
     TARGET_TABLE_ID INTEGER                             not null,
     TARGET_ID       INTEGER,
-    REQUEST_TYPE    CHARACTER(255)                      not null,
+    REQUEST_TYPE    CHARACTER                           not null,
     PAYLOAD         JSON                                not null,
     CURATOR_ID      INTEGER,
     DECISION_NOTES  CHARACTER VARYING(255),
@@ -416,8 +416,6 @@ create table PUBLIC.REQUESTS
 );
 
 comment on column PUBLIC.REQUESTS.TARGET_ID is 'Id del record della tabella che deve essere modificato';
-
-comment on column PUBLIC.REQUESTS.REQUEST_TYPE is '"u" --> update "c" --> create "d" --> delete, "m" --> aggiungere un prodotto al marketplace';
 
 comment on column PUBLIC.REQUESTS.DECISION_NOTES is 'Descrizione del perchè di quell''azione per quella richiesta, motivazioni, commenti, ecc..';
 
