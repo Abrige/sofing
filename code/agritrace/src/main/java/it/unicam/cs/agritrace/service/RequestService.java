@@ -101,7 +101,7 @@ public class RequestService {
         return requestMapper.toProductCreationResponse(created);
     }
 
-
+    // Prende tutte le richieste del curatore
     @Transactional(readOnly = true)
     public List<ResponseRequest> getAllRequests() {
         List<Request> entities = requestRepository.findAll();
@@ -111,17 +111,30 @@ public class RequestService {
         return requestMapper.toDtoList(entities);
     }
 
+    @Transactional(readOnly = true)
+    public List<ResponseRequest> getAllPendingRequests() {
+        List<Request> entities = requestRepository.findByStatusIsPending();
+        if (entities.isEmpty()) {
+            throw new ResourceNotFoundException("No requests found");
+        }
+        return requestMapper.toDtoList(entities);
+    }
+
+    // Accetta una richiesta da parte del curatore
     public void approveRequest(int id, User curator) throws JsonProcessingException {
+        // Prende la richiesta in base all'id
         Request request = requestRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Request with id="+id+" not found"));
 
         // Recupero stato "SHIPPED" (o "APPROVED" se lo rinomini) dal DB usando enum
-        Status approvedStatus = statusRepository.findById(StatusType.SHIPPED.getId())
-                .orElseThrow(() -> new IllegalStateException("Missing status: " + StatusType.SHIPPED));
+        Status approvedStatus = statusRepository.findById(StatusType.ACCEPTED.getId())
+                .orElseThrow(() -> new IllegalStateException("Missing status: " + StatusType.ACCEPTED));
+
         request.setCurator(curator);
         request.setStatus(approvedStatus);
         request.setReviewedAt(Instant.now());
         requestRepository.save(request);
+
         //TODO
         if ("c".equals(request.getRequestType())) {
             // ad esempio: creare un record in Product
@@ -147,6 +160,7 @@ public class RequestService {
         }
         //TODO notifica al curatore
     }
+
     public void rejectRequest(int id, User curator, String reason) {
         Request request = requestRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Request with id="+id+" not found"));

@@ -16,22 +16,20 @@ import java.util.Map;
 @Mapper(componentModel = "spring", imports = {com.fasterxml.jackson.databind.ObjectMapper.class, java.util.Map.class})
 public interface RequestMapper {
 
-    // 🔹 Mapping esistente per ResponseRequest
     @Mapping(source = "requester", target = "requesterUsername", qualifiedByName = "userToUsername")
     @Mapping(source = "curator", target = "curatorName", qualifiedByName = "userToUsername")
-    @Mapping(source = "status.name", target = "statusName")
+    @Mapping(source = "status.name", target = "status")
+    @Mapping(source = "requestType", target = "requestType", qualifiedByName = "requestTypeToString")
     @Mapping(target = "payload", expression = "java(parsePayload(request.getPayload()))")
     ResponseRequest toDto(Request request);
 
     List<ResponseRequest> toDtoList(List<Request> requests);
 
-    // 🔹 Nuovo mapping per ProductCreationResponse
     @Mapping(source = "id", target = "id")
     @Mapping(source = "status.name", target = "status")
     @Mapping(source = "createdAt", target = "createdAt")
     ProductCreationResponse toProductCreationResponse(Request request);
 
-    // 🔹 Helper per il payload JSON
     default Map<String,Object> parsePayload(String json) {
         try {
             return new ObjectMapper().readValue(json, Map.class);
@@ -40,9 +38,20 @@ public interface RequestMapper {
         }
     }
 
-    // 🔹 Helper per username
     @Named("userToUsername")
     default String userToName(User user) {
         return user != null ? user.getUsername() : null;
+    }
+
+    @Named("requestTypeToString")
+    default String requestTypeToString(String type) {
+        if(type == null) return null;
+        return switch(type) {
+            case "c" -> "create";
+            case "u" -> "update";
+            case "d" -> "delete";
+            case "m" -> "marketplace";
+            default -> type;
+        };
     }
 }

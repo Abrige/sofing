@@ -7,7 +7,8 @@ public enum StatusType {
     DELIVERED(4, "delivered"),
     CANCELLED(5, "cancelled"),
     REJECTED(6, "rejected"),
-    DECLINED(7, "declined");
+    DECLINED(7, "declined"),
+    ACCEPTED(8, "accepted"),;
 
     private final int id;
     private final String name;

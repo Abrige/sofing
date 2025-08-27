@@ -44,8 +44,8 @@ type: m (sarebbe qualcosa da aggiungere al M --> Marketplace)
 {
   "email": "pippo@gmail.com",
   "items": [
-    { "productId": 10, "quantity": 2 },
-    { "productId": 15, "quantity": 1 }
+    { "product_id": 10, "quantity": 2 },
+    { "product_id": 15, "quantity": 1 }
   ]
 }
 
@@ -117,32 +117,9 @@ public class OrderService {
     }
 }
 
-    
 
-// Cancellazione di un prodotto
-{
-    "productToDeleteId": 1
-}
-
-// Update di un prodotto
-{
-    "productToUpdateId": 1,
-    "name": "nuovonuome",
-    "description": "nuovodescrizione",
-    .....
-}
-
-
-// Aggiunta di un prodotto al marketplace
-{
-    "product_id": 1,
-    "seller_id": 1,
-    "price": 100.0,
-    "quantity": 10,
-    "unity_of_measure": "kg"
-} 
-
-// Esempio di pacchetto
+// Add package JSON
+// in questo caso la lista di items deve contenere almeno 1 tipo di prodotto
 {
     "name":"blablabla",
     "description": "balblablblabl",
@@ -158,8 +135,41 @@ public class OrderService {
             "quantity": 5
         },
         {
-            "productId": 6,
+            "product_id": 6,
             "quantity": 10
         }
     ]
+}
+
+// Add product JSON
+{
+    "name": "Ciliegina",
+    "description": "Una ciliegia molto buonissima",
+    "category_id": 3,
+    "cultivation_method_id": 2,
+    "harvest_season_id": 2,
+    "producer_id": 4
+}
+// Update product JSON
+// dove ogni campo può essere opzionale ma ce ne deve essere almeno uno e l'id sempre presente
+{
+    "product_id": 1,
+    "name": "Ciliegina",
+    "description": "Una ciliegia molto buonissima",
+    "category_id": 3,
+    "cultivation_method_id": 2,
+    "harvest_season_id": 2,
+    "producer_id": 4
+}
+// Delete product JSON
+{
+    "product_id": 1
+}
+// Add product to marketplace JSON
+{
+    "product_id": 1,
+    "seller_id": 1,
+    "price": 100.0,
+    "quantity": 10,
+    "unity_of_measure": "kg"
 }

@@ -1,14 +1,18 @@
 package it.unicam.cs.agritrace.service;
 import it.unicam.cs.agritrace.dtos.common.PackageItemDTO;
+import it.unicam.cs.agritrace.dtos.payloads.AddPackagePayload;
 import it.unicam.cs.agritrace.dtos.requests.PackageCreationRequest;
 import it.unicam.cs.agritrace.dtos.responses.PackageResponse;
+import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.model.Company;
 import it.unicam.cs.agritrace.model.Product;
 import it.unicam.cs.agritrace.model.TypicalPackage;
 import it.unicam.cs.agritrace.model.TypicalPackageItem;
 import it.unicam.cs.agritrace.repository.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,13 +20,14 @@ import java.util.Set;
 @Service
 public class PackageService {
     private final ProductRepository productRepository;
-    private final TypicalPackageRepository packageRepository;
+    private final TypicalPackageRepository typicalPackageRepository;
     private final TypicalPackageItemRepository typicalPackageItemRepository;
     private final CompanyRepository companyRepository;
 
-    public PackageService(ProductRepository productRepository, TypicalPackageRepository packageRepository, TypicalPackageRepository typicalPackageRepository, TypicalPackageItemRepository typicalPackageItemRepository, CompanyRepository companyRepository) {
+    public PackageService(ProductRepository productRepository, TypicalPackageRepository packageRepository, TypicalPackageRepository typicalPackageRepository,
+                          TypicalPackageRepository typicalPackageRepository1, TypicalPackageItemRepository typicalPackageItemRepository, CompanyRepository companyRepository) {
         this.productRepository = productRepository;
-        this.packageRepository = packageRepository;
+        this.typicalPackageRepository = typicalPackageRepository1;
         this.typicalPackageItemRepository = typicalPackageItemRepository;
         this.companyRepository = companyRepository;
     }
@@ -67,11 +72,11 @@ public class PackageService {
                 packageItemsList.add(packageItem);
             }
             pkg.setTypicalPackageItems(packageItemsList);
-            packageRepository.save(pkg);
+        typicalPackageRepository.save(pkg);
             return new PackageResponse(pkg);
     }
 
     public List<PackageResponse> getPackages() {
-        return packageRepository.findAll().stream().map(PackageResponse::new).toList();
+        return typicalPackageRepository.findAll().stream().map(PackageResponse::new).toList();
     }
 }

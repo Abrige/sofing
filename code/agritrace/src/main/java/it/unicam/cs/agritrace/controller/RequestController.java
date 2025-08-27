@@ -24,7 +24,7 @@ public class RequestController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<ResponseRequest>> requests() {
         return ResponseEntity.ok(requestService.getAllRequests());
     }
@@ -32,10 +32,7 @@ public class RequestController {
     //Ritorna le richieste che hanno statusName : pending
     @GetMapping("/pending")
     public ResponseEntity<List<ResponseRequest>> getPendingApproval() {
-        List<ResponseRequest> pendingRequests = requestService.getAllRequests()
-                .stream()
-                .filter(item -> item.statusName().equals(StatusType.PENDING.name().toLowerCase()))
-                .toList();
+        List<ResponseRequest> pendingRequests = requestService.getAllPendingRequests();
         return ResponseEntity.ok(pendingRequests);
     }
 
