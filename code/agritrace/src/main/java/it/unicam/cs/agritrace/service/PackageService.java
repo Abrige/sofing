@@ -1,18 +1,18 @@
 package it.unicam.cs.agritrace.service;
+
 import it.unicam.cs.agritrace.dtos.common.PackageItemDTO;
-import it.unicam.cs.agritrace.dtos.payloads.AddPackagePayload;
 import it.unicam.cs.agritrace.dtos.requests.PackageCreationRequest;
 import it.unicam.cs.agritrace.dtos.responses.PackageResponse;
-import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.model.Company;
 import it.unicam.cs.agritrace.model.Product;
 import it.unicam.cs.agritrace.model.TypicalPackage;
 import it.unicam.cs.agritrace.model.TypicalPackageItem;
-import it.unicam.cs.agritrace.repository.*;
+import it.unicam.cs.agritrace.repository.CompanyRepository;
+import it.unicam.cs.agritrace.repository.ProductRepository;
+import it.unicam.cs.agritrace.repository.TypicalPackageItemRepository;
+import it.unicam.cs.agritrace.repository.TypicalPackageRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,14 +21,12 @@ import java.util.Set;
 public class PackageService {
     private final ProductRepository productRepository;
     private final TypicalPackageRepository typicalPackageRepository;
-    private final TypicalPackageItemRepository typicalPackageItemRepository;
     private final CompanyRepository companyRepository;
 
     public PackageService(ProductRepository productRepository, TypicalPackageRepository packageRepository, TypicalPackageRepository typicalPackageRepository,
                           TypicalPackageRepository typicalPackageRepository1, TypicalPackageItemRepository typicalPackageItemRepository, CompanyRepository companyRepository) {
         this.productRepository = productRepository;
         this.typicalPackageRepository = typicalPackageRepository1;
-        this.typicalPackageItemRepository = typicalPackageItemRepository;
         this.companyRepository = companyRepository;
     }
 
