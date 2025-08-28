@@ -33,7 +33,7 @@ public final class OrderMapper {
 
         Set<OrderItemDTO> orderItems = order.getOrderItems()
                 .stream()
-                .map(OrderMapper::toOrderItemDto) // ✅ metodo esistente e statico
+                .map(OrderMapper::toOrderItemDto)
                 .collect(Collectors.toSet());
 
         return new OrderDTO(

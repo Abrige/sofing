@@ -8,10 +8,13 @@ import it.unicam.cs.agritrace.model.Product;
 import it.unicam.cs.agritrace.model.ProductionStep;
 import it.unicam.cs.agritrace.repository.CompanyRepository;
 import it.unicam.cs.agritrace.repository.ProductRepository;
+import it.unicam.cs.agritrace.service.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -21,20 +24,19 @@ public class SupplyChainController {
 
     private final ProductRepository productRepository;
     private final CompanyRepository companyRepository;
+    private final ProductService productService;
     private ProductMapper productMapper;
 
-    public SupplyChainController(ProductRepository productRepository, CompanyRepository companyRepository) {
+    public SupplyChainController(ProductRepository productRepository, CompanyRepository companyRepository,
+                                 ProductService productService) {
         this.productRepository = productRepository;
         this.companyRepository = companyRepository;
+        this.productService = productService;
     }
 
-    @RequestMapping("/getproducts")
-    public ResponseEntity<List<ProductDTO>> getProducts() {
-        //TODO Utente fittizio
-        Company company = companyRepository.findById(1).orElseThrow();
-        List<Product> products = productRepository
-                .findByCompanyAndIsDeletedFalse(company);
-        List<ProductDTO> productDTOS = productMapper.toDtoList(products);
+    @GetMapping("/getproducts")
+    public ResponseEntity<List<ProductDTO>> getProducts(@RequestParam int companyId) {
+        List<ProductDTO> productDTOS = productService.getAllCompanyProductById(companyId);
         return ResponseEntity.ok(productDTOS);
     }
     @PostMapping("/products/{productId}/ingredients")

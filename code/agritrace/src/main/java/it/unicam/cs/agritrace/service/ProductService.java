@@ -3,22 +3,28 @@ package it.unicam.cs.agritrace.service;
 import it.unicam.cs.agritrace.dtos.common.ProductDTO;
 import it.unicam.cs.agritrace.exceptions.ProductNotFoundException;
 import it.unicam.cs.agritrace.mappers.ProductMapper;
+import it.unicam.cs.agritrace.model.Company;
 import it.unicam.cs.agritrace.model.Product;
+import it.unicam.cs.agritrace.repository.CompanyRepository;
 import it.unicam.cs.agritrace.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final CompanyRepository companyRepository;
 
 
     public ProductService(ProductRepository productRepository,
-                          ProductMapper productMapper) {
+                          ProductMapper productMapper,
+                          CompanyRepository companyRepository) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
+        this.companyRepository = companyRepository;
     }
 
     // Ritorna il prodotto (NON CANCELLATO) in base all'id
@@ -40,6 +46,13 @@ public class ProductService {
                 .orElseThrow(() -> new ProductNotFoundException("Product not found"));
         product.setIsDeleted(true);
         productRepository.save(product);
+    }
+
+    // Ritorna una lista di prodotti in base all'azienda
+    public List<ProductDTO> getAllCompanyProductById(int companyId) {
+        Company company = companyRepository.findById(companyId).orElseThrow();
+        List<Product> products = productRepository.findByCompanyAndIsDeletedFalse(company);
+        return productMapper.toDtoList(products); // usa il mapper
     }
 }
 
