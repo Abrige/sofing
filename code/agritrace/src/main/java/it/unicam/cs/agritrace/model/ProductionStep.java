@@ -1,7 +1,6 @@
-package it.unicam.cs.agritrace;
+package it.unicam.cs.agritrace.model;
 
-import it.unicam.cs.agritrace.model.Company;
-import it.unicam.cs.agritrace.model.Product;
+import it.unicam.cs.agritrace.Location;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
