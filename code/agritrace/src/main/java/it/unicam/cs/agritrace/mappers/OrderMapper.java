@@ -1,53 +1,74 @@
 package it.unicam.cs.agritrace.mappers;
 
-import it.unicam.cs.agritrace.dtos.common.CompanyDTO;
-import it.unicam.cs.agritrace.dtos.common.OrderDTO;
-import it.unicam.cs.agritrace.dtos.common.OrderItemDTO;
-import it.unicam.cs.agritrace.dtos.common.UserDTO;
-import it.unicam.cs.agritrace.model.Company;
+import it.unicam.cs.agritrace.dtos.common.*;
 import it.unicam.cs.agritrace.model.Order;
 import it.unicam.cs.agritrace.model.OrderItem;
-import it.unicam.cs.agritrace.model.User;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
+import it.unicam.cs.agritrace.model.ProductListing;
 
-import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
-public interface OrderMapper {
+public final class OrderMapper {
 
-    OrderMapper INSTANCE = Mappers.getMapper(OrderMapper.class);
+    private OrderMapper() { /* utility class */ }
 
-    // Mappa direttamente l’Order in OrderDTO
-    @Mapping(source = "buyer", target = "buyer")
-    @Mapping(source = "seller", target = "seller")
-    @Mapping(source = "status.name", target = "status")
-    OrderDTO toDto(Order order);
+    // Prende una entity Order e la trasforma nel relativo DTO --> OrderDTO
+    public static OrderDTO toDto(Order order) {
+        if (order == null) {
+            return null;
+        }
 
-    // Mapping delle liste
-    List<OrderDTO> toDtoList(List<Order> orders);
+        UserDTO buyerDTO = new UserDTO(
+                order.getBuyer().getUsername(),
+                order.getBuyer().getFirstName(),
+                order.getBuyer().getLastName(),
+                order.getBuyer().getEmail(),
+                order.getBuyer().getPhone()
+        );
 
-    // Sotto-mapper: OrderItem → OrderItemDTO
-    @Mapping(source = "product.id", target = "productId")
-    @Mapping(source = "product.name", target = "productName")
-    @Mapping(source = "unitPrice", target = "unitPrice")
-    @Mapping(source = "quantity", target = "quantity")
-    OrderItemDTO toDto(OrderItem orderItem);
+        CompanyDTO sellerDTO = new CompanyDTO(
+                order.getSeller().getName(),
+                order.getSeller().getFiscalCode()
+        );
 
-    Set<OrderItemDTO> toDtoOrderItems(Set<OrderItem> orderItems);
+        Set<OrderItemDTO> orderItems = order.getOrderItems()
+                .stream()
+                .map(OrderMapper::toOrderItemDto) // ✅ metodo esistente e statico
+                .collect(Collectors.toSet());
 
-    // Sotto-mapper: User → UserDTO
-    @Mapping(source = "username", target = "username")
-    @Mapping(source = "firstName", target = "firstName")
-    @Mapping(source = "lastName", target = "lastName")
-    @Mapping(source = "email", target = "email")
-    @Mapping(source = "phone", target = "phone")
-    UserDTO toDto(User user);
+        return new OrderDTO(
+                order.getId(),
+                buyerDTO,
+                sellerDTO,
+                order.getTotalAmount(),
+                StatusMapper.mapStatusToEnum(order.getStatus()).name().toLowerCase(),
+                order.getOrderedAt(),
+                order.getDeliveryDate(),
+                orderItems
+        );
+    }
 
-    // Sotto-mapper: Company → CompanyDTO
-    @Mapping(source = "name", target = "name")
-    @Mapping(source = "fiscalCode", target = "fiscalCode")
-    CompanyDTO toDto(Company company);
+    // Prende una entity OrderItem e la trasforma nel relativo DTO --> OrderItemDTO
+    private static OrderItemDTO toOrderItemDto(OrderItem orderItem) {
+        if (orderItem == null) {
+            return null;
+        }
+
+        ProductListing pl = orderItem.getProductListing();
+
+        // null-safe (anche se PRODUCT_LISTING_ID è NOT NULL a DB, difendiamoci)
+        ProductListingDTO productDto = (pl != null)
+                ? new ProductListingDTO(
+                (pl.getProduct() != null ? pl.getProduct().getName() : null),
+                pl.getPrice()
+        )
+                : null;
+
+        return new OrderItemDTO(
+                productDto,
+                orderItem.getQuantity(),
+                orderItem.getUnitPrice(),
+                orderItem.getTotalPrice()
+        );
+    }
 }

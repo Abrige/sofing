@@ -1,17 +1,14 @@
 package it.unicam.cs.agritrace.service;
 
-import it.unicam.cs.agritrace.dtos.common.CompanyDTO;
 import it.unicam.cs.agritrace.dtos.common.OrderDTO;
-import it.unicam.cs.agritrace.dtos.common.UserDTO;
-import it.unicam.cs.agritrace.model.Company;
+import it.unicam.cs.agritrace.enums.StatusType;
+import it.unicam.cs.agritrace.mappers.OrderMapper;
 import it.unicam.cs.agritrace.model.Order;
-import it.unicam.cs.agritrace.model.User;
 import it.unicam.cs.agritrace.repository.OrderRepository;
-import org.mapstruct.control.MappingControl;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -22,19 +19,26 @@ public class OrderService {
         this.orderRepository = orderRepository;
     }
 
-    List<OrderDTO> getAllOrders(){
-        List<OrderDTO> ordersDTO = new ArrayList<>();
-        for (Order order : orderRepository.findAll()) {
-            User buyer = order.getBuyer();
-            Company seller = order.getSeller();
-            UserDTO userDTO = new UserDTO(buyer.getUsername(), buyer.getFirstName(), buyer.getLastName(),
-                    buyer.getEmail() ,
-                    buyer.getPhone());
-            CompanyDTO companyDTO = new CompanyDTO(seller.getName(), seller.getFiscalCode());
-            OrderDTO orderDTO = new OrderDTO(userDTO, companyDTO, order.getTotalAmount(),
-                    order.getStatus().getName(), order.getOrderedAt(), order.getDeliveryDate(), );
-
-            ordersDTO.add()
-        }
+    // Recupera tutti gli ordini e li mappa in DTO
+    public List<OrderDTO> getAllOrders() {
+        List<Order> orders = orderRepository.findAll();
+        return orders.stream()
+                .map(OrderMapper::toDto)  // usa il mapper
+                .collect(Collectors.toList());
     }
+
+    // Recupera un ordine per id e lo mappa
+    public OrderDTO getOrderById(Integer id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ordine non trovato con id " + id));
+        return OrderMapper.toDto(order);
+    }
+
+    public List<OrderDTO> getOrdersByStatus(StatusType status) {
+        return orderRepository.findByStatus_Id(status.getId())
+                .stream()
+                .map(OrderMapper::toDto)
+                .toList();
+    }
+
 }

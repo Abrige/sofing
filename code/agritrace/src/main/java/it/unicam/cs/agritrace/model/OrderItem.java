@@ -36,4 +36,10 @@ public class OrderItem {
     @Column(name = "TOTAL_PRICE", nullable = false, precision = 19)
     private BigDecimal totalPrice;
 
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.RESTRICT)
+    @JoinColumn(name = "PRODUCT_LISTING_ID", nullable = false)
+    private ProductListing productListing;
+
 }

@@ -1,5 +1,8 @@
 package it.unicam.cs.agritrace.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum StatusType {
     NEW(1, "new"),
     PENDING(2, "pending"),
@@ -18,14 +21,6 @@ public enum StatusType {
         this.name = name;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     public static StatusType fromId(int id) {
         for (StatusType s : values()) {
             if (s.id == id) return s;
@@ -36,6 +31,15 @@ public enum StatusType {
         for (StatusType s : values()) {
             if (s.name.equalsIgnoreCase(name)) {
                 return s.id;
+            }
+        }
+        throw new IllegalArgumentException("Invalid StatusType name: " + name);
+    }
+
+    public static StatusType fromNameIgnoreCase(String name) {
+        for (StatusType s : values()) {
+            if (s.name.equalsIgnoreCase(name)) {
+                return s;
             }
         }
         throw new IllegalArgumentException("Invalid StatusType name: " + name);
