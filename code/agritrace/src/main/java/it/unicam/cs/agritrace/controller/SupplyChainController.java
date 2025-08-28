@@ -2,6 +2,7 @@ package it.unicam.cs.agritrace.controller;
 
 import it.unicam.cs.agritrace.dtos.common.ProductDTO;
 import it.unicam.cs.agritrace.dtos.payloads.AddRowMaterialPayload;
+import it.unicam.cs.agritrace.mappers.ProductMapper;
 import it.unicam.cs.agritrace.model.Company;
 import it.unicam.cs.agritrace.model.Product;
 import it.unicam.cs.agritrace.model.ProductionStep;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
-import java.util.Objects;
 
 @Controller
 @RequestMapping("/supplychain")
@@ -21,6 +21,7 @@ public class SupplyChainController {
 
     private final ProductRepository productRepository;
     private final CompanyRepository companyRepository;
+    private ProductMapper productMapper;
 
     public SupplyChainController(ProductRepository productRepository, CompanyRepository companyRepository) {
         this.productRepository = productRepository;
@@ -31,12 +32,10 @@ public class SupplyChainController {
     public ResponseEntity<List<ProductDTO>> getProducts() {
         //TODO Utente fittizio
         Company company = companyRepository.findById(1).orElseThrow();
-        List<ProductDTO> products = productRepository
-                .findAll()
-                .stream()
-                .filter(item -> item.getProducer().equals(company))
-                .map(ProductDTO::new).toList();
-        return ResponseEntity.ok(products);
+        List<Product> products = productRepository
+                .findByCompanyAndIsDeletedFalse(company);
+        List<ProductDTO> productDTOS = productMapper.toDtoList(products);
+        return ResponseEntity.ok(productDTOS);
     }
     @PostMapping("/products/{productId}/ingredients")
     public ResponseEntity<?> addRowMaterial (int id, List<AddRowMaterialPayload> payload){

@@ -1,5 +1,6 @@
 package it.unicam.cs.agritrace.repository;
 
+import it.unicam.cs.agritrace.model.Company;
 import it.unicam.cs.agritrace.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -19,5 +20,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
   // Trova il prodotto (NON CANCELLATO) in base all'id
   Optional<Product> findByIdAndIsDeletedFalse(Integer id);
-
+  // Trova i prodotti in base all'azienda
+  List<Product> findByCompanyAndIsDeletedFalse(Company company);
 }
