@@ -42,6 +42,7 @@ public class SupplyChainController {
     @PostMapping("/products/{productId}/ingredients")
     public ResponseEntity<?> addRowMaterial (int id, List<AddRowMaterialPayload> payload){
         Product product = productRepository.findById(id).orElseThrow();
+
         for(AddRowMaterialPayload p : payload){
             Product rawMaterial = productRepository
                     .findById(p.productId())

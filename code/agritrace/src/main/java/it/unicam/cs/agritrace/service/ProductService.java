@@ -51,7 +51,7 @@ public class ProductService {
     // Ritorna una lista di prodotti in base all'azienda
     public List<ProductDTO> getAllCompanyProductById(int companyId) {
         Company company = companyRepository.findById(companyId).orElseThrow();
-        List<Product> products = productRepository.findByCompanyAndIsDeletedFalse(company);
+        List<Product> products = productRepository.findByProducerAndIsDeletedFalse(company);
         return productMapper.toDtoList(products); // usa il mapper
     }
 }

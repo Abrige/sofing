@@ -21,5 +21,5 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
   // Trova il prodotto (NON CANCELLATO) in base all'id
   Optional<Product> findByIdAndIsDeletedFalse(Integer id);
   // Trova i prodotti in base all'azienda
-  List<Product> findByCompanyAndIsDeletedFalse(Company company);
+  List<Product> findByProducerAndIsDeletedFalse(Company company);
 }
