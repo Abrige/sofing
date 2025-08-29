@@ -10,5 +10,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 */
 
 public record DeleteProductPayload(
-        @JsonProperty("product_id") Integer productId
+        @JsonProperty("product_id")
+        Integer productId
 ) {}
