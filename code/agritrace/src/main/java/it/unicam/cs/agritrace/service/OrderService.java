@@ -2,13 +2,15 @@ package it.unicam.cs.agritrace.service;
 
 import it.unicam.cs.agritrace.dtos.common.OrderDTO;
 import it.unicam.cs.agritrace.enums.StatusType;
+import it.unicam.cs.agritrace.exceptions.OrderStatusInvalidException;
 import it.unicam.cs.agritrace.mappers.OrderMapper;
-import it.unicam.cs.agritrace.mappers.StatusMapper;
 import it.unicam.cs.agritrace.model.Order;
 import it.unicam.cs.agritrace.model.Status;
 import it.unicam.cs.agritrace.repository.OrderRepository;
 import it.unicam.cs.agritrace.repository.StatusRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -64,7 +66,7 @@ public class OrderService {
             case REJECTED -> {
                 return OrderMapper.toDto(rejectOrder(order));
             }
-            default -> throw new RuntimeException("Aggiornamento dello status non supportato: " + statusEnum);
+            default -> throw new OrderStatusInvalidException(statusEnum.toString());
         }
     }
 

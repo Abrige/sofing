@@ -34,7 +34,7 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
 
-    @PatchMapping("/status")
+    @PatchMapping("/updatestatus")
     public ResponseEntity<OrderDTO> updateStatus(@RequestBody UpdateOrderStatusRequest request) {
         OrderDTO orderDTO = orderService.updateOrderStatus(request.orderId(), request.status());
         return ResponseEntity.ok(orderDTO);

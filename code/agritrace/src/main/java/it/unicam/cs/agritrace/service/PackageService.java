@@ -39,8 +39,6 @@ public class PackageService {
         entityRequest.setRequester(user);
         DbTable table = dbTableRepository.findDbTableByName("TYPICAL_PACKAGES").orElseThrow();
         entityRequest.setTargetTable(table);
-        entityRequest.setTargetId(null);
-        entityRequest.setRequestType("c");
 
         // converto il DTO in stringa e lo metto nel campo corretto
         ObjectMapper mapper = new ObjectMapper();

@@ -40,11 +40,6 @@ public class Request {
     @Column(name = "TARGET_ID")
     private Integer targetId;
 
-    @Size(max = 255)
-    @NotNull
-    @Column(name = "REQUEST_TYPE", nullable = false)
-    private String requestType;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "CURATOR_ID")
@@ -72,7 +67,13 @@ public class Request {
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "PAYLOAD", columnDefinition = "json", nullable = false)
     private String payload;
-    /* ESEMPIO:
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.RESTRICT)
+    @JoinColumn(name = "REQUEST_TYPE_ID")
+    private RequestType requestType;
+
+/* ESEMPIO:
     {
         "name": {
         "old": "Pomodoro Ciliegino",

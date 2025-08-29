@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.concurrent.locks.AbstractOwnableSynchronizer;
 
 @Slf4j
 @RestControllerAdvice
@@ -24,7 +27,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiError> handleResourceNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
-        log.warn("Resource not found at {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage(), ex);
         ApiError error = new ApiError(
                 HttpStatus.NOT_FOUND,
                 "Resource not found at " + request.getRequestURI() + ": " + ex.getMessage()
@@ -34,12 +36,20 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<ApiError> handleProductNotFound(ProductNotFoundException ex, HttpServletRequest request) {
-        log.warn("Product not found at {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage(), ex);
         ApiError error = new ApiError(
                 HttpStatus.NOT_FOUND,
                 "Product not found at " + request.getRequestURI() + ": " + ex.getMessage()
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(OrderStatusInvalidException.class)
+    public ResponseEntity<ApiError> handleInvalidOrderStatus(OrderStatusInvalidException ex, HttpServletRequest request) {
+        ApiError error = new ApiError(
+                HttpStatus.BAD_REQUEST,
+                "Order status invalid: " + ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     @ExceptionHandler(Exception.class)

@@ -32,6 +32,7 @@ public class RequestService {
     private final CultivationMethodRepository cultivationMethodRepository;
     private final HarvestSeasonRepository harvestSeasonRepository;
     private final CompanyRepository companyRepository;
+    private final RequestTypeRepository requestTypeRepository;
     private RequestRepository requestRepository;
     private ProductRepository productRepository;
     private final StatusRepository statusRepository;
@@ -46,7 +47,12 @@ public class RequestService {
                           UserRepository userRepository,
                           StatusRepository statusRepository,
                           ProductRepository productRepository,
-                          RequestRepository requestRepository, ProductCategoryRepository productCategoryRepository, CultivationMethodRepository cultivationMethodRepository, HarvestSeasonRepository harvestSeasonRepository, CompanyRepository companyRepository) {
+                          RequestRepository requestRepository,
+                          ProductCategoryRepository productCategoryRepository,
+                          CultivationMethodRepository cultivationMethodRepository,
+                          HarvestSeasonRepository harvestSeasonRepository,
+                          CompanyRepository companyRepository,
+                          RequestTypeRepository requestTypeRepository) {
         this.requestMapper = requestMapper;
         this.objectMapper = objectMapper;
         this.dbTableRepository = dbTableRepository;
@@ -58,16 +64,17 @@ public class RequestService {
         this.cultivationMethodRepository = cultivationMethodRepository;
         this.harvestSeasonRepository = harvestSeasonRepository;
         this.companyRepository = companyRepository;
+        this.requestTypeRepository = requestTypeRepository;
     }
 
     public ProductCreationResponse createProductRequest(ProductCreationRequest dto) {
         // TODO controllare se il prodotto esiste già e in tal caso non fare la request ma lanciare un errore??
-        // 🔹 Recupero l'utente fittizio con id=1
+        // Recupero l'utente fittizio con id=1
         User requester = userRepository.findById(1)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Fake user with id=1 not found. Insert it in DB first."));
 
-        // 🔹 Serializzo payload
+        // Serializzo payload
         String payloadJson;
         try {
             Map<String, Object> payloadMap = Map.of(
@@ -83,26 +90,27 @@ public class RequestService {
             throw new PayloadParsingException("Errore serializzazione JSON per product request", e);
         }
 
-        // 🔹 Recupero tabella target e status
+        // Recupero tabella target e status
         var targetTable = dbTableRepository.findById(20)
                 .orElseThrow(() -> new ResourceNotFoundException("Target table with id=20 not found"));
         var status = statusRepository.findById(StatusType.fromName("pending"))
                 .orElseThrow(() -> new ResourceNotFoundException("Status 'pending' not found"));
 
-        // 🔹 Creo la request
+        // Creo la request
         Request request = new Request();
         request.setRequester(requester);
         request.setTargetTable(targetTable);
         request.setTargetId(null);
-        request.setRequestType("c");
+        RequestType requestType = requestTypeRepository.findById(1).orElseThrow();
+        request.setRequestType(requestType);
         request.setPayload(payloadJson);
         request.setCreatedAt(Instant.now());
         request.setStatus(status);
 
-        // 🔹 Salvo
+        // Salvo
         Request created = requestRepository.save(request);
 
-        // 🔹 Ritorno direttamente il DTO
+        // Ritorno direttamente il DTO
         return requestMapper.toProductCreationResponse(created);
     }
 
@@ -126,10 +134,11 @@ public class RequestService {
     }
 
     // Accetta una richiesta da parte del curatore
-    public void approveRequest(int id, User curator) throws JsonProcessingException {
+    public void approveRequest(int id,
+                               User curator) throws JsonProcessingException {
         // Prende la richiesta in base all'id
         Request request = requestRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Request with id="+id+" not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Request with id=" + id + " not found"));
 
         // Recupero stato "SHIPPED" (o "APPROVED" se lo rinomini) dal DB usando enum
         Status approvedStatus = statusRepository.findById(StatusType.ACCEPTED.getId())
@@ -166,11 +175,13 @@ public class RequestService {
         //TODO notifica al curatore
     }
 
-    public void rejectRequest(int id, User curator, String reason) {
+    public void rejectRequest(int id,
+                              User curator,
+                              String reason) {
         Request request = requestRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Request with id="+id+" not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Request with id=" + id + " not found"));
         Status status = statusRepository.findById(StatusType.SHIPPED.getId())
-                .orElseThrow(()-> new IllegalStateException("Missing status: " + StatusType.SHIPPED));
+                .orElseThrow(() -> new IllegalStateException("Missing status: " + StatusType.SHIPPED));
         request.setStatus(status);
         request.setCurator(curator);
         request.setReviewedAt(Instant.now());
@@ -178,7 +189,8 @@ public class RequestService {
         requestRepository.save(request);
         //TODO notifica al curatore
     }
-
+}
+/*
     public void acceptPackageRequest(Request request){
         Map<Integer, Product> productMap = productRepository.findAllById(
                 addPackagePayload.items().stream().map(PackageItemDTO::productId).toList()
@@ -213,7 +225,9 @@ public class RequestService {
         // Ritorna DTO
         return PackageMapper.toDTO(pkg);
     }
-}
+
+ */
+
 
 
     /*
