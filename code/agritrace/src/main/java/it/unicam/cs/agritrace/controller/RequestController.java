@@ -1,6 +1,7 @@
 package it.unicam.cs.agritrace.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import it.unicam.cs.agritrace.dtos.common.ReviewRequestDTO;
 import it.unicam.cs.agritrace.dtos.responses.ResponseRequest;
 import it.unicam.cs.agritrace.enums.StatusType;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
@@ -37,20 +38,10 @@ public class RequestController {
     }
 
     //Approvazione richiesta
-    @PostMapping("/{id}/approve")
-    public ResponseEntity<Void> approveRequest(@PathVariable int id) throws JsonProcessingException {
-        User moderator = userRepository.findById(1)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Fake user with id=1 not found. Insert it in DB first."));
-
-        requestService.approveRequest(id, moderator);
+    @PostMapping("/review")
+    public ResponseEntity<Void> reviewRequest(@RequestBody ReviewRequestDTO reviewRequestDTO)  {
+        requestService.reviewRequest(dto.requestId(), dto.action());
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{id}/reject")
-    public ResponseEntity<Void> rejectRequest(@PathVariable int id, User user,
-                                              String rejectReason) {
-        requestService.rejectRequest(id, user, rejectReason);
-        return ResponseEntity.ok().build();
-    }
 }
