@@ -3,17 +3,18 @@ package it.unicam.cs.agritrace.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.unicam.cs.agritrace.dtos.common.PackageItemDTO;
+import it.unicam.cs.agritrace.dtos.common.ReviewRequestDTO;
 import it.unicam.cs.agritrace.dtos.requests.ProductCreationRequest;
 import it.unicam.cs.agritrace.dtos.responses.ProductCreationResponse;
 import it.unicam.cs.agritrace.dtos.responses.ResponseRequest;
 import it.unicam.cs.agritrace.enums.StatusType;
 import it.unicam.cs.agritrace.exceptions.PayloadParsingException;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
-import it.unicam.cs.agritrace.mappers.PackageMapper;
 import it.unicam.cs.agritrace.mappers.RequestMapper;
 import it.unicam.cs.agritrace.model.*;
 import it.unicam.cs.agritrace.repository.*;
+import it.unicam.cs.agritrace.service.factory.RequestHandlerFactory;
+import it.unicam.cs.agritrace.service.handler.RequestHandler;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,9 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 public class RequestService {
@@ -33,13 +31,15 @@ public class RequestService {
     private final HarvestSeasonRepository harvestSeasonRepository;
     private final CompanyRepository companyRepository;
     private final RequestTypeRepository requestTypeRepository;
-    private RequestRepository requestRepository;
-    private ProductRepository productRepository;
+    private final RequestRepository requestRepository;
+    private final ProductRepository productRepository;
     private final StatusRepository statusRepository;
     private final UserRepository userRepository;
     private final DbTableRepository dbTableRepository;
     private final ObjectMapper objectMapper;
     private final RequestMapper requestMapper;
+    private final RequestHandler requestHandler;
+    private final RequestHandlerFactory requestHandlerFactory;
 
     public RequestService(RequestMapper requestMapper,
                           ObjectMapper objectMapper,
@@ -52,7 +52,9 @@ public class RequestService {
                           CultivationMethodRepository cultivationMethodRepository,
                           HarvestSeasonRepository harvestSeasonRepository,
                           CompanyRepository companyRepository,
-                          RequestTypeRepository requestTypeRepository) {
+                          RequestTypeRepository requestTypeRepository,
+                          RequestHandler requestHandler,
+                          RequestHandlerFactory requestHandlerFactory) {
         this.requestMapper = requestMapper;
         this.objectMapper = objectMapper;
         this.dbTableRepository = dbTableRepository;
@@ -65,6 +67,9 @@ public class RequestService {
         this.harvestSeasonRepository = harvestSeasonRepository;
         this.companyRepository = companyRepository;
         this.requestTypeRepository = requestTypeRepository;
+        this.requestHandler = requestHandler;
+
+        this.requestHandlerFactory = requestHandlerFactory;
     }
 
     public ProductCreationResponse createProductRequest(ProductCreationRequest dto) {
@@ -189,44 +194,37 @@ public class RequestService {
         requestRepository.save(request);
         //TODO notifica al curatore
     }
-}
-/*
-    public void acceptPackageRequest(Request request){
-        Map<Integer, Product> productMap = productRepository.findAllById(
-                addPackagePayload.items().stream().map(PackageItemDTO::productId).toList()
-        ).stream().collect(Collectors.toMap(Product::getId, Function.identity()));
 
-        TypicalPackage pkg = new TypicalPackage();
-        pkg.setName(addPackagePayload.name());
-        pkg.setDescription(addPackagePayload.description());
-        pkg.setPrice(addPackagePayload.price());
 
-        Company producer = companyRepository.findById(addPackagePayload.producerId())
-                .orElseThrow(() -> new IllegalArgumentException("Producer non trovato con id: " + addPackagePayload.producerId()));
-        pkg.setProducer(producer);
+    // TODO finire di fare i vari handler e le factory e gli sbocchi de sangue
+    public void reviewRequest(ReviewRequestDTO reviewRequestDTO, User curator) {
+        Request request = requestRepository.findById(reviewRequestDTO.requestId())
+                .orElseThrow(() -> new RuntimeException("Request non trovata"));
 
-        Set<TypicalPackageItem> packageItems = addPackagePayload.items().stream()
-                .map(dto -> {
-                    Product product = productMap.get(dto.productId());
-                    if (product == null) throw new IllegalArgumentException("Prodotto non trovato: " + dto.productId());
+        // Se la action è rifiutato
+        if(StatusType.REJECTED.equals(reviewRequestDTO.action())) {
+            Status statusEntity = statusRepository.findById(StatusType.REJECTED.getId()).orElseThrow();
+            request.setStatus(statusEntity);
+            request.setReviewedAt(Instant.now());
+            request.setCurator(curator);
+            request.setDecisionNotes(reviewRequestDTO.decisionNotes());
+            requestRepository.save(request);
+            return;
+        }
 
-                    TypicalPackageItem item = new TypicalPackageItem();
-                    item.setProduct(product);
-                    item.setQuantity(dto.quantity());
-                    item.setTypicalPackage(pkg);
-                    return item;
-                })
-                .collect(Collectors.toSet());
+        RequestHandler handler = requestHandlerFactory.getRequestHandler(request.getRequestType());
 
-        pkg.setTypicalPackageItems(packageItems);
+        handler.handle(request);
 
-        typicalPackageRepository.save(pkg);
-
-        // Ritorna DTO
-        return PackageMapper.toDTO(pkg);
+        // Aggiorno lo status della request
+        Status acceptedStatus = statusRepository.findById(StatusType.ACCEPTED.getId())
+                .orElseThrow(() -> new RuntimeException("Status ACCEPTED non trovato"));
+        request.setStatus(acceptedStatus);
+        request.setCurator(curator);
+        request.setReviewedAt(Instant.now());
+        requestRepository.save(request);
     }
-
- */
+}
 
 
 

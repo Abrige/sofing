@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.unicam.cs.agritrace.dtos.common.PackageDTO;
 import it.unicam.cs.agritrace.dtos.payloads.AddPackagePayload;
 import it.unicam.cs.agritrace.mappers.PackageMapper;
+import it.unicam.cs.agritrace.mappers.PayloadMapper;
 import it.unicam.cs.agritrace.model.*;
 import it.unicam.cs.agritrace.repository.*;
 import org.springframework.stereotype.Service;
@@ -17,16 +18,22 @@ public class PackageService {
     private final CompanyRepository companyRepository;
     private final UserRepository userRepository;
     private final DbTableRepository dbTableRepository;
+    private final PayloadMapper payloadMapper;
+    private final RequestRepository requestRepository;
 
     public PackageService(ProductRepository productRepository, TypicalPackageRepository packageRepository, TypicalPackageRepository typicalPackageRepository,
                           TypicalPackageRepository typicalPackageRepository1, TypicalPackageItemRepository typicalPackageItemRepository, CompanyRepository companyRepository,
                           UserRepository userRepository,
-                          DbTableRepository dbTableRepository) {
+                          DbTableRepository dbTableRepository,
+                          PayloadMapper payloadMapper,
+                          RequestRepository requestRepository) {
         this.productRepository = productRepository;
         this.typicalPackageRepository = typicalPackageRepository1;
         this.companyRepository = companyRepository;
         this.userRepository = userRepository;
         this.dbTableRepository = dbTableRepository;
+        this.payloadMapper = payloadMapper;
+        this.requestRepository = requestRepository;
     }
 
     public void createPackageRequest(AddPackagePayload addPackagePayload) {
@@ -40,15 +47,8 @@ public class PackageService {
         DbTable table = dbTableRepository.findDbTableByName("TYPICAL_PACKAGES").orElseThrow();
         entityRequest.setTargetTable(table);
 
-        // converto il DTO in stringa e lo metto nel campo corretto
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            // Converti il DTO in JSON e setta subito il payload
-            entityRequest.setPayload(mapper.writeValueAsString(addPackagePayload));
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Errore durante la serializzazione del DTO in JSON", e);
-        }
+        entityRequest.setPayload(payloadMapper.toJson(addPackagePayload));
+        requestRepository.save(entityRequest);
     }
 
     public List<PackageDTO> getPackages() {
