@@ -1,80 +1,61 @@
 package it.unicam.cs.agritrace.service;
 
-import it.unicam.cs.agritrace.dtos.common.PackageItemDTO;
-import it.unicam.cs.agritrace.dtos.requests.PackageCreationRequest;
-import it.unicam.cs.agritrace.dtos.responses.PackageResponse;
-import it.unicam.cs.agritrace.model.Company;
-import it.unicam.cs.agritrace.model.Product;
-import it.unicam.cs.agritrace.model.TypicalPackage;
-import it.unicam.cs.agritrace.model.TypicalPackageItem;
-import it.unicam.cs.agritrace.repository.CompanyRepository;
-import it.unicam.cs.agritrace.repository.ProductRepository;
-import it.unicam.cs.agritrace.repository.TypicalPackageItemRepository;
-import it.unicam.cs.agritrace.repository.TypicalPackageRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import it.unicam.cs.agritrace.dtos.common.PackageDTO;
+import it.unicam.cs.agritrace.dtos.payloads.AddPackagePayload;
+import it.unicam.cs.agritrace.mappers.PackageMapper;
+import it.unicam.cs.agritrace.model.*;
+import it.unicam.cs.agritrace.repository.*;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class PackageService {
     private final ProductRepository productRepository;
     private final TypicalPackageRepository typicalPackageRepository;
     private final CompanyRepository companyRepository;
+    private final UserRepository userRepository;
+    private final DbTableRepository dbTableRepository;
 
     public PackageService(ProductRepository productRepository, TypicalPackageRepository packageRepository, TypicalPackageRepository typicalPackageRepository,
-                          TypicalPackageRepository typicalPackageRepository1, TypicalPackageItemRepository typicalPackageItemRepository, CompanyRepository companyRepository) {
+                          TypicalPackageRepository typicalPackageRepository1, TypicalPackageItemRepository typicalPackageItemRepository, CompanyRepository companyRepository,
+                          UserRepository userRepository,
+                          DbTableRepository dbTableRepository) {
         this.productRepository = productRepository;
         this.typicalPackageRepository = typicalPackageRepository1;
         this.companyRepository = companyRepository;
+        this.userRepository = userRepository;
+        this.dbTableRepository = dbTableRepository;
     }
 
-    public PackageResponse createPackage(PackageCreationRequest request) {
-            // Step 2: recupera prodotti dal marketplace
-            List<Product> products = productRepository.findAllById(
-                    request.items()
-                            .stream()
-                            .map(PackageItemDTO::productId).toList());
+    public void createPackageRequest(AddPackagePayload addPackagePayload) {
+        if (addPackagePayload.items().size() < 3) {
+            throw new IllegalArgumentException("Devi selezionare almeno 3 prodotti");
+        }
 
-            if (products.size() < 3) {
-                throw new IllegalArgumentException("Devi selezionare almeno 3 prodotti");
-            }
-        Company producer = companyRepository.findById(request.producer_id())
-                .orElseThrow(() -> new IllegalArgumentException("Producer non trovato con id: " + request.producer_id()));
+        User user = userRepository.findById(1).orElseThrow();
+        Request entityRequest = new Request();
+        entityRequest.setRequester(user);
+        DbTable table = dbTableRepository.findDbTableByName("TYPICAL_PACKAGES").orElseThrow();
+        entityRequest.setTargetTable(table);
+        entityRequest.setTargetId(null);
+        entityRequest.setRequestType("c");
 
-//        for (PackageItemDTO product : request.items()) {
-//            if (!productRepository.existsById(product.productId())) {
-//                throw new IllegalArgumentException("Duplicated product");
-//            }
-//            Product prod = productRepository.getById(product.productId());
-//        }
-            //TODO stato = "IN_ATTESA"
-            TypicalPackage pkg = new TypicalPackage();
-            pkg.setName(request.name());
-            pkg.setDescription(request.description());
-            pkg.setPrice(request.price());
-            pkg.setProducer(producer);
-
-            Set<TypicalPackageItem> packageItemsList = new HashSet<>();
-            for (PackageItemDTO dto : request.items()) {
-                Product product = products.stream()
-                        .filter(p -> p.getId().equals(dto.productId()))
-                        .findFirst()
-                        .orElseThrow(() -> new IllegalArgumentException("Prodotto non trovato: " + dto.productId()));
-
-                TypicalPackageItem packageItem = new TypicalPackageItem();
-                packageItem.setProduct(product);
-                packageItem.setQuantity(dto.quantity());
-                packageItem.setTypicalPackage(pkg);
-                packageItemsList.add(packageItem);
-            }
-            pkg.setTypicalPackageItems(packageItemsList);
-        typicalPackageRepository.save(pkg);
-            return new PackageResponse(pkg);
+        // converto il DTO in stringa e lo metto nel campo corretto
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            // Converti il DTO in JSON e setta subito il payload
+            entityRequest.setPayload(mapper.writeValueAsString(addPackagePayload));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Errore durante la serializzazione del DTO in JSON", e);
+        }
     }
 
-    public List<PackageResponse> getPackages() {
-        return typicalPackageRepository.findAll().stream().map(PackageResponse::new).toList();
+    public List<PackageDTO> getPackages() {
+        return typicalPackageRepository.findAll().stream()
+                .map(PackageMapper::toDTO)
+                .toList();
     }
 }

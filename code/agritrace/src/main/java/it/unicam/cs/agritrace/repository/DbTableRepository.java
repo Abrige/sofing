@@ -2,7 +2,9 @@ package it.unicam.cs.agritrace.repository;
 
 import it.unicam.cs.agritrace.model.DbTable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
+
+import java.util.Optional;
 
 public interface DbTableRepository extends JpaRepository<DbTable, Integer> {
+    Optional<DbTable> findDbTableByName(String name);
 }

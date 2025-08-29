@@ -1,13 +1,11 @@
 package it.unicam.cs.agritrace.controller;
 
 import it.unicam.cs.agritrace.dtos.common.OrderDTO;
+import it.unicam.cs.agritrace.dtos.requests.UpdateOrderStatusRequest;
 import it.unicam.cs.agritrace.enums.StatusType;
 import it.unicam.cs.agritrace.service.OrderService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,6 +18,7 @@ public class OrderController {
         this.orderService = orderService;
     }
 
+    // Ritorna tutti gli ordini (in base anche allo opzionale stato in cui si trovano)
     @GetMapping
     public ResponseEntity<List<OrderDTO>> getOrders(
             @RequestParam(name = "status", required = false) String statusParam) {
@@ -33,5 +32,11 @@ public class OrderController {
             orders = orderService.getAllOrders();
         }
         return ResponseEntity.ok(orders);
+    }
+
+    @PatchMapping("/status")
+    public ResponseEntity<OrderDTO> updateStatus(@RequestBody UpdateOrderStatusRequest request) {
+        OrderDTO orderDTO = orderService.updateOrderStatus(request.orderId(), request.status());
+        return ResponseEntity.ok(orderDTO);
     }
 }

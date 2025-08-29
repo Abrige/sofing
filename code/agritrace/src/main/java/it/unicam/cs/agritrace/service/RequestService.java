@@ -3,12 +3,14 @@ package it.unicam.cs.agritrace.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.unicam.cs.agritrace.dtos.common.PackageItemDTO;
 import it.unicam.cs.agritrace.dtos.requests.ProductCreationRequest;
 import it.unicam.cs.agritrace.dtos.responses.ProductCreationResponse;
 import it.unicam.cs.agritrace.dtos.responses.ResponseRequest;
 import it.unicam.cs.agritrace.enums.StatusType;
 import it.unicam.cs.agritrace.exceptions.PayloadParsingException;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
+import it.unicam.cs.agritrace.mappers.PackageMapper;
 import it.unicam.cs.agritrace.mappers.RequestMapper;
 import it.unicam.cs.agritrace.model.*;
 import it.unicam.cs.agritrace.repository.*;
@@ -19,6 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class RequestService {
@@ -172,6 +177,41 @@ public class RequestService {
         request.setDecisionNotes(reason);
         requestRepository.save(request);
         //TODO notifica al curatore
+    }
+
+    public void acceptPackageRequest(Request request){
+        Map<Integer, Product> productMap = productRepository.findAllById(
+                addPackagePayload.items().stream().map(PackageItemDTO::productId).toList()
+        ).stream().collect(Collectors.toMap(Product::getId, Function.identity()));
+
+        TypicalPackage pkg = new TypicalPackage();
+        pkg.setName(addPackagePayload.name());
+        pkg.setDescription(addPackagePayload.description());
+        pkg.setPrice(addPackagePayload.price());
+
+        Company producer = companyRepository.findById(addPackagePayload.producerId())
+                .orElseThrow(() -> new IllegalArgumentException("Producer non trovato con id: " + addPackagePayload.producerId()));
+        pkg.setProducer(producer);
+
+        Set<TypicalPackageItem> packageItems = addPackagePayload.items().stream()
+                .map(dto -> {
+                    Product product = productMap.get(dto.productId());
+                    if (product == null) throw new IllegalArgumentException("Prodotto non trovato: " + dto.productId());
+
+                    TypicalPackageItem item = new TypicalPackageItem();
+                    item.setProduct(product);
+                    item.setQuantity(dto.quantity());
+                    item.setTypicalPackage(pkg);
+                    return item;
+                })
+                .collect(Collectors.toSet());
+
+        pkg.setTypicalPackageItems(packageItems);
+
+        typicalPackageRepository.save(pkg);
+
+        // Ritorna DTO
+        return PackageMapper.toDTO(pkg);
     }
 }
 
