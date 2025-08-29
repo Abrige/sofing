@@ -2,6 +2,8 @@ package it.unicam.cs.agritrace.service;
 
 import it.unicam.cs.agritrace.dtos.common.ProductDTO;
 import it.unicam.cs.agritrace.dtos.payloads.AddRawMaterialPayload;
+import it.unicam.cs.agritrace.mappers.ProductMapper;
+import it.unicam.cs.agritrace.mappers.ProductMapperImpl;
 import it.unicam.cs.agritrace.model.Product;
 import it.unicam.cs.agritrace.model.ProductionStep;
 import it.unicam.cs.agritrace.repository.ProductionStepRepository;
@@ -16,10 +18,12 @@ import java.util.List;
 public class SupplyChainService {
     private final ProductService productService;
     private final ProductionStepRepository productionStepRepository;
+    private final ProductMapper productMapper;
 
-    public SupplyChainService(ProductService productService, ProductionStepRepository productionStepRepository) {
+    public SupplyChainService(ProductService productService, ProductionStepRepository productionStepRepository, ProductMapper productMapper) {
         this.productService = productService;
         this.productionStepRepository = productionStepRepository;
+        this.productMapper = productMapper;
     }
 
     //Crea un oggetto Production Step
@@ -44,14 +48,13 @@ public class SupplyChainService {
     //Rimuove la relazione tra raw material e prodotto trasformato
     @Transactional
     public void removeRawMaterial (int productId, int rawMaterialId) {
-        ProductionStep productionStep = productionStepRepository
-                .findProductionStepByInputProductAndOutputProduct(rawMaterialId, productId);
-        productionStepRepository.delete(productionStep);
+        List<ProductionStep> productionStep = productionStepRepository
+                .findByInputProductIdAndOutputProductId(rawMaterialId, productId);
+        productionStepRepository.deleteAll(productionStep);
     }
 
     @Transactional
     public List<ProductDTO> getRawMaterialsByOutputProduct(int productId) {
-        List<ProductDTO> rawMaterials = new ArrayList<>();
-        return rawMaterials;
+        return productMapper.toDtoList(productionStepRepository.findByOutputProductId(productId));
     }
 }

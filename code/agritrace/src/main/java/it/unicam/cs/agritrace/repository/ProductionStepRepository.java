@@ -22,4 +22,8 @@ public interface ProductionStepRepository extends JpaRepository<ProductionStep, 
     // Trova una lista di prodotti in base al prodotto di output
     @Query("SELECT ps.inputProduct FROM ProductionStep ps WHERE ps.outputProduct = :outputProduct")
     List<Product> findInputsByOutputProduct(@Param("outputProduct") Product outputProduct);
+
+    @Query("SELECT ps.inputProduct FROM ProductionStep  ps WHERE ps.outputProduct.id = :outputProductId")
+    List<Product> findByOutputProductId(int outputProductId);
+
 }
