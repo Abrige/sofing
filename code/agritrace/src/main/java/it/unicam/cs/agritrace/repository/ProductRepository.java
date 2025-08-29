@@ -1,6 +1,7 @@
 package it.unicam.cs.agritrace.repository;
 
 import it.unicam.cs.agritrace.model.Company;
+import it.unicam.cs.agritrace.model.HarvestSeason;
 import it.unicam.cs.agritrace.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 

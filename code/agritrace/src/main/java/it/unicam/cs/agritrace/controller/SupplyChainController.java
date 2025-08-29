@@ -1,20 +1,17 @@
 package it.unicam.cs.agritrace.controller;
 
 import it.unicam.cs.agritrace.dtos.common.ProductDTO;
-import it.unicam.cs.agritrace.dtos.payloads.AddRowMaterialPayload;
+import it.unicam.cs.agritrace.dtos.payloads.AddRawMaterialPayload;
 import it.unicam.cs.agritrace.mappers.ProductMapper;
-import it.unicam.cs.agritrace.model.Company;
 import it.unicam.cs.agritrace.model.Product;
 import it.unicam.cs.agritrace.model.ProductionStep;
 import it.unicam.cs.agritrace.repository.CompanyRepository;
 import it.unicam.cs.agritrace.repository.ProductRepository;
 import it.unicam.cs.agritrace.service.ProductService;
+import it.unicam.cs.agritrace.service.SupplyChainService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,13 +22,15 @@ public class SupplyChainController {
     private final ProductRepository productRepository;
     private final CompanyRepository companyRepository;
     private final ProductService productService;
+    private final SupplyChainService supplyChainService;
     private ProductMapper productMapper;
 
     public SupplyChainController(ProductRepository productRepository, CompanyRepository companyRepository,
-                                 ProductService productService) {
+                                 ProductService productService, SupplyChainService supplyChainService) {
         this.productRepository = productRepository;
         this.companyRepository = companyRepository;
         this.productService = productService;
+        this.supplyChainService = supplyChainService;
     }
 
     @GetMapping("/getproducts")
@@ -39,21 +38,22 @@ public class SupplyChainController {
         List<ProductDTO> productDTOS = productService.getAllCompanyProductById(companyId);
         return ResponseEntity.ok(productDTOS);
     }
-    @PostMapping("/products/{productId}/ingredients")
-    public ResponseEntity<?> addRowMaterial (int id, List<AddRowMaterialPayload> payload){
-        Product product = productRepository.findById(id).orElseThrow();
 
-        for(AddRowMaterialPayload p : payload){
-            Product rawMaterial = productRepository
-                    .findById(p.productId())
-                    .orElseThrow();
-            ProductionStep productionStep = new ProductionStep();
-            productionStep.setInputProduct(product);
-            productionStep.setOutputProduct(rawMaterial);
-            productionStep.setDescription(p.description());
-            //TODO
-        }
+    @PostMapping("/products/{productId}/ingredients")
+    public ResponseEntity<Void> addRawMaterial (@PathVariable int productId,
+                                             @RequestBody List<AddRawMaterialPayload> payloads){
+        supplyChainService.addRawMaterials(productId, payloads);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/products/{productId}/ingredients/{ingredientId}")
+    public ResponseEntity<Void> removeRawMaterial (@PathVariable int productId, @PathVariable int ingredientId){
+        supplyChainService.removeRawMaterial(productId, ingredientId);
+        return ResponseEntity.ok().build();
+    }
+    @GetMapping ("/products/{productId}/ingredients")
+    public ResponseEntity<List<ProductDTO>> getRawMaterialsByOutputProduct (@PathVariable int productId){
+        return ResponseEntity.ok(supplyChainService.getRawMaterialsByOutputProduct(productId));
 
     }
 }
