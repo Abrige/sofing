@@ -26,12 +26,6 @@ public class ProductionStep {
     @JoinColumn(name = "INPUT_PRODUCT_ID", nullable = false)
     private Product inputProduct;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.RESTRICT)
-    @JoinColumn(name = "COMPANY_ID", nullable = false)
-    private Company company;
-
     @Size(max = 255)
     @NotNull
     @Column(name = "STEP_TYPE", nullable = false)
