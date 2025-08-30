@@ -66,6 +66,10 @@ public class ProductService {
         List<Product> products = productRepository.findByProducerAndIsDeletedFalse(company);
         return productMapper.toDtoList(products); // usa il mapper
     }
+
+    public Product findProductById(int id) {
+        return productRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new ProductNotFoundException("Product not found with id=" + id));
+    }
 }
 
 // Nota: ResourceNotFoundException e UnauthorizedOperationException sono eccezioni custom che dovresti creare.

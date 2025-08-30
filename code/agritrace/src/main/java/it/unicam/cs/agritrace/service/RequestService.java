@@ -197,14 +197,16 @@ public class RequestService {
 
 
     // TODO finire di fare i vari handler e le factory e gli sbocchi de sangue
+    @Transactional
     public void reviewRequest(ReviewRequestDTO reviewRequestDTO, User curator) {
         Request request = requestRepository.findById(reviewRequestDTO.requestId())
-                .orElseThrow(() -> new RuntimeException("Request non trovata"));
+                .orElseThrow(() -> new RuntimeException("Request non trovata con id=" + reviewRequestDTO.requestId()));
 
-        // Se la action è rifiutato
-        if(StatusType.REJECTED.equals(reviewRequestDTO.action())) {
-            Status statusEntity = statusRepository.findById(StatusType.REJECTED.getId()).orElseThrow();
-            request.setStatus(statusEntity);
+        // Se la action è reject → chiudo subito la richiesta
+        if (StatusType.REJECTED.equals(reviewRequestDTO.action())) {
+            Status rejectedStatus = statusRepository.findById(StatusType.REJECTED.getId())
+                    .orElseThrow(() -> new RuntimeException("Status REJECTED non trovato"));
+            request.setStatus(rejectedStatus);
             request.setReviewedAt(Instant.now());
             request.setCurator(curator);
             request.setDecisionNotes(reviewRequestDTO.decisionNotes());
@@ -212,11 +214,22 @@ public class RequestService {
             return;
         }
 
-        RequestHandler handler = requestHandlerFactory.getRequestHandler(request.getRequestType());
+        // Se non è reject, allora deve essere approve
+        if (!StatusType.ACCEPTED.equals(reviewRequestDTO.action())) {
+            throw new IllegalArgumentException("Azione non valida: " + reviewRequestDTO.action());
+        }
 
+        // Recupero handler dalla factory in base al tipo di request
+        RequestHandler handler = requestHandlerFactory.getHandler(request.getRequestType());
+
+        if (handler == null) {
+            throw new RuntimeException("Nessun handler trovato per request type: " + request.getRequestType().getName());
+        }
+
+        // Eseguo la logica di business specifica del tipo
         handler.handle(request);
 
-        // Aggiorno lo status della request
+        // Aggiorno lo status della request ad ACCEPTED
         Status acceptedStatus = statusRepository.findById(StatusType.ACCEPTED.getId())
                 .orElseThrow(() -> new RuntimeException("Status ACCEPTED non trovato"));
         request.setStatus(acceptedStatus);

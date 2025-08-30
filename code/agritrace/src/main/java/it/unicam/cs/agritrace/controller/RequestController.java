@@ -40,7 +40,8 @@ public class RequestController {
     //Approvazione richiesta
     @PostMapping("/review")
     public ResponseEntity<Void> reviewRequest(@RequestBody ReviewRequestDTO reviewRequestDTO)  {
-        requestService.reviewRequest(dto.requestId(), dto.action());
+        User curator = userRepository.findById(1).orElseThrow();
+        requestService.reviewRequest(reviewRequestDTO, curator);
         return ResponseEntity.ok().build();
     }
 

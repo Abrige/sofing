@@ -56,4 +56,12 @@ public class PackageService {
                 .map(PackageMapper::toDTO)
                 .toList();
     }
+
+    public Company findCompanyById(int id) {
+        return companyRepository.findById(id).orElseThrow();
+    }
+
+    public TypicalPackage savePackage(TypicalPackage pkg) {
+        return typicalPackageRepository.save(pkg);
+    }
 }

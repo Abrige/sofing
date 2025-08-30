@@ -11,10 +11,23 @@ import java.util.List;
     {
         "name": "Pacchetto bellissimo",
         "description": "Il miglior pacchetto del mondo",
-        "category_id": 3,
-        "cultivation_method_id": 2,
-        "harvest_season_id": 2,
-        "producer_id": 4
+        "price": 100,
+        "producer_id": 2,
+        "package":
+        [
+                {
+                "product_id": 1,
+                "quantity": 3
+                },
+                {
+                "product_id": 2,
+                "quantity": 4
+                },
+                {
+                "product_id": 5,
+                "quantity": 2
+                },
+         ]
     }
 */
 

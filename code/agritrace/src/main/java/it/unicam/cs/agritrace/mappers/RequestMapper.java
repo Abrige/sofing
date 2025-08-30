@@ -5,6 +5,7 @@ import it.unicam.cs.agritrace.dtos.responses.ProductCreationResponse;
 import it.unicam.cs.agritrace.dtos.responses.ResponseRequest;
 import it.unicam.cs.agritrace.exceptions.PayloadParsingException;
 import it.unicam.cs.agritrace.model.Request;
+import it.unicam.cs.agritrace.model.RequestType;
 import it.unicam.cs.agritrace.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -44,14 +45,8 @@ public interface RequestMapper {
     }
 
     @Named("requestTypeToString")
-    default String requestTypeToString(String type) {
-        if(type == null) return null;
-        return switch(type) {
-            case "c" -> "create";
-            case "u" -> "update";
-            case "d" -> "delete";
-            case "m" -> "marketplace";
-            default -> type;
-        };
+    default String requestTypeToString(RequestType type) {
+        if (type == null) return null;
+        return type.getName(); // o getCode(), dipende da cosa hai nella tua entity
     }
 }

@@ -1,12 +1,13 @@
 package it.unicam.cs.agritrace.service.handler;
 
 import it.unicam.cs.agritrace.model.Request;
+import it.unicam.cs.agritrace.model.RequestType;
 
-public interface RequestHandler<T> {
+public interface RequestHandler {
 
-    // Esegue la logica del tipo di request
+    // Indica che tipo di request gestisce (l'entità, non una stringa a caso)
+    RequestType getSupportedRequestType();
+
+    // Esegue la logica con il payload già mappato
     void handle(Request request);
-
-    // Ritorna il nome della request che questo handler gestisce
-    String getRequestTypeName();
 }
