@@ -26,7 +26,7 @@ public class AddPackageRequestHandler implements RequestHandler {
                                     ProductService productService) {
         this.packageService = packageService;
         this.payloadMapper = payloadMapper;
-        this.supportedRequestType = requestTypeRepository.findById(1) // ID di ADD_PACKAGE
+        this.supportedRequestType = requestTypeRepository.findById(2) // ID di ADD_PACKAGE
                 .orElseThrow(() -> new IllegalStateException("RequestType ADD_PACKAGE non trovato"));
         this.productService = productService;
     }
