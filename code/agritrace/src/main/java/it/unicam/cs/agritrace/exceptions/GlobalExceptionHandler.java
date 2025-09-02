@@ -7,14 +7,40 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.concurrent.locks.AbstractOwnableSynchronizer;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(InvalidPackageRequestException.class)
+    public ResponseEntity<ApiError> handleInvalidPackage(InvalidPackageRequestException ex, HttpServletRequest request) {
+        log.warn("Invalid package request at {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage());
+        ApiError error = new ApiError(
+                HttpStatus.BAD_REQUEST,
+                "Invalid package request: " + ex.getMessage()
+        );
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ApiError> handleUserNotFound(UserNotFoundException ex, HttpServletRequest request) {
+        ApiError error = new ApiError(
+                HttpStatus.NOT_FOUND,
+                ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(DbTableNotFoundException.class)
+    public ResponseEntity<ApiError> handleDbTableNotFound(DbTableNotFoundException ex, HttpServletRequest request) {
+        ApiError error = new ApiError(
+                HttpStatus.NOT_FOUND,
+                ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    // Quelli che avevi già...
     @ExceptionHandler(PayloadParsingException.class)
     public ResponseEntity<ApiError> handlePayloadError(PayloadParsingException ex, HttpServletRequest request) {
         log.warn("Payload parsing failed at {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage(), ex);
@@ -23,33 +49,6 @@ public class GlobalExceptionHandler {
                 "Payload parsing error at " + request.getRequestURI() + ": " + ex.getMessage()
         );
         return ResponseEntity.badRequest().body(error);
-    }
-
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiError> handleResourceNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
-        ApiError error = new ApiError(
-                HttpStatus.NOT_FOUND,
-                "Resource not found at " + request.getRequestURI() + ": " + ex.getMessage()
-        );
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-    }
-
-    @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<ApiError> handleProductNotFound(ProductNotFoundException ex, HttpServletRequest request) {
-        ApiError error = new ApiError(
-                HttpStatus.NOT_FOUND,
-                "Product not found at " + request.getRequestURI() + ": " + ex.getMessage()
-        );
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-    }
-
-    @ExceptionHandler(OrderStatusInvalidException.class)
-    public ResponseEntity<ApiError> handleInvalidOrderStatus(OrderStatusInvalidException ex, HttpServletRequest request) {
-        ApiError error = new ApiError(
-                HttpStatus.BAD_REQUEST,
-                "Order status invalid: " + ex.getMessage()
-        );
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     @ExceptionHandler(Exception.class)

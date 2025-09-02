@@ -1,5 +1,6 @@
 package it.unicam.cs.agritrace.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 
 @Getter
@@ -43,6 +44,22 @@ public enum StatusType {
             }
         }
         throw new IllegalArgumentException("Invalid StatusType name: " + name);
+    }
+
+    // serve per la serializzazione a JSON
+    @JsonCreator
+    public static StatusType fromValue(String value) {
+        if (value == null) return null;
+        switch (value.toLowerCase()) {
+            case "accept":
+            case "accepted":
+                return ACCEPTED;
+            case "reject":
+            case "rejected":
+                return REJECTED;
+            default:
+                return StatusType.valueOf(value.toUpperCase());
+        }
     }
 
 }

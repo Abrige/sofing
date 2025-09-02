@@ -1,7 +1,6 @@
 package it.unicam.cs.agritrace.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.unicam.cs.agritrace.dtos.common.ReviewRequestDTO;
 import it.unicam.cs.agritrace.dtos.requests.ProductCreationRequest;
@@ -11,11 +10,13 @@ import it.unicam.cs.agritrace.enums.StatusType;
 import it.unicam.cs.agritrace.exceptions.PayloadParsingException;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.mappers.RequestMapper;
-import it.unicam.cs.agritrace.model.*;
+import it.unicam.cs.agritrace.model.Request;
+import it.unicam.cs.agritrace.model.RequestType;
+import it.unicam.cs.agritrace.model.Status;
+import it.unicam.cs.agritrace.model.User;
 import it.unicam.cs.agritrace.repository.*;
 import it.unicam.cs.agritrace.service.factory.RequestHandlerFactory;
 import it.unicam.cs.agritrace.service.handler.RequestHandler;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,19 +27,13 @@ import java.util.Map;
 @Service
 public class RequestService {
 
-    private final ProductCategoryRepository productCategoryRepository;
-    private final CultivationMethodRepository cultivationMethodRepository;
-    private final HarvestSeasonRepository harvestSeasonRepository;
-    private final CompanyRepository companyRepository;
     private final RequestTypeRepository requestTypeRepository;
     private final RequestRepository requestRepository;
-    private final ProductRepository productRepository;
     private final StatusRepository statusRepository;
     private final UserRepository userRepository;
     private final DbTableRepository dbTableRepository;
     private final ObjectMapper objectMapper;
     private final RequestMapper requestMapper;
-    private final RequestHandler requestHandler;
     private final RequestHandlerFactory requestHandlerFactory;
 
     public RequestService(RequestMapper requestMapper,
@@ -46,29 +41,16 @@ public class RequestService {
                           DbTableRepository dbTableRepository,
                           UserRepository userRepository,
                           StatusRepository statusRepository,
-                          ProductRepository productRepository,
                           RequestRepository requestRepository,
-                          ProductCategoryRepository productCategoryRepository,
-                          CultivationMethodRepository cultivationMethodRepository,
-                          HarvestSeasonRepository harvestSeasonRepository,
-                          CompanyRepository companyRepository,
                           RequestTypeRepository requestTypeRepository,
-                          RequestHandler requestHandler,
                           RequestHandlerFactory requestHandlerFactory) {
         this.requestMapper = requestMapper;
         this.objectMapper = objectMapper;
         this.dbTableRepository = dbTableRepository;
         this.userRepository = userRepository;
         this.statusRepository = statusRepository;
-        this.productRepository = productRepository;
         this.requestRepository = requestRepository;
-        this.productCategoryRepository = productCategoryRepository;
-        this.cultivationMethodRepository = cultivationMethodRepository;
-        this.harvestSeasonRepository = harvestSeasonRepository;
-        this.companyRepository = companyRepository;
         this.requestTypeRepository = requestTypeRepository;
-        this.requestHandler = requestHandler;
-
         this.requestHandlerFactory = requestHandlerFactory;
     }
 
@@ -106,7 +88,7 @@ public class RequestService {
         request.setRequester(requester);
         request.setTargetTable(targetTable);
         request.setTargetId(null);
-        RequestType requestType = requestTypeRepository.findById(1).orElseThrow();
+        RequestType requestType = requestTypeRepository.findById(3).orElseThrow(); // ADD PRODUCT
         request.setRequestType(requestType);
         request.setPayload(payloadJson);
         request.setCreatedAt(Instant.now());
@@ -138,65 +120,13 @@ public class RequestService {
         return requestMapper.toDtoList(entities);
     }
 
-    // Accetta una richiesta da parte del curatore
-    public void approveRequest(int id,
-                               User curator) throws JsonProcessingException {
-        // Prende la richiesta in base all'id
-        Request request = requestRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Request with id=" + id + " not found"));
-
-        // Recupero stato "SHIPPED" (o "APPROVED" se lo rinomini) dal DB usando enum
-        Status approvedStatus = statusRepository.findById(StatusType.ACCEPTED.getId())
-                .orElseThrow(() -> new IllegalStateException("Missing status: " + StatusType.ACCEPTED));
-
-        request.setCurator(curator);
-        request.setStatus(approvedStatus);
-        request.setReviewedAt(Instant.now());
-        requestRepository.save(request);
-
-        //TODO
-        if ("c".equals(request.getRequestType())) {
-            // ad esempio: creare un record in Product
-            // Creazione reale del prodotto dal payload JSON
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode data = mapper.readTree(request.getPayload());
-
-            Product product = new Product();
-            product.setName(data.get("name").asText());
-            product.setDescription(data.get("description").asText());
-            product.setCategory(productCategoryRepository.findById(data.get("category_id").asInt())
-                    .orElseThrow(() -> new IllegalArgumentException("Categoria non trovata")));
-            product.setCultivationMethod(cultivationMethodRepository.findById(data.get("cultivation_method_id").asInt())
-                    .orElseThrow(() -> new IllegalArgumentException("Metodo di coltivazione non trovato")));
-            product.setHarvestSeason(harvestSeasonRepository.findById(data.get("harvest_season_id").asInt())
-                    .orElseThrow(() -> new IllegalArgumentException("Stagione di Raccolta non trovata")));
-            // product.setIsDeleted(false); DEFAULT VALUE
-            product.setProducer(companyRepository.findById(data.get("producer_id").asInt())
-                    .orElseThrow(() -> new IllegalArgumentException("Produttore non trovato")));
-            Product savedProduct = productRepository.save(product);
-            request.setTargetId(savedProduct.getId());
-            requestRepository.save(request);
-        }
-        //TODO notifica al curatore
+    public List<ResponseRequest> getRequestsByStatus(StatusType status) {
+        return requestRepository.findByStatus_Id(status.getId())
+                .stream()
+                .map(requestMapper::toDto)
+                .toList();
     }
 
-    public void rejectRequest(int id,
-                              User curator,
-                              String reason) {
-        Request request = requestRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Request with id=" + id + " not found"));
-        Status status = statusRepository.findById(StatusType.SHIPPED.getId())
-                .orElseThrow(() -> new IllegalStateException("Missing status: " + StatusType.SHIPPED));
-        request.setStatus(status);
-        request.setCurator(curator);
-        request.setReviewedAt(Instant.now());
-        request.setDecisionNotes(reason);
-        requestRepository.save(request);
-        //TODO notifica al curatore
-    }
-
-
-    // TODO finire di fare i vari handler e le factory e gli sbocchi de sangue
     @Transactional
     public void reviewRequest(ReviewRequestDTO reviewRequestDTO, User curator) {
         Request request = requestRepository.findById(reviewRequestDTO.requestId())
@@ -205,7 +135,7 @@ public class RequestService {
         // Se la action è reject → chiudo subito la richiesta
         if (StatusType.REJECTED.equals(reviewRequestDTO.action())) {
             Status rejectedStatus = statusRepository.findById(StatusType.REJECTED.getId())
-                    .orElseThrow(() -> new RuntimeException("Status REJECTED non trovato"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Status REJECTED non trovato nel db"));
             request.setStatus(rejectedStatus);
             request.setReviewedAt(Instant.now());
             request.setCurator(curator);
@@ -238,56 +168,3 @@ public class RequestService {
         requestRepository.save(request);
     }
 }
-
-
-
-    /*
-    public Product approveRequest(Integer requestId, User curator) throws IOException {
-        Request request = requestRepository.findById(requestId)
-                .orElseThrow(() -> new IllegalArgumentException("Request not found: " + requestId));
-
-        // Recupero stato "SHIPPED" (o "APPROVED" se lo rinomini) dal DB usando enum
-        Status approvedStatus = statusRepository.findById(StatusType.SHIPPED.getId())
-                .orElseThrow(() -> new IllegalStateException("Missing status: " + StatusType.SHIPPED));
-
-        request.setCurator(curator);
-        request.setReviewedAt(LocalDateTime.now().toInstant(ZoneOffset.UTC));
-        request.setStatus(approvedStatus);
-
-        // Creazione reale del prodotto dal payload JSON
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode data = mapper.readTree(request.getPayload());
-
-        Product product = new Product();
-        product.setName(data.get("name").asText());
-        product.setDescription(data.get("description").asText());
-        product.setCategory(new ProductCategory(data.get("category_id").asLong()));
-        product.setCultivationMethod(new CultivationMethod(data.get("cultivation_method_id").asLong()));
-        product.setHarvestSeason(new HarvestSeason(data.get("harvest_season_id").asLong()));
-        // product.setIsDeleted(false); DEFAULT VALUE
-
-        Product savedProduct = productRepository.save(product);
-        request.setTargetId(savedProduct.getId());
-        requestRepository.save(request);
-
-        return savedProduct;
-    }
-
-    public Request rejectRequest(Long requestId, User curator, String notes) {
-        Request request = requestRepository.findById(requestId)
-                .orElseThrow(() -> new IllegalArgumentException("Request not found: " + requestId));
-
-        request.setCurator(curator);
-        request.setReviewedAt(LocalDateTime.now().toInstant(ZoneOffset.UTC));
-        request.setDecisionNotes(notes);
-
-        // Recupero stato "REJECTED"
-        Status rejectedStatus = statusRepository.findById(StatusType.REJECTED.getId())
-                .orElseThrow(() -> new IllegalStateException("Missing status: " + StatusType.REJECTED));
-
-        request.setStatus(rejectedStatus);
-
-        return requestRepository.save(request);
-    }
-
-     */

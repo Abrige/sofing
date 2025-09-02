@@ -26,8 +26,16 @@ public class RequestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ResponseRequest>> requests() {
-        return ResponseEntity.ok(requestService.getAllRequests());
+    public ResponseEntity<List<ResponseRequest>> requests(@RequestParam(name = "status", required = false) String statusParam) {
+        List<ResponseRequest> response;
+        if (statusParam != null) {
+            // case-insensitive
+            StatusType statusType = StatusType.fromNameIgnoreCase(statusParam);
+            response = requestService.getRequestsByStatus(statusType);
+        } else {
+            response = requestService.getAllRequests();
+        }
+        return ResponseEntity.ok(response);
     }
 
     //Ritorna le richieste che hanno statusName : pending
