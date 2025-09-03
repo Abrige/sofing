@@ -1,9 +1,11 @@
 package it.unicam.cs.agritrace.service.handler;
 
-import it.unicam.cs.agritrace.dtos.payloads.AddPackagePayload;
+import it.unicam.cs.agritrace.dtos.payloads.PackagePayload;
+import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.mappers.PayloadMapper;
 import it.unicam.cs.agritrace.model.*;
 import it.unicam.cs.agritrace.repository.RequestTypeRepository;
+import it.unicam.cs.agritrace.service.CompanyService;
 import it.unicam.cs.agritrace.service.PackageService;
 import it.unicam.cs.agritrace.service.ProductService;
 import org.springframework.stereotype.Component;
@@ -19,16 +21,19 @@ public class AddPackageRequestHandler implements RequestHandler {
     private final PayloadMapper payloadMapper;
     private final RequestType supportedRequestType;
     private final ProductService productService;
+    private final CompanyService companyService;
 
     public AddPackageRequestHandler(PackageService packageService,
                                     PayloadMapper payloadMapper,
                                     RequestTypeRepository requestTypeRepository,
-                                    ProductService productService) {
+                                    ProductService productService,
+                                    CompanyService companyService) {
         this.packageService = packageService;
         this.payloadMapper = payloadMapper;
-        this.supportedRequestType = requestTypeRepository.findById(2) // ID di ADD_PACKAGE
-                .orElseThrow(() -> new IllegalStateException("RequestType ADD_PACKAGE non trovato"));
+        this.supportedRequestType = requestTypeRepository.findByName("ADD_PACKAGE")
+                .orElseThrow(() -> new ResourceNotFoundException("RequestType ADD_PACKAGE non trovato"));
         this.productService = productService;
+        this.companyService = companyService;
     }
 
     @Override
@@ -40,7 +45,7 @@ public class AddPackageRequestHandler implements RequestHandler {
     @Transactional
     public void handle(Request request) {
         // 1. Converto JSON in DTO
-        AddPackagePayload payload = payloadMapper.mapPayload(request, AddPackagePayload.class);
+        PackagePayload payload = payloadMapper.mapPayload(request, PackagePayload.class);
 
         // 2. Creo il pacchetto
         TypicalPackage pkg = new TypicalPackage();
@@ -49,7 +54,7 @@ public class AddPackageRequestHandler implements RequestHandler {
         pkg.setPrice(payload.price());
 
         // produttore
-        Company producer = packageService.findCompanyById(payload.producerId());
+        Company producer = companyService.getCompanyById(payload.producerId());
         pkg.setProducer(producer);
         pkg.setIsActive(true);
 

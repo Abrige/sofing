@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
 import java.util.Map;
 
-public record ResponseRequest(
+public record RequestResponse(
         @JsonProperty("id")
         Integer id,
 

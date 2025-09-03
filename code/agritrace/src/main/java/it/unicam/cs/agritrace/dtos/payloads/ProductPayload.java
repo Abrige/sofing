@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /*
     ESEMPIO DI JSON:
     {
+        "product_id": 1,
         "name": "Ciliegina",
         "description": "Una ciliegia molto buonissima",
         "category_id": 3,
@@ -12,9 +13,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
         "harvest_season_id": 2,
         "producer_id": 4
     }
+
+    tutti i campi sono opzionali ed è usato anche per l'UPDATE di un product
 */
 
-public record AddProductPayload(
+public record ProductPayload(
+        @JsonProperty("product_id")
+        Integer productId,
         String name,
         String description,
         @JsonProperty("category_id")

@@ -9,11 +9,12 @@ import java.util.List;
 /*
     ESEMPIO DI JSON:
     {
+        "package_id": 1,
         "name": "Pacchetto bellissimo",
         "description": "Il miglior pacchetto del mondo",
         "price": 100,
         "producer_id": 2,
-        "package":
+        "items":
         [
                 {
                 "product_id": 1,
@@ -29,9 +30,13 @@ import java.util.List;
                 },
          ]
     }
+
+    tutti i campi sono opzionali ed è usato anche per l'UPDATE di un package
 */
 
-public record AddPackagePayload(
+public record PackagePayload(
+        @JsonProperty("package_id")
+        Integer packageId,
         String name,
         String description,
         BigDecimal price,
