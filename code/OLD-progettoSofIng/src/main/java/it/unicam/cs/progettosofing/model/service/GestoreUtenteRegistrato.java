@@ -4,7 +4,7 @@ import it.unicam.cs.progettosofing.model.entity.UtenteRegistrato;
 import it.unicam.cs.progettosofing.model.entity.UtenteRegistratoDTO;
 
 public class GestoreUtenteRegistrato {
-    private Piattaforma piattaforma;
+    private final Piattaforma piattaforma;
 
     public GestoreUtenteRegistrato(Piattaforma piattaforma) {
         this.piattaforma = piattaforma;

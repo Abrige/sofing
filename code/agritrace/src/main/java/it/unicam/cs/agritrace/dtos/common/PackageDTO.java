@@ -8,6 +8,6 @@ public record PackageDTO(
         String name,
         String description,
         BigDecimal price,
-        List<ProductDTO> products
+        List<PackageItemDTO> items
 )
 {}

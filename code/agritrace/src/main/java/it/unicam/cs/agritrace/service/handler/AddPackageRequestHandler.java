@@ -61,7 +61,7 @@ public class AddPackageRequestHandler implements RequestHandler {
         // 3. Creo gli item
         Set<TypicalPackageItem> items = payload.items().stream()
                 .map(dto -> {
-                    Product product = productService.findProductById(dto.productId());
+                    Product product = productService.findProductById(dto.product().id());
                     TypicalPackageItem item = new TypicalPackageItem();
                     item.setProduct(product);
                     item.setQuantity(dto.quantity());

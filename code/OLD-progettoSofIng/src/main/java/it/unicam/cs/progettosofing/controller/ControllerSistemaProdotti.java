@@ -8,8 +8,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class ControllerSistemaProdotti {
-    private SistemaProdotti sistemaProdotti;
-    private Azienda azienda;
+    private final SistemaProdotti sistemaProdotti;
+    private final Azienda azienda;
 
     public ControllerSistemaProdotti(SistemaProdotti sistemaProdotti, Azienda azienda) {
         this.sistemaProdotti = sistemaProdotti;
