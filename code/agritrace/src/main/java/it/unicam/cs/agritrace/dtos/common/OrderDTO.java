@@ -1,5 +1,6 @@
 package it.unicam.cs.agritrace.dtos.common;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
@@ -16,8 +17,10 @@ public record OrderDTO(
         BigDecimal totalAmount,
         String status,
         @JsonProperty("ordered_at")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss", timezone = "Europe/Rome")
         Instant orderedAt,
         @JsonProperty("delivery_date")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
         LocalDate deliveryDate,
         @JsonProperty("order_items")
         Set<OrderItemDTO> orderItems) {
