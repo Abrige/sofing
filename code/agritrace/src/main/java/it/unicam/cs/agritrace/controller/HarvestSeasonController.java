@@ -5,6 +5,7 @@ import it.unicam.cs.agritrace.dtos.responses.HarvestSeasonResponse;
 import it.unicam.cs.agritrace.service.HarvestSeasonService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,6 +23,11 @@ public class HarvestSeasonController {
     @GetMapping("/list")
     public ResponseEntity<List<HarvestSeasonResponse>> getAllHarvestSeason(){
         return ResponseEntity.ok(harvestSeasonService.GetAllHarvestSeason());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<HarvestSeasonResponse> getHarvestSeasonId(@PathVariable int id){
+        return ResponseEntity.ok(harvestSeasonService.GetHarvestSeasonId(id));
     }
 
 }

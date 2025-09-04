@@ -2,10 +2,9 @@ package it.unicam.cs.agritrace.service;
 
 
 import it.unicam.cs.agritrace.dtos.responses.HarvestSeasonResponse;
+import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.model.HarvestSeason;
 import it.unicam.cs.agritrace.repository.HarvestSeasonRepository;
-import org.hibernate.dialect.unique.CreateTableUniqueDelegate;
-import org.mapstruct.IterableMapping;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,4 +33,18 @@ public class HarvestSeasonService {
         return AllHVResponse;
     }
 
-} 
+    public HarvestSeasonResponse GetHarvestSeasonId(int id){
+        HarvestSeason HVId = harvestSeasonRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Harvest Season non trovata: " + id));
+
+        return new HarvestSeasonResponse(
+                HVId.getId(),
+                HVId.getName(),
+                HVId.getMonthStart(),
+                HVId.getMonthEnd(),
+                HVId.getHemisphere(),
+                HVId.getDescription()
+        );
+    }
+
+}
