@@ -36,7 +36,7 @@ public class RequestFactory {
 
     public Request createRequest(String tableName, String requestTypeName, Object payload) {
         User requester = userRepository.findById(1)
-                .orElseThrow(() -> new UserNotFoundException(1));
+                .orElseThrow(() -> new UserNotFoundException("Utente"));
 
         DbTable targetTable = dbTableRepository.findByName(tableName)
                 .orElseThrow(() -> new DbTableNotFoundException(tableName));
