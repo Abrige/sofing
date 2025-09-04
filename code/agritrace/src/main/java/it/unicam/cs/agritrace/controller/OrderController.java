@@ -1,12 +1,11 @@
 package it.unicam.cs.agritrace.controller;
 
 import it.unicam.cs.agritrace.dtos.common.OrderDTO;
-import it.unicam.cs.agritrace.dtos.requests.CreateOrder;
 import it.unicam.cs.agritrace.dtos.requests.UpdateOrderStatusRequest;
 import it.unicam.cs.agritrace.enums.StatusType;
-import it.unicam.cs.agritrace.model.Order;
 import it.unicam.cs.agritrace.service.OrderService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,15 +36,22 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
 
-    @PatchMapping("/updatestatus")
-    public ResponseEntity<OrderDTO> updateStatus(@RequestBody UpdateOrderStatusRequest request) {
-        OrderDTO orderDTO = orderService.updateOrderStatus(request.orderId(), request.status());
+    // Aggiorna lo status di un ordine in base a quelli consentiti
+    @PatchMapping("/update-status")
+    public ResponseEntity<OrderDTO> updateStatus(@RequestBody @Valid UpdateOrderStatusRequest request) {
+
+        // Chiama il service passando l'intero DTO
+        OrderDTO orderDTO = orderService.updateOrderStatus(request);
+
+        // Ritorna l'ordine aggiornato
         return ResponseEntity.ok(orderDTO);
     }
 
-    @PostMapping
-    public ResponseEntity<Void> createOrder(@RequestBody @Valid CreateOrder request) {
-        Order order = orderService.createOrder(request);
-        return ResponseEntity.noContent().build();
+    // Mandando l'id nella URL crea dall'id di un carrello un ordine vero e proprio
+    @PostMapping("/from-cart/{cartId}")
+    public ResponseEntity<OrderDTO> createOrderFromCart(@PathVariable Integer cartId) {
+        OrderDTO orderDTO = orderService.createOrderFromCart(cartId);
+        // Risposta con l'ordine creato
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderDTO);
     }
 }

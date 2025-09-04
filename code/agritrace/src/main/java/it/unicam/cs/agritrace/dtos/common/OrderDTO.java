@@ -12,7 +12,6 @@ public record OrderDTO(
         @JsonProperty("order_id")
         int orderId,
         UserDTO buyer,
-        CompanyDTO seller,
         @JsonProperty("total_amount")
         BigDecimal totalAmount,
         String status,

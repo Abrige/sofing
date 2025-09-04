@@ -1,16 +1,15 @@
 package it.unicam.cs.agritrace.service;
 
 import it.unicam.cs.agritrace.dtos.common.OrderDTO;
-import it.unicam.cs.agritrace.dtos.requests.CreateOrder;
-import it.unicam.cs.agritrace.dtos.requests.OrderItemRequest;
+import it.unicam.cs.agritrace.dtos.requests.UpdateOrderStatusRequest;
 import it.unicam.cs.agritrace.enums.StatusType;
 import it.unicam.cs.agritrace.exceptions.OrderStatusInvalidException;
+import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.mappers.OrderMapper;
-import it.unicam.cs.agritrace.model.Order;
-import it.unicam.cs.agritrace.model.OrderItem;
-import it.unicam.cs.agritrace.model.Status;
+import it.unicam.cs.agritrace.model.*;
 import it.unicam.cs.agritrace.repository.OrderItemRepository;
 import it.unicam.cs.agritrace.repository.OrderRepository;
+import it.unicam.cs.agritrace.repository.ShoppingCartRepository;
 import it.unicam.cs.agritrace.repository.StatusRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,12 +25,11 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final StatusRepository statusRepository;
-    private final UserService userService;
-    private final CompanyService companyService;
     private final StatusService statusService;
     private final LocationService locationService;
-    private final ProductListingService productListingService;
     private final OrderItemRepository orderItemRepository;
+    private final ShoppingCartRepository shoppingCartRepository;
+    private final ShoppingCartService shoppingCartService;
 
     public OrderService(OrderRepository orderRepository,
                         StatusRepository statusRepository,
@@ -39,15 +38,16 @@ public class OrderService {
                         StatusService statusService,
                         LocationService locationService,
                         ProductListingService productListingService,
-                        OrderItemRepository orderItemRepository) {
+                        OrderItemRepository orderItemRepository,
+                        ShoppingCartRepository shoppingCartRepository,
+                        ShoppingCartService shoppingCartService) {
         this.orderRepository = orderRepository;
         this.statusRepository = statusRepository;
-        this.userService = userService;
-        this.companyService = companyService;
+        this.shoppingCartRepository = shoppingCartRepository;
         this.statusService = statusService;
         this.locationService = locationService;
-        this.productListingService = productListingService;
         this.orderItemRepository = orderItemRepository;
+        this.shoppingCartService = shoppingCartService;
     }
 
     // Recupera tutti gli ordini e li mappa in DTO
@@ -73,74 +73,85 @@ public class OrderService {
                 .toList();
     }
 
-    public OrderDTO updateOrderStatus(int orderId, String statusName) {
-        // Recupero ordine
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Ordine non trovato con id: " + orderId));
+    @Transactional
+    public OrderDTO updateOrderStatus(UpdateOrderStatusRequest request) {
 
-        // Conversione della stringa in enum
-        StatusType statusEnum = StatusType.fromNameIgnoreCase(statusName);
+        // Recupera ordine
+        Order order = orderRepository.findById(request.orderId())
+                .orElseThrow(() -> new ResourceNotFoundException("Ordine non trovato con id: " + request.orderId()));
 
-        // Scelta azione in base allo status
-        switch (statusEnum) {
-            case PENDING -> {
-                return OrderMapper.toDto(acceptOrder(order));
-            }
-            case REJECTED -> {
-                return OrderMapper.toDto(rejectOrder(order));
-            }
-            default -> throw new OrderStatusInvalidException(statusEnum.toString());
+        // Convalida status
+        StatusType statusEnum;
+        try {
+            statusEnum = StatusType.fromNameIgnoreCase(request.status());
+        } catch (IllegalArgumentException e) {
+            throw new OrderStatusInvalidException("Status non valido: " + request.status());
         }
-    }
 
-    // Imposta lo stato dell'ordine a pending
-    private Order acceptOrder(Order order) {
-        Status status = statusRepository.findById(StatusType.PENDING.getId()).orElseThrow(() -> new RuntimeException("Status non trovato"));
-        order.setStatus(status);
-        orderRepository.save(order);
-        return order;
-    }
+        // Recupera l'entità Status dal DB
+        Status status = statusRepository.findByNameIgnoreCase(statusEnum.getName())
+                .orElseThrow(() -> new RuntimeException("Status non trovato nel DB: " + statusEnum.getName()));
 
-    // Imposta lo stato dell'ordine a rifiutato
-    private Order rejectOrder(Order order) {
-        Status status = statusRepository.findById(StatusType.REJECTED.getId()).orElseThrow(() -> new RuntimeException("Status non trovato"));
+        // Aggiorna status
         order.setStatus(status);
+
+        // Aggiorna eventualmente la delivery date
+        if (request.deliveryDate() != null) {
+            order.setDeliveryDate(request.deliveryDate());
+        }
+
+        // Salva ordine
         orderRepository.save(order);
-        return order;
+
+        // Mappa in DTO e ritorna
+        return OrderMapper.toDto(order);
     }
 
     @Transactional
-    public Order createOrder(CreateOrder request) {
+    public OrderDTO createOrderFromCart(int cartId) {
+        ShoppingCart cartEntity = shoppingCartService.getCartById(cartId);
+
+        Set<ShoppingCartItem> items = cartEntity.getShoppingCartItems();
+
+        if (items.isEmpty()) {
+            throw new IllegalArgumentException("Il carrello è vuoto");
+        }
+
         // Calcola totale
-        BigDecimal totalAmount = request.items().stream()
-                .map(i -> i.unitPrice().multiply(BigDecimal.valueOf(i.quantity())))
+        BigDecimal totalAmount = items.stream()
+                .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         // Crea ordine
         Order order = new Order();
-
-        order.setBuyer(userService.getUserById(request.buyerId()));
-        order.setSeller(companyService.getCompanyById(request.sellerId()));
+        User buyer = cartEntity.getUser();
+        order.setBuyer(buyer);
         order.setTotalAmount(totalAmount);
+        // La delivery date verrà messa quando il fornitore aggiorna lo stato dell'ordine
         order.setStatus(statusService.getStatusByName("new")); // STATUS = NEW
         order.setOrderedAt(Instant.now());
-        order.setDeliveryDate(request.deliveryDate());
-        order.setDeliveryLocation(locationService.getLocationById(request.deliveryLocationId()));
+        // La delivery location la prende dall'utente
+        order.setDeliveryLocation(buyer.getLocation());
 
         orderRepository.save(order);
 
-        // Aggiungi gli items
-        for (OrderItemRequest itemReq : request.items()) {
+        // Aggiungi gli items all'ordine
+        for (ShoppingCartItem cartItem : items) {
             OrderItem item = new OrderItem();
             item.setOrder(order);
-            item.setProductListing(productListingService.getProductListingById(itemReq.productListingId()));
-            item.setQuantity(itemReq.quantity());
-            item.setUnitPrice(itemReq.unitPrice());
-            item.setTotalPrice(itemReq.unitPrice().multiply(BigDecimal.valueOf(itemReq.quantity())));
+            item.setProductListing(cartItem.getProduct());
+            item.setQuantity(cartItem.getQuantity());
+            item.setUnitPrice(cartItem.getProduct().getPrice());
+            item.setTotalPrice(cartItem.getProduct().getPrice()
+                    .multiply(BigDecimal.valueOf(cartItem.getQuantity())));
             orderItemRepository.save(item);
         }
 
-        return order;
+        // Svuota il carrello, le righe vengono fisicamente eliminate dal DB
+        items.clear();
+        shoppingCartRepository.save(cartEntity); // persiste lo svuotamento
+
+        return OrderMapper.toDto(order);
     }
 
 }

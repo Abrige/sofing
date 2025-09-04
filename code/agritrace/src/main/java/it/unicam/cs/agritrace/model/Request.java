@@ -12,8 +12,6 @@ import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 
 @Getter
 @Setter

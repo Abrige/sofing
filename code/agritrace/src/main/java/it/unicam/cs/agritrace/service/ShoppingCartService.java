@@ -3,9 +3,11 @@ package it.unicam.cs.agritrace.service;
 import it.unicam.cs.agritrace.dtos.responses.ShoppingCartItemResponse;
 import it.unicam.cs.agritrace.dtos.responses.ShoppingCartResponse;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
-import it.unicam.cs.agritrace.model.*;
+import it.unicam.cs.agritrace.model.ProductListing;
+import it.unicam.cs.agritrace.model.ShoppingCart;
+import it.unicam.cs.agritrace.model.ShoppingCartItem;
+import it.unicam.cs.agritrace.model.User;
 import it.unicam.cs.agritrace.repository.ProductListingRepository;
-import it.unicam.cs.agritrace.repository.ProductRepository;
 import it.unicam.cs.agritrace.repository.ShoppingCartItemRepository;
 import it.unicam.cs.agritrace.repository.ShoppingCartRepository;
 import jakarta.transaction.Transactional;
@@ -19,17 +21,15 @@ import java.util.Optional;
 public class ShoppingCartService {
 
     private final ShoppingCartRepository shoppingCartRepository;
-    private final ProductRepository productRepository;
-    private final ShoppingCartItemRepository cartItemRepository;
     private final ProductListingRepository productListingRepository;
+    private final ShoppingCartItemRepository shoppingCartItemRepository;
 
-    // Constructor Injection (best practice)
-    public ShoppingCartService(ShoppingCartRepository cartRepository, ProductRepository productRepository, ShoppingCartItemRepository cartItemRepository,
-                               ProductListingRepository productListingRepository, ShoppingCartRepository shoppingCartRepository) {
-        this.productRepository = productRepository;
-        this.cartItemRepository = cartItemRepository;
-        this.productListingRepository = productListingRepository;
+    public ShoppingCartService(ShoppingCartRepository shoppingCartRepository,
+                               ProductListingRepository productListingRepository,
+                               ShoppingCartItemRepository shoppingCartItemRepository) {
         this.shoppingCartRepository = shoppingCartRepository;
+        this.productListingRepository = productListingRepository;
+        this.shoppingCartItemRepository = shoppingCartItemRepository;
     }
 
     public ShoppingCartResponse getShoppingCart(User user) {
@@ -46,7 +46,7 @@ public class ShoppingCartService {
         ShoppingCart cart = maybeCart.get();
 
         // 4. Trasforma ogni ShoppingCartItem (Entity) in un CartItemResponse (DTO).
-        List<ShoppingCartItemResponse> itemResponses = cart.getItems().stream()
+        List<ShoppingCartItemResponse> itemResponses = cart.getShoppingCartItems().stream()
                 .map(item -> new ShoppingCartItemResponse(
                         item.getProduct().getId(),
                         item.getProduct().getProduct().getName(),
@@ -89,7 +89,7 @@ public class ShoppingCartService {
         });
 
         // 4. Controlla se il prodotto è già nel carrello per decidere se aggiornare o creare
-        Optional<ShoppingCartItem> existingItem = cartItemRepository.findByCartAndProduct(cart, product);
+        Optional<ShoppingCartItem> existingItem = shoppingCartItemRepository.findByCartAndProduct(cart, product);
 
         if (existingItem.isPresent()) {
             // Se esiste, aggiorna la quantità
@@ -101,7 +101,7 @@ public class ShoppingCartService {
             newItem.setCart(cart);
             newItem.setProduct(product);
             newItem.setQuantity(quantity);
-            cart.getItems().add(newItem);
+            cart.getShoppingCartItems().add(newItem);
         }
 
         // 5. Salva il carrello (e grazie a CascadeType.ALL, anche le sue righe)
@@ -118,16 +118,20 @@ public class ShoppingCartService {
                 .orElseThrow(() -> new ResourceNotFoundException("Carrello non trovato"));
 
         // 2. Trova la riga da rimuovere
-        ShoppingCartItem itemToRemove = cart.getItems().stream()
+        ShoppingCartItem itemToRemove = cart.getShoppingCartItems().stream()
                 .filter(item -> item.getProduct().getId().equals(productId))
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Prodotto non presente nel carrello"));
 
         // 3. Rimuovi la riga dalla lista. Grazie a orphanRemoval=true, verrà cancellata dal DB.
-        cart.getItems().remove(itemToRemove);
+        cart.getShoppingCartItems().remove(itemToRemove);
 
         // 4. Salva il carrello aggiornato
         shoppingCartRepository.save(cart);
+    }
+
+    public ShoppingCart getCartById(int id){
+        return shoppingCartRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Carrello con id=" + id + " non trovato"));
     }
 }
 

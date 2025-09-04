@@ -1,49 +1,32 @@
 package it.unicam.cs.agritrace.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
+@Getter
+@Setter
 @Entity
+@Table(name = "SHOPPING_CART")
 public class ShoppingCart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @Column(name = "ID", nullable = false)
+    private Integer id;
 
-    // Un carrello appartiene a un solo utente
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @NotNull
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.RESTRICT)
+    @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
-    // Un carrello ha molte righe. Cascade e orphanRemoval sono FONDAMENTALI:
-    // se salvo un carrello, salva anche le sue righe. Se rimuovo una riga dalla lista, cancellala dal DB.
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ShoppingCartItem> items = new ArrayList<>();
+    @OneToMany(mappedBy = "cart")
+    private Set<ShoppingCartItem> shoppingCartItems = new LinkedHashSet<>();
 
-    // Getters and Setters...
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public List<ShoppingCartItem> getItems() {
-        return items;
-    }
-
-    public void setItems(List<ShoppingCartItem> items) {
-        this.items = items;
-    }
 }

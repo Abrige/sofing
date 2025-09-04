@@ -75,7 +75,7 @@ public class ProductService {
 
     public OperationResponse updateProductRequest(ProductPayload payload) {
         if (payload.productId() == null) {
-            throw new IllegalArgumentException("productId è obbligatorio per l'update");
+            throw new IllegalArgumentException("L'id del prodotto è obbligatorio per l'update");
         }
         Request request = requestFactory.createRequest(
                 "PRODUCTS",

@@ -59,4 +59,9 @@ public class User {
     @Column(name = "IS_DELETED", nullable = false)
     private Boolean isDeleted = false;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.RESTRICT)
+    @JoinColumn(name = "LOCATION_ID")
+    private Location location;
+
 }

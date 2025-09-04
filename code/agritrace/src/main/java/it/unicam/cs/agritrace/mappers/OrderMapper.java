@@ -26,10 +26,6 @@ public final class OrderMapper {
                 order.getBuyer().getPhone()
         );
 
-        CompanyDTO sellerDTO = new CompanyDTO(
-                order.getSeller().getName(),
-                order.getSeller().getFiscalCode()
-        );
 
         Set<OrderItemDTO> orderItems = order.getOrderItems()
                 .stream()
@@ -39,7 +35,6 @@ public final class OrderMapper {
         return new OrderDTO(
                 order.getId(),
                 buyerDTO,
-                sellerDTO,
                 order.getTotalAmount(),
                 StatusMapper.mapStatusToEnum(order.getStatus()).name().toLowerCase(),
                 order.getOrderedAt(),
