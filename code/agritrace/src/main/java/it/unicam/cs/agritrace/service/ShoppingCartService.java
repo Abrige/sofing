@@ -4,9 +4,11 @@ import it.unicam.cs.agritrace.dtos.responses.ShoppingCartItemResponse;
 import it.unicam.cs.agritrace.dtos.responses.ShoppingCartResponse;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.model.*;
+import it.unicam.cs.agritrace.repository.ProductListingRepository;
 import it.unicam.cs.agritrace.repository.ProductRepository;
 import it.unicam.cs.agritrace.repository.ShoppingCartItemRepository;
 import it.unicam.cs.agritrace.repository.ShoppingCartRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -66,6 +68,7 @@ public class ShoppingCartService {
     /**
      * Implementa il caso d'uso "Aggiungi Prodotto al Carrello"
      */
+    @Transactional
     public void addProductToCart(User user, int productId, int quantity) {
         // 1. Trova il prodotto o lancia un'eccezione se non esiste
         ProductListing product = productListingRepository.findById(productId)
@@ -108,6 +111,7 @@ public class ShoppingCartService {
     /**
      * Implementa il caso d'uso "Rimuovi Prodotto dal Carrello"
      */
+    @Transactional
     public void removeProductFromCart(User user, int productId) {
         // 1. Trova il carrello dell'utente
         ShoppingCart cart = shoppingCartRepository.findByUser(user)
