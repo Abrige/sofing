@@ -1,16 +1,17 @@
 package it.unicam.cs.agritrace.service;
 
 import it.unicam.cs.agritrace.dtos.common.ProductDTO;
-import it.unicam.cs.agritrace.dtos.payloads.AddRawMaterialPayload;
+import it.unicam.cs.agritrace.dtos.payloads.DeletePayload;
+import it.unicam.cs.agritrace.dtos.payloads.ProductPayload;
+import it.unicam.cs.agritrace.dtos.responses.OperationResponse;
 import it.unicam.cs.agritrace.exceptions.ProductNotFoundException;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.mappers.ProductMapper;
 import it.unicam.cs.agritrace.model.*;
 import it.unicam.cs.agritrace.repository.*;
-import jakarta.transaction.Transactional;
+import it.unicam.cs.agritrace.service.factory.RequestFactory;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -18,25 +19,28 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final CompanyRepository companyRepository;
-    private final ProductionStepRepository productionStepRepository;
     private final ProductCategoryRepository productCategoryRepository;
     private final CultivationMethodRepository cultivationMethodRepository;
     private final HarvestSeasonRepository harvestSeasonRepository;
-
+    private final RequestRepository requestRepository;
+    private final RequestFactory requestFactory;
 
     public ProductService(ProductRepository productRepository,
                           ProductMapper productMapper,
                           CompanyRepository companyRepository, ProductionStepRepository productionStepRepository,
                           ProductCategoryRepository productCategoryRepository,
                           CultivationMethodRepository cultivationMethodRepository,
-                          HarvestSeasonRepository harvestSeasonRepository) {
+                          HarvestSeasonRepository harvestSeasonRepository,
+                          RequestRepository requestRepository,
+                          RequestFactory requestFactory) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
         this.companyRepository = companyRepository;
-        this.productionStepRepository = productionStepRepository;
         this.productCategoryRepository = productCategoryRepository;
         this.cultivationMethodRepository = cultivationMethodRepository;
         this.harvestSeasonRepository = harvestSeasonRepository;
+        this.requestRepository = requestRepository;
+        this.requestFactory = requestFactory;
     }
 
     // Ritorna il prodotto (NON CANCELLATO) in base all'id
@@ -58,12 +62,40 @@ public class ProductService {
         return productMapper.toDtoList(products); // usa il mapper
     }
 
-    // Fa soft-delete del prodotto
-    public void deleteProduct(int id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
-        product.setIsDeleted(true);
-        productRepository.save(product);
+    public OperationResponse deleteProductRequest(DeletePayload payload) {
+        Request request = requestFactory.createRequest(
+                "PRODUCTS",
+                "DELETE_PRODUCT",
+                payload
+        );
+        Request savedRequest = requestRepository.save(request);
+
+        return new OperationResponse(savedRequest.getId(), "PRODUCT", "DELETE", savedRequest.getCreatedAt());
+    }
+
+    public OperationResponse updateProductRequest(ProductPayload payload) {
+        if (payload.productId() == null) {
+            throw new IllegalArgumentException("L'id del prodotto è obbligatorio per l'update");
+        }
+        Request request = requestFactory.createRequest(
+                "PRODUCTS",
+                "UPDATE_PRODUCT",
+                payload
+        );
+        Request savedRequest = requestRepository.save(request);
+
+        return new OperationResponse(savedRequest.getId(), "PRODUCT", "UPDATE", savedRequest.getCreatedAt());
+    }
+
+    public OperationResponse createProductRequest(ProductPayload payload) {
+        Request request = requestFactory.createRequest(
+                "PRODUCTS",
+                "ADD_PRODUCT",
+                payload
+        );
+        Request savedRequest = requestRepository.save(request);
+
+        return new OperationResponse(savedRequest.getId(), "PRODUCT", "CREATE", savedRequest.getCreatedAt());
     }
 
     // Ritorna una lista di prodotti in base all'azienda
@@ -93,7 +125,4 @@ public class ProductService {
         return productRepository.save(product);
     }
 }
-
-// Nota: ResourceNotFoundException e UnauthorizedOperationException sono eccezioni custom che dovresti creare.
-// Esempio: public class ResourceNotFoundException extends RuntimeException { ... }
 

@@ -1,8 +1,7 @@
 package it.unicam.cs.agritrace.mappers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.unicam.cs.agritrace.dtos.responses.ProductCreationResponse;
-import it.unicam.cs.agritrace.dtos.responses.ResponseRequest;
+import it.unicam.cs.agritrace.dtos.responses.RequestResponse;
 import it.unicam.cs.agritrace.exceptions.PayloadParsingException;
 import it.unicam.cs.agritrace.model.Request;
 import it.unicam.cs.agritrace.model.RequestType;
@@ -22,14 +21,9 @@ public interface RequestMapper {
     @Mapping(source = "status.name", target = "status")
     @Mapping(source = "requestType", target = "requestType", qualifiedByName = "requestTypeToString")
     @Mapping(target = "payload", expression = "java(parsePayload(request.getPayload()))")
-    ResponseRequest toDto(Request request);
+    RequestResponse toDto(Request request);
 
-    List<ResponseRequest> toDtoList(List<Request> requests);
-
-    @Mapping(source = "id", target = "id")
-    @Mapping(source = "status.name", target = "status")
-    @Mapping(source = "createdAt", target = "createdAt")
-    ProductCreationResponse toProductCreationResponse(Request request);
+    List<RequestResponse> toDtoList(List<Request> requests);
 
     default Map<String,Object> parsePayload(String json) {
         try {

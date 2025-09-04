@@ -14,6 +14,6 @@ public class CompanyService {
     }
 
     public Company getCompanyById(int id) {
-        return companyRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Company con id=" + id + " non trovato"));
+        return companyRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new ResourceNotFoundException("Company con id=" + id + " non trovato"));
     }
 }

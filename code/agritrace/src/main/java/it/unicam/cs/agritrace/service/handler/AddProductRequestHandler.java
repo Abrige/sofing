@@ -1,6 +1,6 @@
 package it.unicam.cs.agritrace.service.handler;
 
-import it.unicam.cs.agritrace.dtos.payloads.AddProductPayload;
+import it.unicam.cs.agritrace.dtos.payloads.ProductPayload;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.mappers.PayloadMapper;
 import it.unicam.cs.agritrace.model.*;
@@ -23,7 +23,7 @@ public class AddProductRequestHandler implements RequestHandler {
                                     ProductService productService,
                                     CompanyService companyService) {
         // ADD PRODUCT
-        this.requestType = requestTypeRepository.findById(3).orElseThrow(
+        this.requestType = requestTypeRepository.findByName("ADD_PRODUCT").orElseThrow(
                 () -> new ResourceNotFoundException("RequestType ADD_PRODUCT non trovato sul db"));
         this.payloadMapper = payloadMapper;
         this.productService = productService;
@@ -39,7 +39,7 @@ public class AddProductRequestHandler implements RequestHandler {
     @Override
     public void handle(Request request) {
         // 1. Converto JSON in DTO
-        AddProductPayload payload = payloadMapper.mapPayload(request, AddProductPayload.class);
+        ProductPayload payload = payloadMapper.mapPayload(request, ProductPayload.class);
         // 2. Creo il prodotto
         Product product = new Product();
         // 3. Popolo il prodotto dal DTO

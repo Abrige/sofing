@@ -1,7 +1,7 @@
 package it.unicam.cs.agritrace.mappers;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import it.unicam.cs.agritrace.dtos.common.PackageDTO;
+import it.unicam.cs.agritrace.dtos.common.PackageItemDTO;
 import it.unicam.cs.agritrace.dtos.common.ProductDTO;
 import it.unicam.cs.agritrace.model.TypicalPackage;
 
@@ -9,18 +9,22 @@ import java.util.List;
 
 public final class PackageMapper {
 
-    public PackageMapper(){}
+    public PackageMapper(){
+    }
 
     public static PackageDTO toDTO(TypicalPackage pkg) {
-        List<ProductDTO> products = pkg.getTypicalPackageItems().stream()
-                .map(item -> new ProductDTO(
-                        item.getProduct().getId(),
-                        item.getProduct().getName(),
-                        item.getProduct().getDescription(),
-                        item.getProduct().getCategory().getName(),
-                        item.getProduct().getCultivationMethod().getName(),
-                        item.getProduct().getHarvestSeason().getName(),
-                        item.getProduct().getProducer().getName()
+        List<PackageItemDTO> packageItems = pkg.getTypicalPackageItems().stream()
+                .map(packageItem -> new PackageItemDTO(
+                        new ProductDTO(
+                                packageItem.getProduct().getId(),
+                                packageItem.getProduct().getName(),
+                                packageItem.getProduct().getDescription(),
+                                packageItem.getProduct().getCategory().getName(),
+                                packageItem.getProduct().getCultivationMethod().getName(),
+                                packageItem.getProduct().getHarvestSeason().getName(),
+                                packageItem.getProduct().getProducer().getName()
+                        ),
+                        packageItem.getQuantity()
                 ))
                 .toList();
 
@@ -29,7 +33,7 @@ public final class PackageMapper {
                 pkg.getName(),
                 pkg.getDescription(),
                 pkg.getPrice(),
-                products
+                packageItems
         );
     }
 }

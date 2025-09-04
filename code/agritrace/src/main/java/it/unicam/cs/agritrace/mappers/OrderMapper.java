@@ -26,10 +26,6 @@ public final class OrderMapper {
                 order.getBuyer().getPhone()
         );
 
-        CompanyDTO sellerDTO = new CompanyDTO(
-                order.getSeller().getName(),
-                order.getSeller().getFiscalCode()
-        );
 
         Set<OrderItemDTO> orderItems = order.getOrderItems()
                 .stream()
@@ -39,7 +35,6 @@ public final class OrderMapper {
         return new OrderDTO(
                 order.getId(),
                 buyerDTO,
-                sellerDTO,
                 order.getTotalAmount(),
                 StatusMapper.mapStatusToEnum(order.getStatus()).name().toLowerCase(),
                 order.getOrderedAt(),
@@ -48,7 +43,7 @@ public final class OrderMapper {
         );
     }
 
-    // Prende una entity OrderItem e la trasforma nel relativo DTO --> OrderItemDTO
+    // Prende una entity OrderItemRequest e la trasforma nel relativo DTO --> OrderItemDTO
     private static OrderItemDTO toOrderItemDto(OrderItem orderItem) {
         if (orderItem == null) {
             return null;

@@ -31,12 +31,6 @@ public class Order {
     private User buyer;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.RESTRICT)
-    @JoinColumn(name = "SELLER_ID", nullable = false)
-    private Company seller;
-
-    @NotNull
     @Column(name = "TOTAL_AMOUNT", nullable = false, precision = 19)
     private BigDecimal totalAmount;
 

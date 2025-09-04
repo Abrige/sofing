@@ -1,10 +1,8 @@
 package it.unicam.cs.agritrace.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import it.unicam.cs.agritrace.dtos.common.ReviewRequestDTO;
-import it.unicam.cs.agritrace.dtos.responses.ResponseRequest;
+import it.unicam.cs.agritrace.dtos.responses.RequestResponse;
 import it.unicam.cs.agritrace.enums.StatusType;
-import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.model.User;
 import it.unicam.cs.agritrace.repository.UserRepository;
 import it.unicam.cs.agritrace.service.RequestService;
@@ -26,8 +24,8 @@ public class RequestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ResponseRequest>> requests(@RequestParam(name = "status", required = false) String statusParam) {
-        List<ResponseRequest> response;
+    public ResponseEntity<List<RequestResponse>> requests(@RequestParam(name = "status", required = false) String statusParam) {
+        List<RequestResponse> response;
         if (statusParam != null) {
             // case-insensitive
             StatusType statusType = StatusType.fromNameIgnoreCase(statusParam);
@@ -40,8 +38,8 @@ public class RequestController {
 
     //Ritorna le richieste che hanno statusName : pending
     @GetMapping("/pending")
-    public ResponseEntity<List<ResponseRequest>> getPendingApproval() {
-        List<ResponseRequest> pendingRequests = requestService.getAllPendingRequests();
+    public ResponseEntity<List<RequestResponse>> getPendingApproval() {
+        List<RequestResponse> pendingRequests = requestService.getAllPendingRequests();
         return ResponseEntity.ok(pendingRequests);
     }
 

@@ -1,7 +1,6 @@
 package it.unicam.cs.agritrace.dtos.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import it.unicam.cs.agritrace.enums.StatusType;
 
 public record ReviewRequestDTO(
