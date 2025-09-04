@@ -1,9 +1,12 @@
 package it.unicam.cs.agritrace.controller;
 
 import it.unicam.cs.agritrace.dtos.common.OrderDTO;
+import it.unicam.cs.agritrace.dtos.requests.CreateOrder;
 import it.unicam.cs.agritrace.dtos.requests.UpdateOrderStatusRequest;
 import it.unicam.cs.agritrace.enums.StatusType;
+import it.unicam.cs.agritrace.model.Order;
 import it.unicam.cs.agritrace.service.OrderService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,5 +41,11 @@ public class OrderController {
     public ResponseEntity<OrderDTO> updateStatus(@RequestBody UpdateOrderStatusRequest request) {
         OrderDTO orderDTO = orderService.updateOrderStatus(request.orderId(), request.status());
         return ResponseEntity.ok(orderDTO);
+    }
+
+    @PostMapping
+    public ResponseEntity<Void> createOrder(@RequestBody @Valid CreateOrder request) {
+        Order order = orderService.createOrder(request);
+        return ResponseEntity.noContent().build();
     }
 }

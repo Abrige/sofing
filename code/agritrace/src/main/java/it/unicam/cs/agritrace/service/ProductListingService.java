@@ -76,4 +76,8 @@ public class ProductListingService {
                 ))
                 .toList();
     }
+
+    public ProductListing getProductListingById(int id) {
+        return productListingRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Prodotto di listino con id= " + id + " non trovato"));
+    }
 }

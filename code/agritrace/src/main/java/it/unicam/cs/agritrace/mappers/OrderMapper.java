@@ -48,7 +48,7 @@ public final class OrderMapper {
         );
     }
 
-    // Prende una entity OrderItem e la trasforma nel relativo DTO --> OrderItemDTO
+    // Prende una entity OrderItemRequest e la trasforma nel relativo DTO --> OrderItemDTO
     private static OrderItemDTO toOrderItemDto(OrderItem orderItem) {
         if (orderItem == null) {
             return null;

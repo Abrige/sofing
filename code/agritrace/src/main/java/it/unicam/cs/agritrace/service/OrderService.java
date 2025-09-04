@@ -1,17 +1,22 @@
 package it.unicam.cs.agritrace.service;
 
 import it.unicam.cs.agritrace.dtos.common.OrderDTO;
+import it.unicam.cs.agritrace.dtos.requests.CreateOrder;
+import it.unicam.cs.agritrace.dtos.requests.OrderItemRequest;
 import it.unicam.cs.agritrace.enums.StatusType;
 import it.unicam.cs.agritrace.exceptions.OrderStatusInvalidException;
 import it.unicam.cs.agritrace.mappers.OrderMapper;
 import it.unicam.cs.agritrace.model.Order;
+import it.unicam.cs.agritrace.model.OrderItem;
 import it.unicam.cs.agritrace.model.Status;
+import it.unicam.cs.agritrace.repository.OrderItemRepository;
 import it.unicam.cs.agritrace.repository.OrderRepository;
 import it.unicam.cs.agritrace.repository.StatusRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,11 +25,29 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final StatusRepository statusRepository;
+    private final UserService userService;
+    private final CompanyService companyService;
+    private final StatusService statusService;
+    private final LocationService locationService;
+    private final ProductListingService productListingService;
+    private final OrderItemRepository orderItemRepository;
 
     public OrderService(OrderRepository orderRepository,
-                        StatusRepository statusRepository) {
+                        StatusRepository statusRepository,
+                        UserService userService,
+                        CompanyService companyService,
+                        StatusService statusService,
+                        LocationService locationService,
+                        ProductListingService productListingService,
+                        OrderItemRepository orderItemRepository) {
         this.orderRepository = orderRepository;
         this.statusRepository = statusRepository;
+        this.userService = userService;
+        this.companyService = companyService;
+        this.statusService = statusService;
+        this.locationService = locationService;
+        this.productListingService = productListingService;
+        this.orderItemRepository = orderItemRepository;
     }
 
     // Recupera tutti gli ordini e li mappa in DTO
@@ -83,6 +106,40 @@ public class OrderService {
         Status status = statusRepository.findById(StatusType.REJECTED.getId()).orElseThrow(() -> new RuntimeException("Status non trovato"));
         order.setStatus(status);
         orderRepository.save(order);
+        return order;
+    }
+
+    @Transactional
+    public Order createOrder(CreateOrder request) {
+        // Calcola totale
+        BigDecimal totalAmount = request.items().stream()
+                .map(i -> i.unitPrice().multiply(BigDecimal.valueOf(i.quantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // Crea ordine
+        Order order = new Order();
+
+        order.setBuyer(userService.getUserById(request.buyerId()));
+        order.setSeller(companyService.getCompanyById(request.sellerId()));
+        order.setTotalAmount(totalAmount);
+        order.setStatus(statusService.getStatusByName("new")); // STATUS = NEW
+        order.setOrderedAt(Instant.now());
+        order.setDeliveryDate(request.deliveryDate());
+        order.setDeliveryLocation(locationService.getLocationById(request.deliveryLocationId()));
+
+        orderRepository.save(order);
+
+        // Aggiungi gli items
+        for (OrderItemRequest itemReq : request.items()) {
+            OrderItem item = new OrderItem();
+            item.setOrder(order);
+            item.setProductListing(productListingService.getProductListingById(itemReq.productListingId()));
+            item.setQuantity(itemReq.quantity());
+            item.setUnitPrice(itemReq.unitPrice());
+            item.setTotalPrice(itemReq.unitPrice().multiply(BigDecimal.valueOf(itemReq.quantity())));
+            orderItemRepository.save(item);
+        }
+
         return order;
     }
 
