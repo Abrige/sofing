@@ -1,5 +1,6 @@
 package it.unicam.cs.agritrace.service;
 
+import it.unicam.cs.agritrace.dtos.requests.AddToShoppingCartRequest;
 import it.unicam.cs.agritrace.dtos.responses.ShoppingCartItemResponse;
 import it.unicam.cs.agritrace.dtos.responses.ShoppingCartResponse;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
@@ -23,13 +24,16 @@ public class ShoppingCartService {
     private final ShoppingCartRepository shoppingCartRepository;
     private final ProductListingRepository productListingRepository;
     private final ShoppingCartItemRepository shoppingCartItemRepository;
+    private final UserService userService;
 
     public ShoppingCartService(ShoppingCartRepository shoppingCartRepository,
                                ProductListingRepository productListingRepository,
-                               ShoppingCartItemRepository shoppingCartItemRepository) {
+                               ShoppingCartItemRepository shoppingCartItemRepository,
+                               UserService userService) {
         this.shoppingCartRepository = shoppingCartRepository;
         this.productListingRepository = productListingRepository;
         this.shoppingCartItemRepository = shoppingCartItemRepository;
+        this.userService = userService;
     }
 
     public ShoppingCartResponse getShoppingCart(User user) {
@@ -69,14 +73,17 @@ public class ShoppingCartService {
      * Implementa il caso d'uso "Aggiungi Prodotto al Carrello"
      */
     @Transactional
-    public void addProductToCart(User user, int productId, int quantity) {
+    public void addProductToCart(AddToShoppingCartRequest request) {
         // 1. Trova il prodotto o lancia un'eccezione se non esiste
-        ProductListing product = productListingRepository.findById(productId)
+        ProductListing product = productListingRepository.findById(request.productId())
                 .orElseThrow(() -> new ResourceNotFoundException("Prodotto non trovato"));
 
+        // Recupera l'utente fittizio
+        User user = userService.getUserById(1);
+
         // 2. Verifica la disponibilità (regola di business)
-        if (product.getQuantityAvailable() < quantity) {
-            //TODO cambirare l'eccezione a una personalizzata
+        if (product.getQuantityAvailable() < request.quantity()) {
+            //TODO cambiare l'eccezione a una personalizzata
             throw new IllegalArgumentException("Quantità non disponibile in magazzino");
         }
 
@@ -94,13 +101,13 @@ public class ShoppingCartService {
         if (existingItem.isPresent()) {
             // Se esiste, aggiorna la quantità
             ShoppingCartItem item = existingItem.get();
-            item.setQuantity(item.getQuantity() + quantity);
+            item.setQuantity(item.getQuantity() + request.quantity());
         } else {
             // Se non esiste, crea una nuova riga e aggiungila al carrello
             ShoppingCartItem newItem = new ShoppingCartItem();
             newItem.setCart(cart);
             newItem.setProduct(product);
-            newItem.setQuantity(quantity);
+            newItem.setQuantity(request.quantity());
             cart.getShoppingCartItems().add(newItem);
         }
 
@@ -112,7 +119,10 @@ public class ShoppingCartService {
      * Implementa il caso d'uso "Rimuovi Prodotto dal Carrello"
      */
     @Transactional
-    public void removeProductFromCart(User user, int productId) {
+    public void removeProductFromCart(int productId) {
+        // Recupera l'utente fittizio
+        User user = userService.getUserById(1);
+
         // 1. Trova il carrello dell'utente
         ShoppingCart cart = shoppingCartRepository.findByUser(user)
                 .orElseThrow(() -> new ResourceNotFoundException("Carrello non trovato"));
