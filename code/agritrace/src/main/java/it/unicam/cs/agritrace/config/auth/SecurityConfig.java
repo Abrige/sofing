@@ -2,6 +2,7 @@ package it.unicam.cs.agritrace.config.auth;
 
 import it.unicam.cs.agritrace.config.filter.JwtAuthenticationFilter;
 import it.unicam.cs.agritrace.service.auth.CustomUserDetailsService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -41,9 +42,10 @@ public class SecurityConfig {
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(List.of("http://localhost:8080/"));
+		configuration.setAllowedOrigins(List.of("http://localhost:8080"));
 		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
 		configuration.setAllowedHeaders(List.of("*"));
+		configuration.setAllowCredentials(true);
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration); // qui va il path del backend
@@ -62,17 +64,36 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		return http
 				.csrf(AbstractHttpConfigurer::disable)
-				.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
-				.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+				.headers(headers -> headers
+						.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
+						.contentTypeOptions(HeadersConfigurer.ContentTypeOptionsConfig::disable))
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/api/auth/**").permitAll()
+						.requestMatchers(
+								"/swagger-ui/**",
+								"/swagger-ui.html",
+								"/v3/api-docs/**",
+								"/v3/api-docs.yaml",
+								"/swagger-resources/**",
+								"/webjars/**"
+						).permitAll()
 						.anyRequest().authenticated()
 				)
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.exceptionHandling(exception -> exception
+						.authenticationEntryPoint((request, response, authException) -> {
+							// Se non sei autenticato → 401
+							response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+						})
+						.accessDeniedHandler((request, response, accessDeniedException) -> {
+							// Se sei autenticato ma non hai il ruolo → 403
+							response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
+						})
+				)
 				.userDetailsService(customUserDetailsService)
 				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 				.build();
-
 	}
 
 	@Bean

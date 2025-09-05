@@ -26,18 +26,13 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final StatusRepository statusRepository;
     private final StatusService statusService;
-    private final LocationService locationService;
     private final OrderItemRepository orderItemRepository;
     private final ShoppingCartRepository shoppingCartRepository;
     private final ShoppingCartService shoppingCartService;
 
     public OrderService(OrderRepository orderRepository,
                         StatusRepository statusRepository,
-                        UserService userService,
-                        CompanyService companyService,
                         StatusService statusService,
-                        LocationService locationService,
-                        ProductListingService productListingService,
                         OrderItemRepository orderItemRepository,
                         ShoppingCartRepository shoppingCartRepository,
                         ShoppingCartService shoppingCartService) {
@@ -45,7 +40,6 @@ public class OrderService {
         this.statusRepository = statusRepository;
         this.shoppingCartRepository = shoppingCartRepository;
         this.statusService = statusService;
-        this.locationService = locationService;
         this.orderItemRepository = orderItemRepository;
         this.shoppingCartService = shoppingCartService;
     }

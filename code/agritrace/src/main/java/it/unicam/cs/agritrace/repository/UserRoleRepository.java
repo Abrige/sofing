@@ -7,7 +7,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRoleRepository extends JpaRepository<UserRole, Integer> {
-
-  List<UserRole> findByIsActiveTrue();
-  Optional<UserRole> findByName(String name);
+  Optional <UserRole> findByNameAndIsActiveTrue(String name);
 }

@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -101,6 +103,32 @@ public class GlobalExceptionHandler {
                 errors.toString()
         );
         return ResponseEntity.badRequest().body(error);
+    }
+
+    // Accesso negato (utente autenticato ma senza ruolo)
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiError> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
+        log.warn("Access denied at {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage());
+        ApiError error = new ApiError(
+                HttpStatus.FORBIDDEN.value(),
+                "Access denied: " + ex.getMessage(),
+                LocalDateTime.now(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
+    // Utente non autenticato
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiError> handleAuthentication(AuthenticationException ex, HttpServletRequest request) {
+        log.warn("Authentication failed at {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage());
+        ApiError error = new ApiError(
+                HttpStatus.UNAUTHORIZED.value(),
+                "Authentication failed: " + ex.getMessage(),
+                LocalDateTime.now(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
     // handler catch-all

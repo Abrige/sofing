@@ -42,7 +42,7 @@ public class UserService {
     }
 
     public UserRole getDefaultUserRole() {
-        return userRoleRepository.findByName("UTENTE")
+        return userRoleRepository.findByNameAndIsActiveTrue("UTENTE")
                 .orElseThrow(() -> new ResourceNotFoundException("Ruolo non trovato: UTENTE"));
     }
 }
