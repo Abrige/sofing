@@ -1,10 +1,12 @@
 package it.unicam.cs.agritrace.dtos.responses;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Instant;
 import java.util.Map;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record RequestResponse(
         @JsonProperty("id")
         Integer id,

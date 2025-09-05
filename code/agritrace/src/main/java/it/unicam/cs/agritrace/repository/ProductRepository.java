@@ -13,9 +13,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
   // Trova tutti i prodotti non cancellati con la soft delete
   List<Product> findByIsDeletedIsFalse();
 
-  // Trova tutti i prodotti cancellati con la soft delete
-  List<Product> findByIsDeletedIsTrue();
-
   // Trova il prodotto in base al nome
   Product findByName(String name);
 
@@ -23,4 +20,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
   Optional<Product> findByIdAndIsDeletedFalse(Integer id);
   // Trova i prodotti in base all'azienda
   List<Product> findByProducerAndIsDeletedFalse(Company company);
+  // Controlla se un prodotto esiste sul db
+  boolean existsByIdAndIsDeletedFalse(Integer id);
 }

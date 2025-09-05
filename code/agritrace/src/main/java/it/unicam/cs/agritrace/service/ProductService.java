@@ -62,6 +62,10 @@ public class ProductService {
     }
 
     public OperationResponse deleteProductRequest(DeletePayload payload) {
+        if(!existsProductById(payload.targetId())){
+            throw new ResourceNotFoundException("Product not found with id=" + payload.targetId());
+        }
+
         Request request = requestFactory.createRequest(
                 "PRODUCTS",
                 "DELETE_PRODUCT",
@@ -73,9 +77,11 @@ public class ProductService {
     }
 
     public OperationResponse updateProductRequest(ProductPayload payload) {
-        if (payload.productId() == null) {
-            throw new IllegalArgumentException("L'id del prodotto è obbligatorio per l'update");
+        // Se il prodotto con quell'id non esiste lancia una eccezione
+        if(!existsProductById(payload.productId())){
+            throw new ResourceNotFoundException("Product not found with id=" + payload.productId());
         }
+
         Request request = requestFactory.createRequest(
                 "PRODUCTS",
                 "UPDATE_PRODUCT",
@@ -122,6 +128,10 @@ public class ProductService {
 
     public Product saveProduct(Product product) {
         return productRepository.save(product);
+    }
+
+    public boolean existsProductById(int id) {
+        return productRepository.existsByIdAndIsDeletedFalse(id);
     }
 }
 

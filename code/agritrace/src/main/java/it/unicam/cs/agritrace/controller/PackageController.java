@@ -10,10 +10,12 @@ import it.unicam.cs.agritrace.validators.update.ValidPackageUpdate;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@PreAuthorize("hasRole('DISTRIBUTORE_DI_TIPICITA')")
 @RestController
 @RequestMapping("/api/packages")
 public class PackageController {

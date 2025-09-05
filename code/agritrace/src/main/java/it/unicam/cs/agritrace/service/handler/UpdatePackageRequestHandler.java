@@ -62,7 +62,7 @@ public class UpdatePackageRequestHandler implements RequestHandler {
         if (payload.items() != null && payload.items().size() >= 3) {
             Set<TypicalPackageItem> items = payload.items().stream()
                     .map(dto -> {
-                        Product product = productService.findProductById(dto.product().id());
+                        Product product = productService.findProductById(dto.productId());
                         TypicalPackageItem item = new TypicalPackageItem();
                         item.setProduct(product);
                         item.setQuantity(dto.quantity());
