@@ -17,18 +17,12 @@ import java.util.List;
 @RequestMapping("/supplychain")
 public class SupplyChainController {
 
-    private final ProductRepository productRepository;
-    private final CompanyRepository companyRepository;
     private final ProductService productService;
     private final SupplyChainService supplyChainService;
-    private ProductMapper productMapper;
 
-    public SupplyChainController(ProductRepository productRepository,
-                                 CompanyRepository companyRepository,
+    public SupplyChainController(
                                  ProductService productService,
                                  SupplyChainService supplyChainService) {
-        this.productRepository = productRepository;
-        this.companyRepository = companyRepository;
         this.productService = productService;
         this.supplyChainService = supplyChainService;
     }

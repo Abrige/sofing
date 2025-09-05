@@ -28,15 +28,6 @@ public class UserService {
         return userRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new ResourceNotFoundException("Utente non trovato"));
     }
 
-    public void registerUser(String username, String rawPassword) {
-        String hashed = passwordEncoder.encode(rawPassword);
-        // salva hashed nel DB
-    }
-
-    public User getUserByUsername(String username) {
-        return userRepository.findByUsernameAndIsDeletedFalse(username).orElseThrow(() -> new ResourceNotFoundException("Utente non trovato"));
-    }
-
     public User getUserByEmail(String email) {
         return userRepository.findByEmailAndIsDeletedFalse(email).orElseThrow(() -> new ResourceNotFoundException("Utente non trovato"));
     }

@@ -39,12 +39,8 @@ public class OrderController {
     // Aggiorna lo status di un ordine in base a quelli consentiti
     @PatchMapping("/update-status")
     public ResponseEntity<OrderDTO> updateStatus(@RequestBody @Valid UpdateOrderStatusRequest request) {
-
-        // Chiama il service passando l'intero DTO
-        OrderDTO orderDTO = orderService.updateOrderStatus(request);
-
         // Ritorna l'ordine aggiornato
-        return ResponseEntity.ok(orderDTO);
+        return ResponseEntity.ok(orderService.updateOrderStatus(request));
     }
 
     // Mandando l'id nella URL crea dall'id di un carrello un ordine vero e proprio

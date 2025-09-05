@@ -85,8 +85,11 @@ public class ShoppingCartService {
         ProductListing product = productListingRepository.findByProductIdAndIsActive(request.productId(), true)
                 .orElseThrow(() -> new ResourceNotFoundException("Prodotto non trovato"));
 
-        // Recupera l'utente fittizio
-        User user = userService.getUserById(1);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName(); // email dall’utente loggato
+
+        User user = userService.getUserByEmail(email);
 
         // 2. Verifica la disponibilità (regola di business)
         if (product.getQuantityAvailable() < request.quantity()) {
@@ -127,8 +130,10 @@ public class ShoppingCartService {
      */
     @Transactional
     public void removeProductFromCart(int productId) {
-        // Recupera l'utente fittizio
-        User user = userService.getUserById(1);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName(); // email dall’utente loggato
+
+        User user = userService.getUserByEmail(email);
 
         // 1. Trova il carrello dell'utente
         ShoppingCart cart = shoppingCartRepository.findByUser(user)

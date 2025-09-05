@@ -3,7 +3,8 @@ package it.unicam.cs.agritrace.dtos.common;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record ProductDTO(
-        int id,
+        @JsonProperty("product_id")
+        Integer productId,
         String name,
         String description,
         @JsonProperty("product_category")
