@@ -67,7 +67,7 @@ public class CertificationService {
     }
 
     @Transactional
-    public OperationResponse createCertification(CertificationPayload certification) {
+    public OperationResponse createCertificationRequest(CertificationPayload certification) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName(); // email dall’utente loggato

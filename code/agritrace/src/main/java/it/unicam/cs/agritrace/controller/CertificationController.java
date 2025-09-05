@@ -36,7 +36,7 @@ public class CertificationController {
 
     @PostMapping("/create")
     public ResponseEntity<OperationResponse> createCertification(@Valid @RequestBody CertificationPayload certification){
-        OperationResponse operationResponse = certificationService.createCertification(certification);
+        OperationResponse operationResponse = certificationService.createCertificationRequest(certification);
         return ResponseEntity.status(HttpStatus.CREATED).body(operationResponse);
     }
 

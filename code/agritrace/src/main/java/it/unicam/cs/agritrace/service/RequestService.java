@@ -13,6 +13,8 @@ import it.unicam.cs.agritrace.model.User;
 import it.unicam.cs.agritrace.repository.*;
 import it.unicam.cs.agritrace.service.factory.RequestHandlerFactory;
 import it.unicam.cs.agritrace.service.handler.RequestHandler;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,18 +29,21 @@ public class RequestService {
     private final RequestHandlerFactory requestHandlerFactory;
     private final StatusService statusService;
     private final RequestTypeRepository requestTypeRepository;
+    private final UserService userService;
 
     public RequestService(RequestMapper requestMapper,
                           RequestRepository requestRepository,
                           RequestHandlerFactory requestHandlerFactory,
                           StatusService statusService,
-                          RequestTypeRepository requestTypeRepository) {
+                          RequestTypeRepository requestTypeRepository,
+                          UserService userService) {
         this.requestMapper = requestMapper;
 
         this.requestRepository = requestRepository;
         this.requestHandlerFactory = requestHandlerFactory;
         this.statusService = statusService;
         this.requestTypeRepository = requestTypeRepository;
+        this.userService = userService;
     }
 
     // Prende tutte le richieste del curatore
@@ -68,7 +73,7 @@ public class RequestService {
     }
 
     @Transactional
-    public void reviewRequest(ReviewRequestDTO reviewRequestDTO, User curator) {
+    public void reviewRequest(ReviewRequestDTO reviewRequestDTO) {
         Request request = getRequestById(reviewRequestDTO.requestId());
         Status pendingStatus = statusService.getStatusByName("pending");
 
@@ -76,6 +81,11 @@ public class RequestService {
         if(!request.getStatus().equals(pendingStatus)) {
             throw new IllegalArgumentException("Selezionare una Request non in pending non si può fare");
         }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName(); // email dall’utente loggato
+
+        User curator = userService.getUserByEmail(email);
 
         // Se la action è reject → chiudo subito la richiesta
         if (StatusType.REJECTED.equals(reviewRequestDTO.action())) {

@@ -12,6 +12,8 @@ import it.unicam.cs.agritrace.repository.ProductListingRepository;
 import it.unicam.cs.agritrace.repository.ShoppingCartItemRepository;
 import it.unicam.cs.agritrace.repository.ShoppingCartRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -36,7 +38,12 @@ public class ShoppingCartService {
         this.userService = userService;
     }
 
-    public ShoppingCartResponse getShoppingCart(User user) {
+    public ShoppingCartResponse getShoppingCart() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName(); // email dall’utente loggato
+
+        User user = userService.getUserByEmail(email);
+
         // 1. Trova il carrello dell'utente dal repository.
         Optional<ShoppingCart> maybeCart = shoppingCartRepository.findByUser(user);
 

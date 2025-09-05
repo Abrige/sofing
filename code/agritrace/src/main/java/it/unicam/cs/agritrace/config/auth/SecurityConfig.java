@@ -82,8 +82,9 @@ public class SecurityConfig {
 		// Se la sicurezza è disabilitata
 		if (!securityEnabled) {
 			return httpSecurity
-					.authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+					.authorizeHttpRequests(auth -> auth.anyRequest().permitAll()) // tutti possono chiamare le rotte
 					.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+					.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class) // <-- tieni il filtro
 					.build();
 		}
 

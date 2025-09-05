@@ -13,11 +13,9 @@ import org.springframework.web.bind.annotation.*;
 public class ShoppingCartController {
 
     private final ShoppingCartService shoppingCartService;
-    private final UserRepository userRepository; // Per recuperare l'utente autenticato
 
-    public ShoppingCartController(ShoppingCartService shoppingCartService, UserRepository userRepository) {
+    public ShoppingCartController(ShoppingCartService shoppingCartService) {
         this.shoppingCartService = shoppingCartService;
-        this.userRepository = userRepository;
     }
 
     @PostMapping("/items")
@@ -35,7 +33,6 @@ public class ShoppingCartController {
 
     @GetMapping("/items")
     public ResponseEntity<ShoppingCartResponse> getShoppingCart() {
-        User currentUser = userRepository.findById(1).orElseThrow();
-        return ResponseEntity.ok(shoppingCartService.getShoppingCart(currentUser));
+        return ResponseEntity.ok(shoppingCartService.getShoppingCart());
     }
 }
