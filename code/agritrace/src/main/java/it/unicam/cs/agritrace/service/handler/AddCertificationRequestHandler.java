@@ -44,6 +44,7 @@ public class AddCertificationRequestHandler implements RequestHandler{
             newCert.setDescription(payload.description());
         }
         newCert.setIssuingBody(payload.issuingBody());
+        newCert.setIsActive(true);
 
         // 3. Salvo la certificazione
         Certification saved = certificationRepository.save(newCert);

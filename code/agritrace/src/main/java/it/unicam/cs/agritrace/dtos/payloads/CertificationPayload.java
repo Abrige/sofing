@@ -7,10 +7,13 @@ import jakarta.validation.constraints.NotEmpty;
 public record CertificationPayload (
         @JsonProperty("certification_id")
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        int certificationId,
+        Integer certificationId,
+
         @NotEmpty
         String name,
+
         String description,
+
         @JsonProperty("issuing_body")
         @NotEmpty
         String issuingBody
