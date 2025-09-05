@@ -10,4 +10,7 @@ public interface ProductListingRepository extends JpaRepository<ProductListing, 
 
     //Trova il prodotto nel listino di una Azienda
     Optional<ProductListing> findByProductIdAndSellerId(Integer productId, Integer sellerId);
+
+    //Trova il prodotto attivo nel listino
+    Optional<ProductListing> findByProductIdAndIsActive(Integer productId, Boolean isActive);
 }

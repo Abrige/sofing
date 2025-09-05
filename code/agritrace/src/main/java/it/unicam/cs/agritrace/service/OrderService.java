@@ -139,10 +139,11 @@ public class OrderService {
             item.setTotalPrice(cartItem.getProduct().getPrice()
                     .multiply(BigDecimal.valueOf(cartItem.getQuantity())));
             orderItemRepository.save(item);
+            // Rimuovi la riga dal carrello. Grazie a orphanRemoval=true, verrà cancellata dal DB.
+            cartEntity.getShoppingCartItems().remove(cartItem);
         }
 
         // Svuota il carrello, le righe vengono fisicamente eliminate dal DB
-        items.clear();
         shoppingCartRepository.save(cartEntity); // persiste lo svuotamento
 
         return OrderMapper.toDto(order);

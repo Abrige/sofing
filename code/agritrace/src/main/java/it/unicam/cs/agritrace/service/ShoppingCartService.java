@@ -75,7 +75,7 @@ public class ShoppingCartService {
     @Transactional
     public void addProductToCart(AddToShoppingCartRequest request) {
         // 1. Trova il prodotto o lancia un'eccezione se non esiste
-        ProductListing product = productListingRepository.findById(request.productId())
+        ProductListing product = productListingRepository.findByProductIdAndIsActive(request.productId(), true)
                 .orElseThrow(() -> new ResourceNotFoundException("Prodotto non trovato"));
 
         // Recupera l'utente fittizio
