@@ -23,21 +23,18 @@ import java.util.List;
 public class RequestService {
 
     private final RequestRepository requestRepository;
-    private final StatusRepository statusRepository;
     private final RequestMapper requestMapper;
     private final RequestHandlerFactory requestHandlerFactory;
     private final StatusService statusService;
     private final RequestTypeRepository requestTypeRepository;
 
     public RequestService(RequestMapper requestMapper,
-                          StatusRepository statusRepository,
                           RequestRepository requestRepository,
                           RequestHandlerFactory requestHandlerFactory,
                           StatusService statusService,
                           RequestTypeRepository requestTypeRepository) {
         this.requestMapper = requestMapper;
 
-        this.statusRepository = statusRepository;
         this.requestRepository = requestRepository;
         this.requestHandlerFactory = requestHandlerFactory;
         this.statusService = statusService;

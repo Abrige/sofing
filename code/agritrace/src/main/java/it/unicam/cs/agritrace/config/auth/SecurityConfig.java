@@ -3,6 +3,9 @@ package it.unicam.cs.agritrace.config.auth;
 import it.unicam.cs.agritrace.config.filter.JwtAuthenticationFilter;
 import it.unicam.cs.agritrace.service.auth.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,8 +27,13 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
+// @EnableMethodSecurity
 public class SecurityConfig {
+
+	private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
+
+	@Value("${app.security.enabled:true}")
+	private boolean securityEnabled;
 
 	private final JwtAuthenticationFilter jwtAuthFilter;
 	private final CustomUserDetailsService customUserDetailsService;
@@ -62,12 +70,25 @@ public class SecurityConfig {
 	 */
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		return http
+
+		// Configurazione base comune
+		HttpSecurity httpSecurity = http
 				.csrf(AbstractHttpConfigurer::disable)
 				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.headers(headers -> headers
 						.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
-						.contentTypeOptions(HeadersConfigurer.ContentTypeOptionsConfig::disable))
+						.contentTypeOptions(HeadersConfigurer.ContentTypeOptionsConfig::disable));
+
+		// Se la sicurezza è disabilitata
+		if (!securityEnabled) {
+			return httpSecurity
+					.authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+					.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+					.build();
+		}
+
+		// Configurazione con sicurezza abilitata
+		return httpSecurity
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/api/auth/**").permitAll()
 						.requestMatchers(
@@ -102,5 +123,3 @@ public class SecurityConfig {
 	}
 
 }
-
-

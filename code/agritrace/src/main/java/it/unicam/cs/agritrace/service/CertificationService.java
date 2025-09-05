@@ -107,7 +107,7 @@ public class CertificationService {
         return certificationRepository.findByIdAndIsActiveTrue(certificationId).orElseThrow(() -> new ResourceNotFoundException("Certificazione non trovata: " + certificationId));
     }
 
-    public void saveCertification(Certification certification) {
-        certificationRepository.save(certification);
+    public Certification saveCertification(Certification certification) {
+        return certificationRepository.save(certification);
     }
 }
