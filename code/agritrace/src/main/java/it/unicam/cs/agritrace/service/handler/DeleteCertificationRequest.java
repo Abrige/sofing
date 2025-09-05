@@ -9,6 +9,7 @@ import it.unicam.cs.agritrace.model.Request;
 import it.unicam.cs.agritrace.model.RequestType;
 import it.unicam.cs.agritrace.repository.CertificationRepository;
 import it.unicam.cs.agritrace.repository.RequestTypeRepository;
+import it.unicam.cs.agritrace.service.RequestService;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +19,8 @@ public class DeleteCertificationRequest implements RequestHandler {
     private final PayloadMapper payloadMapper;
     private final CertificationRepository certificationRepository;
 
-    public DeleteCertificationRequest(RequestTypeRepository requestTypeRepository, PayloadMapper payloadMapper, CertificationRepository certificationRepository) {
-        this.supportedRequestType = requestTypeRepository.findByName("DELETE_CERT")
-                .orElseThrow(() -> new ResourceNotFoundException("RequestType DELETE_CERT non trovato"));
-        ;
+    public DeleteCertificationRequest(RequestTypeRepository requestTypeRepository, PayloadMapper payloadMapper, CertificationRepository certificationRepository, RequestService requestService) {
+        this.supportedRequestType = requestService.getRequestTypeByName("CERTIFICATION")
         this.payloadMapper = payloadMapper;
         this.certificationRepository = certificationRepository;
     }

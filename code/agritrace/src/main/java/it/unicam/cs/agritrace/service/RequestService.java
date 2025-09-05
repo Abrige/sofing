@@ -7,6 +7,7 @@ import it.unicam.cs.agritrace.enums.StatusType;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.mappers.RequestMapper;
 import it.unicam.cs.agritrace.model.Request;
+import it.unicam.cs.agritrace.model.RequestType;
 import it.unicam.cs.agritrace.model.Status;
 import it.unicam.cs.agritrace.model.User;
 import it.unicam.cs.agritrace.repository.*;
@@ -25,16 +26,22 @@ public class RequestService {
     private final StatusRepository statusRepository;
     private final RequestMapper requestMapper;
     private final RequestHandlerFactory requestHandlerFactory;
+    private final StatusService statusService;
+    private final RequestTypeRepository requestTypeRepository;
 
     public RequestService(RequestMapper requestMapper,
                           StatusRepository statusRepository,
                           RequestRepository requestRepository,
-                          RequestHandlerFactory requestHandlerFactory) {
+                          RequestHandlerFactory requestHandlerFactory,
+                          StatusService statusService,
+                          RequestTypeRepository requestTypeRepository) {
         this.requestMapper = requestMapper;
 
         this.statusRepository = statusRepository;
         this.requestRepository = requestRepository;
         this.requestHandlerFactory = requestHandlerFactory;
+        this.statusService = statusService;
+        this.requestTypeRepository = requestTypeRepository;
     }
 
     // Prende tutte le richieste del curatore
@@ -65,17 +72,23 @@ public class RequestService {
 
     @Transactional
     public void reviewRequest(ReviewRequestDTO reviewRequestDTO, User curator) {
-        Request request = requestRepository.findById(reviewRequestDTO.requestId())
-                .orElseThrow(() -> new RuntimeException("Request non trovata con id=" + reviewRequestDTO.requestId()));
+        Request request = getRequestById(reviewRequestDTO.requestId());
+        Status pendingStatus = statusService.getStatusByName("pending");
+
+        // Se lo status non è pending non va bene, non puoi usare quella richiesta, lancia un errore
+        if(!request.getStatus().equals(pendingStatus)) {
+            throw new IllegalArgumentException("Selezionare una Request non in pending non si può fare");
+        }
 
         // Se la action è reject → chiudo subito la richiesta
         if (StatusType.REJECTED.equals(reviewRequestDTO.action())) {
-            Status rejectedStatus = statusRepository.findById(StatusType.REJECTED.getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Status REJECTED non trovato nel db"));
+            Status rejectedStatus = statusService.getStatusByName("pending");
             request.setStatus(rejectedStatus);
             request.setReviewedAt(Instant.now());
             request.setCurator(curator);
-            request.setDecisionNotes(reviewRequestDTO.decisionNotes());
+            if(reviewRequestDTO.decisionNotes() != null) {
+                request.setDecisionNotes(reviewRequestDTO.decisionNotes());
+            }
             requestRepository.save(request);
             return;
         }
@@ -88,19 +101,26 @@ public class RequestService {
         // Recupero handler dalla factory in base al tipo di request
         RequestHandler handler = requestHandlerFactory.getHandler(request.getRequestType());
 
-        if (handler == null) {
-            throw new RuntimeException("Nessun handler trovato per request type: " + request.getRequestType().getName());
-        }
-
         // Eseguo la logica di business specifica del tipo
         handler.handle(request);
 
         // Aggiorno lo status della request ad ACCEPTED
-        Status acceptedStatus = statusRepository.findById(StatusType.ACCEPTED.getId())
-                .orElseThrow(() -> new RuntimeException("Status ACCEPTED non trovato"));
+        Status acceptedStatus = statusService.getStatusById(StatusType.ACCEPTED.getId());
         request.setStatus(acceptedStatus);
         request.setCurator(curator);
         request.setReviewedAt(Instant.now());
         requestRepository.save(request);
+    }
+
+    public Request getRequestById(int id) {
+        return requestRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Request non trovata con id=" + id));
+    }
+
+    public RequestType getRequestTypeById(int id) {
+        return requestTypeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Request non trovata con id=" + id));
+    }
+
+    public RequestType getRequestTypeByName(String name) {
+        return requestTypeRepository.findByName(name).orElseThrow(() -> new ResourceNotFoundException("Request non trovata con nome=" + name));
     }
 }

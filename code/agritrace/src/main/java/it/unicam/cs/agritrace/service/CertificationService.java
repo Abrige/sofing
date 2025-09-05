@@ -1,7 +1,7 @@
 package it.unicam.cs.agritrace.service;
 
 import it.unicam.cs.agritrace.dtos.payloads.CertificationPayload;
-import it.unicam.cs.agritrace.dtos.requests.CertificationRequest;
+import it.unicam.cs.agritrace.dtos.payloads.DeletePayload;
 import it.unicam.cs.agritrace.dtos.responses.CertificationsResponse;
 import it.unicam.cs.agritrace.dtos.responses.OperationResponse;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
@@ -19,20 +19,20 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class CertificationsService {
+public class CertificationService {
     private final CertificationRepository certificationRepository;
     private final ProductRepository productRepository;
     private final RequestFactory requestFactory;
     private final RequestRepository requestRepository;
 
-    public CertificationsService(CertificationRepository certificationRepository, ProductRepository productRepository, RequestFactory requestFactory, RequestRepository requestRepository) {
+    public CertificationService(CertificationRepository certificationRepository, ProductRepository productRepository, RequestFactory requestFactory, RequestRepository requestRepository) {
         this.certificationRepository = certificationRepository;
         this.productRepository = productRepository;
         this.requestFactory = requestFactory;
         this.requestRepository = requestRepository;
     }
 
-    public List<CertificationsResponse> GetCertifications(){
+    public List<CertificationsResponse> getCertifications(){
         List<Certification> AllCert = certificationRepository.findAllByIsActiveTrue();
 
         List<CertificationsResponse> AllCertResponse = AllCert.stream().map(
@@ -47,7 +47,7 @@ public class CertificationsService {
 
     }
 
-    public CertificationsResponse GetCertificationsById(int id) {
+    public CertificationsResponse getCertificationsById(int id) {
 
         Certification cert = certificationRepository.findByIdAndIsActiveTrue(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Certificazione non trovata: " + id));
@@ -62,20 +62,31 @@ public class CertificationsService {
 
     @Transactional
     public OperationResponse createCertification(CertificationPayload certification) {
+
         Request request = requestFactory.createRequest(
                 "CERTIFICATIONS",
-                "ADD_CERT",
+                "ADD_CERTIFICATION",
                 certification
         );
         Request savedRequest = requestRepository.save(request);
 
-        return new OperationResponse(savedRequest.getId(), "CERTIFICATIONS", "ADD_CERT", savedRequest.getCreatedAt());
+        return new OperationResponse(savedRequest.getId(), "CERTIFICATIONS", "ADD", savedRequest.getCreatedAt());
 
     }
 
-    public void deleteCertification(int id) {
-        Optional<Certification> certification = certificationRepository.findByIdAndIsActiveTrue(id);
-        certification.ifPresent(value -> value.setIsActive(false));
+    public OperationResponse deleteCertificationRequest(DeletePayload deletePayload) {
+        if(!existsCertificationById(deletePayload.targetId())){
+            throw new ResourceNotFoundException("Certificazione non trovata: " + deletePayload.targetId());
+        }
+        Request request = requestFactory.createRequest(
+                "CERTIFICATIONS",
+                "DELETE_CERTIFICATION",
+                deletePayload
+        );
+        Request savedRequest = requestRepository.save(request);
+
+        return new OperationResponse(savedRequest.getId(), "CERTIFICATION", "DELETE", savedRequest.getCreatedAt());
+
     }
 
     public void addCertificationToProduct(int certificationId, int productId) {
@@ -86,5 +97,17 @@ public class CertificationsService {
             Certification cert = certification.get();
 
         }
+    }
+
+    public boolean existsCertificationById(int certificationId) {
+        return certificationRepository.existsByIdAndIsActiveTrue(certificationId);
+    }
+
+    public Certification getCertificationById(int certificationId) {
+        return certificationRepository.findByIdAndIsActiveTrue(certificationId).orElseThrow(() -> new ResourceNotFoundException("Certificazione non trovata: " + certificationId));
+    }
+
+    public void saveCertification(Certification certification) {
+        certificationRepository.save(certification);
     }
 }

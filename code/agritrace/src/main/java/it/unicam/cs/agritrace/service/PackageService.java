@@ -62,7 +62,7 @@ public class PackageService {
     // crea una richiesta di cancellazione di un pacchetto
     public OperationResponse deletePackageRequest(DeletePayload payload) {
 
-        if(existsPackageById(payload.targetId())){
+        if(!existsPackageById(payload.targetId())){
             throw new InvalidPackageRequestException("Prodotto non trovato con id: " + payload.targetId());
         }
 
@@ -83,13 +83,13 @@ public class PackageService {
         }
 
         // Controllo che esista il pacchetto
-        if(existsPackageById(payload.packageId())){
+        if(!existsPackageById(payload.packageId())){
             throw new InvalidPackageRequestException("Prodotto non trovato con id: " + payload.packageId());
         }
 
         // Controllo che tutti i prodotti esistano nel database
         for (PackageItemPayload item : payload.items()) {
-            if(productService.existsProductById(item.productId())){
+            if(!productService.existsProductById(item.productId())){
                 throw new InvalidPackageRequestException("Prodotto non trovato con id: " + item.productId());
             }
         }
