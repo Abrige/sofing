@@ -10,9 +10,12 @@ import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.mappers.PackageMapper;
 import it.unicam.cs.agritrace.model.Request;
 import it.unicam.cs.agritrace.model.TypicalPackage;
+import it.unicam.cs.agritrace.model.User;
 import it.unicam.cs.agritrace.repository.RequestRepository;
 import it.unicam.cs.agritrace.repository.TypicalPackageRepository;
 import it.unicam.cs.agritrace.service.factory.RequestFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,16 +26,19 @@ public class PackageService {
     private final RequestRepository requestRepository;
     private final RequestFactory requestFactory;
     private final ProductService productService;
+    private final UserService userService;
 
     public PackageService(
             RequestRepository requestRepository,
             TypicalPackageRepository typicalPackageRepository1,
             RequestFactory requestFactory,
-            ProductService productService) {
+            ProductService productService,
+            UserService userService) {
         this.requestRepository = requestRepository;
         this.typicalPackageRepository = typicalPackageRepository1;
         this.requestFactory = requestFactory;
         this.productService = productService;
+        this.userService = userService;
     }
 
     // crea una richiesta di creazione di un pacchetto
@@ -48,10 +54,15 @@ public class PackageService {
             }
         }
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User requester = userService.getUserByEmail(email);
+
         Request request = requestFactory.createRequest(
                 "TYPICAL_PACKAGES",
                 "ADD_PACKAGE",
-                payload
+                payload,
+                requester
         );
 
         Request savedRequest = requestRepository.save(request);
@@ -66,10 +77,15 @@ public class PackageService {
             throw new InvalidPackageRequestException("Prodotto non trovato con id: " + payload.targetId());
         }
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User requester = userService.getUserByEmail(email);
+
         Request request = requestFactory.createRequest(
                 "TYPICAL_PACKAGES",
                 "DELETE_PACKAGE",
-                payload
+                payload,
+                requester
         );
         Request savedRequest = requestRepository.save(request);
 
@@ -94,10 +110,15 @@ public class PackageService {
             }
         }
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User requester = userService.getUserByEmail(email);
+
         Request request = requestFactory.createRequest(
                 "TYPICAL_PACKAGES",
                 "UPDATE_PACKAGE",
-                payload
+                payload,
+                requester
         );
         Request savedRequest = requestRepository.save(request);
 

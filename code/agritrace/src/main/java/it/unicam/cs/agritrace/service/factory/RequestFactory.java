@@ -32,10 +32,7 @@ public class RequestFactory {
         this.payloadMapper = payloadMapper;
     }
 
-    public Request createRequest(String tableName, String requestTypeName, Object payload) {
-        User requester = userRepository.findById(1)
-                .orElseThrow(() -> new ResourceNotFoundException("Utente non trovato"));
-
+    public Request createRequest(String tableName, String requestTypeName, Object payload, User requester) {
         DbTable targetTable = dbTableRepository.findByName(tableName)
                 .orElseThrow(() -> new ResourceNotFoundException("Tabella non trovata: " + tableName));
 

@@ -9,7 +9,8 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -58,5 +59,8 @@ public class Product {
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "PRODUCER_ID", nullable = false)
     private Company producer;
+
+    @OneToMany(mappedBy = "product")
+    private Set<ProductCertification> productCertifications = new LinkedHashSet<>();
 
 }

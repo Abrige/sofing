@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 @Entity
@@ -39,5 +42,8 @@ public class Company {
     @Convert(disableConversion = true)
     @Column(name = "IS_DELETED", nullable = false)
     private Boolean isDeleted = false;
+
+    @OneToMany(mappedBy = "company")
+    private Set<CompanyCertification> companyCertifications = new LinkedHashSet<>();
 
 }

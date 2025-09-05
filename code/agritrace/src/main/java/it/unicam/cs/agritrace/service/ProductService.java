@@ -9,6 +9,8 @@ import it.unicam.cs.agritrace.mappers.ProductMapper;
 import it.unicam.cs.agritrace.model.*;
 import it.unicam.cs.agritrace.repository.*;
 import it.unicam.cs.agritrace.service.factory.RequestFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,15 +25,17 @@ public class ProductService {
     private final HarvestSeasonRepository harvestSeasonRepository;
     private final RequestRepository requestRepository;
     private final RequestFactory requestFactory;
+    private final UserService userService;
 
     public ProductService(ProductRepository productRepository,
                           ProductMapper productMapper,
-                          CompanyRepository companyRepository, ProductionStepRepository productionStepRepository,
+                          CompanyRepository companyRepository,
                           ProductCategoryRepository productCategoryRepository,
                           CultivationMethodRepository cultivationMethodRepository,
                           HarvestSeasonRepository harvestSeasonRepository,
                           RequestRepository requestRepository,
-                          RequestFactory requestFactory) {
+                          RequestFactory requestFactory,
+                          UserService userService) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
         this.companyRepository = companyRepository;
@@ -40,6 +44,7 @@ public class ProductService {
         this.harvestSeasonRepository = harvestSeasonRepository;
         this.requestRepository = requestRepository;
         this.requestFactory = requestFactory;
+        this.userService = userService;
     }
 
     // Ritorna il prodotto (NON CANCELLATO) in base all'id
@@ -66,10 +71,15 @@ public class ProductService {
             throw new ResourceNotFoundException("Product not found with id=" + payload.targetId());
         }
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User requester = userService.getUserByEmail(email);
+
         Request request = requestFactory.createRequest(
                 "PRODUCTS",
                 "DELETE_PRODUCT",
-                payload
+                payload,
+                requester
         );
         Request savedRequest = requestRepository.save(request);
 
@@ -82,10 +92,15 @@ public class ProductService {
             throw new ResourceNotFoundException("Product not found with id=" + payload.productId());
         }
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User requester = userService.getUserByEmail(email);
+
         Request request = requestFactory.createRequest(
                 "PRODUCTS",
                 "UPDATE_PRODUCT",
-                payload
+                payload,
+                requester
         );
         Request savedRequest = requestRepository.save(request);
 
@@ -93,10 +108,15 @@ public class ProductService {
     }
 
     public OperationResponse createProductRequest(ProductPayload payload) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User requester = userService.getUserByEmail(email);
+
         Request request = requestFactory.createRequest(
                 "PRODUCTS",
                 "ADD_PRODUCT",
-                payload
+                payload,
+                requester
         );
         Request savedRequest = requestRepository.save(request);
 
