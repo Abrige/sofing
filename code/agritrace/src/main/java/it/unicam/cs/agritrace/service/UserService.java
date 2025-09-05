@@ -1,7 +1,6 @@
 package it.unicam.cs.agritrace.service;
 
-import it.unicam.cs.agritrace.exceptions.UserNotFoundException;
-import it.unicam.cs.agritrace.exceptions.auth.RoleNotFoundException;
+import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.model.User;
 import it.unicam.cs.agritrace.model.UserRole;
 import it.unicam.cs.agritrace.repository.UserRepository;
@@ -26,7 +25,7 @@ public class UserService {
 
     // Ritorna un'entità user in base all'id controllando che non sia cancellato
     public User getUserById(int id){
-        return userRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new UserNotFoundException("utente"));
+        return userRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new ResourceNotFoundException("Utente non trovato"));
     }
 
     public void registerUser(String username, String rawPassword) {
@@ -35,15 +34,15 @@ public class UserService {
     }
 
     public User getUserByUsername(String username) {
-        return userRepository.findByUsernameAndIsDeletedFalse(username).orElseThrow(() -> new UserNotFoundException("utente non trovato"));
+        return userRepository.findByUsernameAndIsDeletedFalse(username).orElseThrow(() -> new ResourceNotFoundException("Utente non trovato"));
     }
 
     public User getUserByEmail(String email) {
-        return userRepository.findByEmailAndIsDeletedFalse(email).orElseThrow(() -> new UserNotFoundException("utente non trovato"));
+        return userRepository.findByEmailAndIsDeletedFalse(email).orElseThrow(() -> new ResourceNotFoundException("Utente non trovato"));
     }
 
     public UserRole getDefaultUserRole() {
         return userRoleRepository.findByName("UTENTE")
-                .orElseThrow(() -> new RoleNotFoundException("UTENTE"));
+                .orElseThrow(() -> new ResourceNotFoundException("Ruolo non trovato: UTENTE"));
     }
 }

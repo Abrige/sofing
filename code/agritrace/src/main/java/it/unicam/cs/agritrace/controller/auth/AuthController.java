@@ -30,7 +30,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginUserRequest loginRequest) {
+    public ResponseEntity<AuthResponse> login(@RequestBody @Valid LoginUserRequest loginRequest) {
         // Chiama il service che gestisce autenticazione e generazione del token
         AuthResponse response = authService.login(loginRequest);
 

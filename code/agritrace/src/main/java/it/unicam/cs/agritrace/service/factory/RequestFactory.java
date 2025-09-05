@@ -1,8 +1,6 @@
 package it.unicam.cs.agritrace.service.factory;
 
-import it.unicam.cs.agritrace.exceptions.DbTableNotFoundException;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
-import it.unicam.cs.agritrace.exceptions.UserNotFoundException;
 import it.unicam.cs.agritrace.mappers.PayloadMapper;
 import it.unicam.cs.agritrace.model.*;
 import it.unicam.cs.agritrace.repository.DbTableRepository;
@@ -36,16 +34,16 @@ public class RequestFactory {
 
     public Request createRequest(String tableName, String requestTypeName, Object payload) {
         User requester = userRepository.findById(1)
-                .orElseThrow(() -> new UserNotFoundException("Utente"));
+                .orElseThrow(() -> new ResourceNotFoundException("Utente non trovato"));
 
         DbTable targetTable = dbTableRepository.findByName(tableName)
-                .orElseThrow(() -> new DbTableNotFoundException(tableName));
+                .orElseThrow(() -> new ResourceNotFoundException("Tabella non trovata: " + tableName));
 
         RequestType requestType = requestTypeRepository.findByName(requestTypeName)
-                .orElseThrow(() -> new ResourceNotFoundException(requestTypeName));
+                .orElseThrow(() -> new ResourceNotFoundException("RequestType non trovata: " +requestTypeName));
 
         Status status = statusRepository.findByName("pending")
-                .orElseThrow(() -> new ResourceNotFoundException("pending"));
+                .orElseThrow(() -> new ResourceNotFoundException("Status pending non trovato"));
 
         Request request = new Request();
         request.setRequester(requester);

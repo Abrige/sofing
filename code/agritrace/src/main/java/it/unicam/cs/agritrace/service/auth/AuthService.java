@@ -60,6 +60,9 @@ public class AuthService {
         user.setLastName(request.lastName());
         user.setRole(userService.getDefaultUserRole());
         user.setLocation(locationService.getLocationById(request.locationId()));
+        if(request.phoneNumber() != null) {
+            user.setPhone(request.phoneNumber());
+        }
         // Salva l'utente
         userRepository.save(user);
     }

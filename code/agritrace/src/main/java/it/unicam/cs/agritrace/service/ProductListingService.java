@@ -2,7 +2,7 @@ package it.unicam.cs.agritrace.service;
 
 import it.unicam.cs.agritrace.dtos.requests.AddProductToListing;
 import it.unicam.cs.agritrace.dtos.responses.ProductListingResponse;
-import it.unicam.cs.agritrace.exceptions.ProductNotFoundException;
+import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.model.Company;
 import it.unicam.cs.agritrace.model.Product;
 import it.unicam.cs.agritrace.model.ProductListing;
@@ -54,7 +54,7 @@ public class ProductListingService {
     public void removeProductToListing(int productId, Company company) {
         // Trova la ProductListing
         ProductListing productListing = productListingRepository.findByProductIdAndSellerId(productId, company.getId())
-                .orElseThrow(() -> new ProductNotFoundException("Prodotto non trovato nel listino dell'azienda"));
+                .orElseThrow(() -> new ResourceNotFoundException("Prodotto non trovato nel listino dell'azienda"));
 
         // Controlla che non sia già stato disattivato
         if (!productListing.getIsActive()) {
@@ -78,6 +78,6 @@ public class ProductListingService {
     }
 
     public ProductListing getProductListingById(int id) {
-        return productListingRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Prodotto di listino con id= " + id + " non trovato"));
+        return productListingRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Prodotto di listino con id= " + id + " non trovato"));
     }
 }

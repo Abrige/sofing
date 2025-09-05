@@ -1,30 +1,23 @@
 package it.unicam.cs.agritrace.exceptions;
 
 import it.unicam.cs.agritrace.dtos.errors.ApiError;
+import it.unicam.cs.agritrace.exceptions.auth.EmailAlreadyExistsException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-    @ExceptionHandler(InvalidPackageRequestException.class)
-    public ResponseEntity<ApiError> handleInvalidPackage(InvalidPackageRequestException ex, HttpServletRequest request) {
-        log.warn("Invalid package request at {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage());
-        ApiError error = new ApiError(
-                HttpStatus.BAD_REQUEST,
-                "Invalid package request: " + ex.getMessage()
-        );
-        return ResponseEntity.badRequest().body(error);
-    }
 
     @ExceptionHandler(OrderStatusInvalidException.class)
     public ResponseEntity<ApiError> handleOrderStatusInvalid(OrderStatusInvalidException ex, HttpServletRequest request) {
@@ -36,24 +29,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
-    @ExceptionHandler(PayloadParsingException.class)
-    public ResponseEntity<ApiError> handlePayloadError(PayloadParsingException ex, HttpServletRequest request) {
-        log.warn("Payload parsing failed at {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage(), ex);
+    // Handler per payload parsing e altre eccezioni di richiesta errata
+    @ExceptionHandler({InvalidPackageRequestException.class, PayloadParsingException.class})
+    public ResponseEntity<ApiError> handleBadRequest(RuntimeException ex, HttpServletRequest request) {
+        log.warn("Bad request at {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage(), ex);
         ApiError error = new ApiError(
                 HttpStatus.BAD_REQUEST,
-                "Payload parsing error at " + request.getRequestURI() + ": " + ex.getMessage()
+                ex.getMessage()
         );
         return ResponseEntity.badRequest().body(error);
-    }
-
-    @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<ApiError> handleProductNotFound(ProductNotFoundException ex, HttpServletRequest request) {
-        log.warn("Product not found at {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage());
-        ApiError error = new ApiError(
-                HttpStatus.NOT_FOUND,
-                "Product not found: " + ex.getMessage()
-        );
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -66,25 +50,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ApiError> handleUserNotFound(UserNotFoundException ex, HttpServletRequest request) {
-        log.warn("User not found at {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage());
+    // Email già presente nel db in fase di registrazione
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<ApiError> handleEmailAlreadyExists(EmailAlreadyExistsException ex, HttpServletRequest request) {
+        log.warn("Email already exists at {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage());
         ApiError error = new ApiError(
-                HttpStatus.NOT_FOUND,
-                "User not found: " + ex.getMessage()
+               HttpStatus.CONFLICT,
+               "Email already exists: " + ex.getMessage()
         );
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
-    @ExceptionHandler(DbTableNotFoundException.class)
-    public ResponseEntity<ApiError> handleDbTableNotFound(DbTableNotFoundException ex, HttpServletRequest request) {
-        log.warn("DbTable not found at {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage());
-        ApiError error = new ApiError(
-                HttpStatus.NOT_FOUND,
-                "Database table not found: " + ex.getMessage()
-        );
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-    }
+
 
     @ExceptionHandler(HandlerMethodValidationException.class)
     public ResponseEntity<ApiError> handleValidation(HandlerMethodValidationException ex,
@@ -103,6 +80,26 @@ public class GlobalExceptionHandler {
                 details
         );
 
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    // Handler per validazioni dei DTO (@Valid)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
+        List<String> errors = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(fe -> fe.getField() + ": " + fe.getDefaultMessage())
+                .toList();
+
+        log.warn("Validation failed at {} {}: {}", request.getMethod(), request.getRequestURI(), errors);
+
+        ApiError error = new ApiError(
+                HttpStatus.BAD_REQUEST.value(),
+                "Validation failed",
+                LocalDateTime.now(),
+                errors.toString()
+        );
         return ResponseEntity.badRequest().body(error);
     }
 

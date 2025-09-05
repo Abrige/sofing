@@ -4,7 +4,6 @@ import it.unicam.cs.agritrace.dtos.common.ProductDTO;
 import it.unicam.cs.agritrace.dtos.payloads.DeletePayload;
 import it.unicam.cs.agritrace.dtos.payloads.ProductPayload;
 import it.unicam.cs.agritrace.dtos.responses.OperationResponse;
-import it.unicam.cs.agritrace.exceptions.ProductNotFoundException;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.mappers.ProductMapper;
 import it.unicam.cs.agritrace.model.*;
@@ -46,14 +45,14 @@ public class ProductService {
     // Ritorna il prodotto (NON CANCELLATO) in base all'id
     public ProductDTO getProductById(int id) {
         Product product = productRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found with id=" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id=" + id));
         return productMapper.toDto(product);
     }
 
     // Ritorna il prodotto no DTO (NON CANCELLATO) in base all'id
     public Product getProductObjById(int id) {
         return productRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found with id=" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id=" + id));
     }
 
     // Prende tutti i prodotti (NON CANCELLATI) e li restituisce come lista di DTO
@@ -106,11 +105,11 @@ public class ProductService {
     }
 
     public Product findProductById(int id) {
-        return productRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new ProductNotFoundException("Product not found with id=" + id));
+        return productRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new ResourceNotFoundException("Product not found with id=" + id));
     }
 
     public ProductCategory getProductCategoryById(int id) {
-        return productCategoryRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product category not found with id=" + id));
+        return productCategoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product category not found with id=" + id));
     }
 
     public CultivationMethod getCultivationMethodById(int id){

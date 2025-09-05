@@ -49,7 +49,7 @@ public class User {
     private String phone;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "ROLE_ID", nullable = false)
     private UserRole role;
