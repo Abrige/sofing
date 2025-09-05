@@ -19,6 +19,6 @@ public class StatusService {
     }
 
     public Status getStatusById(int id) {
-        return statusRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No status with name " + name));
+        return statusRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No status with name " + id));
     }
 }

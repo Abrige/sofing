@@ -20,7 +20,7 @@ public class DeleteCertificationRequest implements RequestHandler {
     private final CertificationRepository certificationRepository;
 
     public DeleteCertificationRequest(RequestTypeRepository requestTypeRepository, PayloadMapper payloadMapper, CertificationRepository certificationRepository, RequestService requestService) {
-        this.supportedRequestType = requestService.getRequestTypeByName("CERTIFICATION")
+        this.supportedRequestType = requestService.getRequestTypeByName("CERTIFICATION");
         this.payloadMapper = payloadMapper;
         this.certificationRepository = certificationRepository;
     }
