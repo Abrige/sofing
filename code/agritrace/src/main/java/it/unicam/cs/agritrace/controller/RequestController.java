@@ -6,6 +6,7 @@ import it.unicam.cs.agritrace.enums.StatusType;
 import it.unicam.cs.agritrace.model.User;
 import it.unicam.cs.agritrace.repository.UserRepository;
 import it.unicam.cs.agritrace.service.RequestService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +48,7 @@ public class RequestController {
 
     //Approvazione richiesta
     @PostMapping("/review")
-    public ResponseEntity<Void> reviewRequest(@RequestBody ReviewRequestDTO reviewRequestDTO)  {
+    public ResponseEntity<Void> reviewRequest(@Valid @RequestBody ReviewRequestDTO reviewRequestDTO)  {
         User curator = userRepository.findById(1).orElseThrow();
         requestService.reviewRequest(reviewRequestDTO, curator);
         return ResponseEntity.ok().build();

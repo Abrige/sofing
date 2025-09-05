@@ -19,8 +19,8 @@ public class AddCertificationRequestHandler implements RequestHandler{
     private final CertificationRepository certificationRepository;
 
     public AddCertificationRequestHandler(RequestTypeRepository requestTypeRepository, PayloadMapper payloadMapper, CertificationRepository certificationRepository) {
-        this.supportedRequestType = requestTypeRepository.findByName("ADD_CERT")
-                .orElseThrow(() -> new ResourceNotFoundException("RequestType ADD_CERT non trovato"));
+        this.supportedRequestType = requestTypeRepository.findByName("ADD_CERTIFICATION")
+                .orElseThrow(() -> new ResourceNotFoundException("RequestType ADD_CERTIFICATION non trovato"));
         this.payloadMapper = payloadMapper;
         this.certificationRepository = certificationRepository;
     }
@@ -40,13 +40,14 @@ public class AddCertificationRequestHandler implements RequestHandler{
         // 2. Crea la certificazione
         Certification newCert = new Certification();
         newCert.setName(payload.name());
-        newCert.setDescription(payload.description());
+        if(payload.description() != null) {
+            newCert.setDescription(payload.description());
+        }
         newCert.setIssuingBody(payload.issuingBody());
 
         // 3. Salvo la certificazione
         Certification saved = certificationRepository.save(newCert);
         // 5. Aggiorno la request col targetId
         request.setTargetId(saved.getId());
-
     }
 }

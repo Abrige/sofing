@@ -12,4 +12,6 @@ public interface CertificationRepository extends JpaRepository<Certification, In
   Optional<Certification> findByIdAndIsActiveTrue(Integer id);
 
   List<Certification> findAllByIsActiveTrue();
+
+  boolean existsByIdAndIsActiveTrue(Integer id);
 }
