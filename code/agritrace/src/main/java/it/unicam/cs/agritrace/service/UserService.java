@@ -1,8 +1,11 @@
 package it.unicam.cs.agritrace.service;
 
 import it.unicam.cs.agritrace.exceptions.UserNotFoundException;
+import it.unicam.cs.agritrace.exceptions.auth.RoleNotFoundException;
 import it.unicam.cs.agritrace.model.User;
+import it.unicam.cs.agritrace.model.UserRole;
 import it.unicam.cs.agritrace.repository.UserRepository;
+import it.unicam.cs.agritrace.repository.UserRoleRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -11,11 +14,14 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserRoleRepository userRoleRepository;
 
     public UserService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder,
+                       UserRoleRepository userRoleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userRoleRepository = userRoleRepository;
     }
 
     // Ritorna un'entità user in base all'id controllando che non sia cancellato
@@ -34,5 +40,10 @@ public class UserService {
 
     public User getUserByEmail(String email) {
         return userRepository.findByEmailAndIsDeletedFalse(email).orElseThrow(() -> new UserNotFoundException("utente non trovato"));
+    }
+
+    public UserRole getDefaultUserRole() {
+        return userRoleRepository.findByName("UTENTE")
+                .orElseThrow(() -> new RoleNotFoundException("UTENTE"));
     }
 }

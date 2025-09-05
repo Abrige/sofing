@@ -1,4 +1,4 @@
-package it.unicam.cs.agritrace.service;
+package it.unicam.cs.agritrace.service.auth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -1,4 +1,4 @@
-package it.unicam.cs.agritrace.service;
+package it.unicam.cs.agritrace.service.auth;
 
 import it.unicam.cs.agritrace.model.User;
 import it.unicam.cs.agritrace.repository.UserRepository;
