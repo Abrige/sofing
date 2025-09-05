@@ -2,6 +2,7 @@ package it.unicam.cs.agritrace.controller;
 
 import it.unicam.cs.agritrace.dtos.common.OrderDTO;
 import it.unicam.cs.agritrace.dtos.requests.UpdateOrderStatusRequest;
+import it.unicam.cs.agritrace.dtos.responses.OrderResponse;
 import it.unicam.cs.agritrace.enums.StatusType;
 import it.unicam.cs.agritrace.service.OrderService;
 import jakarta.validation.Valid;
@@ -35,6 +36,20 @@ public class OrderController {
         }
         return ResponseEntity.ok(orders);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderResponse> getOrderById(@PathVariable Integer id){
+        return ResponseEntity.ok(orderService.GetOrderById(id));
+        /*
+        {
+    "status": 500,
+    "error": "Unexpected server error at /api/orders/4",
+    "timestamp": "2025-09-06T01:11:34.4606588",
+    "details": "Type definiti
+         */
+
+    }
+
 
     // Aggiorna lo status di un ordine in base a quelli consentiti
     @PatchMapping("/update-status")

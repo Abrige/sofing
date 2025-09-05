@@ -2,6 +2,7 @@ package it.unicam.cs.agritrace.service;
 
 import it.unicam.cs.agritrace.dtos.common.OrderDTO;
 import it.unicam.cs.agritrace.dtos.requests.UpdateOrderStatusRequest;
+import it.unicam.cs.agritrace.dtos.responses.OrderResponse;
 import it.unicam.cs.agritrace.enums.StatusType;
 import it.unicam.cs.agritrace.exceptions.OrderStatusInvalidException;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
@@ -148,5 +149,22 @@ public class OrderService {
 
         return OrderMapper.toDto(order);
     }
+
+    public OrderResponse GetOrderById(Integer id){
+        Order order = orderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Ordine non trovato: " + id));
+
+        return new OrderResponse(
+                order.getId(),
+                order.getBuyer(),
+                order.getTotalAmount(),
+                order.getStatus(),
+                order.getOrderedAt(),
+                order.getDeliveryDate(),
+                order.getDeliveryLocation()
+                //, order.getOrderItems()
+        );
+    }
+
+
 
 }
