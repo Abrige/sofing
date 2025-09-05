@@ -10,6 +10,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
 
+    @Mapping(source = "id", target = "productId")
     @Mapping(source = "category.name", target = "productCategory")
     @Mapping(source = "cultivationMethod.name", target = "cultivationMethod")
     @Mapping(source = "harvestSeason.name", target = "harvestSeason")
