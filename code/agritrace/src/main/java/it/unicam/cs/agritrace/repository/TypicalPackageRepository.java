@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface TypicalPackageRepository extends JpaRepository<TypicalPackage, Integer> {
     Optional<TypicalPackage> findByIdAndIsActiveTrue(Integer id);
     boolean existsByIdAndIsActiveTrue(Integer id);
+
+    Optional<TypicalPackage> findById(Integer id);
 }
