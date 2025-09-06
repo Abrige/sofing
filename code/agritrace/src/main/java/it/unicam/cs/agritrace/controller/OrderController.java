@@ -7,6 +7,7 @@ import it.unicam.cs.agritrace.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,6 +38,7 @@ public class OrderController {
     }
 
     // Aggiorna lo status di un ordine in base a quelli consentiti
+    @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE', 'DISTRIBUTORE')")
     @PatchMapping("/update-status")
     public ResponseEntity<OrderDTO> updateStatus(@RequestBody @Valid UpdateOrderStatusRequest request) {
         // Ritorna l'ordine aggiornato

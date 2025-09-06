@@ -12,14 +12,11 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final UserRoleRepository userRoleRepository;
 
     public UserService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder,
                        UserRoleRepository userRoleRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
         this.userRoleRepository = userRoleRepository;
     }
 
@@ -33,7 +30,7 @@ public class UserService {
     }
 
     public UserRole getDefaultUserRole() {
-        return userRoleRepository.findByNameAndIsActiveTrue("UTENTE")
-                .orElseThrow(() -> new ResourceNotFoundException("Ruolo non trovato: UTENTE"));
+        return userRoleRepository.findByNameAndIsActiveTrue("ACQUIRENTE")
+                .orElseThrow(() -> new ResourceNotFoundException("Ruolo non trovato: ACQUIRENTE"));
     }
 }

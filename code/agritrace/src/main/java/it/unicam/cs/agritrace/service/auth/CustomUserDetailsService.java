@@ -2,6 +2,7 @@ package it.unicam.cs.agritrace.service.auth;
 
 import it.unicam.cs.agritrace.model.User;
 import it.unicam.cs.agritrace.repository.UserRepository;
+import it.unicam.cs.agritrace.service.UserService;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,16 +14,16 @@ import java.util.List;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public CustomUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public CustomUserDetailsService(
+            UserService userService) {
+        this.userService = userService;
     }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmailAndIsDeletedFalse(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+        User user = userService.getUserByEmail(email);
 
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(), // email come username
