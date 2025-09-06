@@ -65,5 +65,4 @@ public class Event {
 
     @OneToMany(mappedBy = "event")
     private Set<EventPartecipant> eventPartecipants = new LinkedHashSet<>();
-
 }

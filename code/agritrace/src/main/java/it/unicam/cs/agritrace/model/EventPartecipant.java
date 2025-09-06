@@ -16,6 +16,7 @@ import java.time.Instant;
 @Table(name = "EVENT_PARTECIPANTS")
 public class EventPartecipant {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
@@ -32,5 +33,24 @@ public class EventPartecipant {
 
     @Column(name = "RESPONDED_AT")
     private Instant respondedAt;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.RESTRICT)
+    @JoinColumn(name = "PARTECIPANT_ID", nullable = false)
+    private Company company;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.RESTRICT)
+    @JoinColumn(name = "INVITER_ID", nullable = false)
+    private User inviter;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.RESTRICT)
+    @ColumnDefault("1")
+    @JoinColumn(name = "STATUS_ID", nullable = false)
+    private Status status;
 
 }
