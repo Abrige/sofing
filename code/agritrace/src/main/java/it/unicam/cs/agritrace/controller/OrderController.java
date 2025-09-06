@@ -1,5 +1,7 @@
 package it.unicam.cs.agritrace.controller;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import it.unicam.cs.agritrace.dtos.common.OrderDTO;
 import it.unicam.cs.agritrace.dtos.requests.UpdateOrderStatusRequest;
 import it.unicam.cs.agritrace.dtos.responses.OrderResponse;
@@ -81,7 +83,24 @@ public class OrderController {
     @Operation(
             summary = "Aggiorna lo stato di un ordine",
             description = "Permette di aggiornare lo stato di un ordine tra quelli consentiti. " +
-                    "Richiede uno dei ruoli: PRODUTTORE, TRASFORMATORE, DISTRIBUTORE."
+                    "Richiede uno dei ruoli: PRODUTTORE, TRASFORMATORE, DISTRIBUTORE.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Dati necessari per aggiornare lo stato dell'ordine",
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "Esempio aggiornamento stato ordine",
+                                    value = """
+                {
+                  "order_id": 1,
+                  "status": "shipped",
+                  "delivery_date": "2025-09-10"
+                }
+                """
+                            )
+                    )
+            )
     )
     @ApiResponse(responseCode = "200", description = "Ordine aggiornato con successo")
     @ApiResponse(responseCode = "400", description = "Richiesta non valida")
