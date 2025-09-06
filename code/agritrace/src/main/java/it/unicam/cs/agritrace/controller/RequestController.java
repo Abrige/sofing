@@ -19,11 +19,9 @@ import java.util.List;
 public class RequestController {
 
     private final RequestService requestService;
-    private final UserRepository userRepository;
 
-    public RequestController(RequestService requestService, UserRepository userRepository) {
+    public RequestController(RequestService requestService) {
         this.requestService = requestService;
-        this.userRepository = userRepository;
     }
 
     @GetMapping

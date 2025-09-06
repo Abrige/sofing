@@ -4,10 +4,10 @@ import it.unicam.cs.agritrace.dtos.payloads.PackagePayload;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.mappers.PayloadMapper;
 import it.unicam.cs.agritrace.model.*;
+import it.unicam.cs.agritrace.repository.CompanyRepository;
+import it.unicam.cs.agritrace.repository.ProductRepository;
 import it.unicam.cs.agritrace.repository.RequestTypeRepository;
-import it.unicam.cs.agritrace.service.CompanyService;
-import it.unicam.cs.agritrace.service.PackageService;
-import it.unicam.cs.agritrace.service.ProductService;
+import it.unicam.cs.agritrace.repository.TypicalPackageRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,23 +17,25 @@ import java.util.stream.Collectors;
 @Component
 public class AddPackageRequestHandler implements RequestHandler {
 
-    private final PackageService packageService;
     private final PayloadMapper payloadMapper;
     private final RequestType supportedRequestType;
-    private final ProductService productService;
-    private final CompanyService companyService;
+    private final ProductRepository productRepository;
+    private final CompanyRepository companyRepository;
+    private final TypicalPackageRepository typicalPackageRepository;
 
-    public AddPackageRequestHandler(PackageService packageService,
-                                    PayloadMapper payloadMapper,
-                                    RequestTypeRepository requestTypeRepository,
-                                    ProductService productService,
-                                    CompanyService companyService) {
-        this.packageService = packageService;
+    public AddPackageRequestHandler(
+            PayloadMapper payloadMapper,
+            RequestTypeRepository requestTypeRepository,
+            ProductRepository productRepository,
+            CompanyRepository companyRepository,
+            TypicalPackageRepository typicalPackageRepository) {
+
         this.payloadMapper = payloadMapper;
         this.supportedRequestType = requestTypeRepository.findByName("ADD_PACKAGE")
                 .orElseThrow(() -> new ResourceNotFoundException("RequestType ADD_PACKAGE non trovato"));
-        this.productService = productService;
-        this.companyService = companyService;
+        this.productRepository = productRepository;
+        this.companyRepository = companyRepository;
+        this.typicalPackageRepository = typicalPackageRepository;
     }
 
     @Override
@@ -44,24 +46,24 @@ public class AddPackageRequestHandler implements RequestHandler {
     @Override
     @Transactional
     public void handle(Request request) {
-        // 1. Converto JSON in DTO
         PackagePayload payload = payloadMapper.mapPayload(request, PackagePayload.class);
 
-        // 2. Creo il pacchetto
         TypicalPackage pkg = new TypicalPackage();
         pkg.setName(payload.name());
         pkg.setDescription(payload.description());
         pkg.setPrice(payload.price());
-
-        // produttore
-        Company producer = companyService.getCompanyById(payload.producerId());
-        pkg.setProducer(producer);
         pkg.setIsActive(true);
 
-        // 3. Creo gli item
+        // produttore
+        Company producer = companyRepository.findById(payload.producerId())
+                .orElseThrow(() -> new ResourceNotFoundException("Company con id=" + payload.producerId() + " non trovato"));
+        pkg.setProducer(producer);
+
+        // items
         Set<TypicalPackageItem> items = payload.items().stream()
                 .map(dto -> {
-                    Product product = productService.findProductById(dto.productId());
+                    Product product = productRepository.findById(dto.productId())
+                            .orElseThrow(() -> new ResourceNotFoundException("Prodotto con id=" + dto.productId() + " non trovato"));
                     TypicalPackageItem item = new TypicalPackageItem();
                     item.setProduct(product);
                     item.setQuantity(dto.quantity());
@@ -72,10 +74,7 @@ public class AddPackageRequestHandler implements RequestHandler {
 
         pkg.setTypicalPackageItems(items);
 
-        // 4. Salvo pacchetto e item
-        TypicalPackage saved = packageService.savePackage(pkg);
-
-        // 5. Aggiorno la request col targetId
+        TypicalPackage saved = typicalPackageRepository.save(pkg);
         request.setTargetId(saved.getId());
     }
 }

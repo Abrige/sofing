@@ -3,7 +3,7 @@ package it.unicam.cs.agritrace.controller;
 
 import it.unicam.cs.agritrace.dtos.payloads.CertificationPayload;
 import it.unicam.cs.agritrace.dtos.payloads.DeletePayload;
-import it.unicam.cs.agritrace.dtos.responses.CertificationsResponse;
+import it.unicam.cs.agritrace.dtos.responses.CertificationResponse;
 import it.unicam.cs.agritrace.dtos.responses.OperationResponse;
 import it.unicam.cs.agritrace.service.CertificationService;
 import jakarta.validation.Valid;
@@ -25,12 +25,12 @@ public class CertificationController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<CertificationsResponse>> getAllCertifications(){
+    public ResponseEntity<List<CertificationResponse>> getAllCertifications(){
         return ResponseEntity.ok(certificationService.getCertifications());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CertificationsResponse> getCertificationById(@PathVariable int id){
+    public ResponseEntity<CertificationResponse> getCertificationById(@PathVariable int id){
         return ResponseEntity.ok(certificationService.getCertificationsById(id));
     }
 

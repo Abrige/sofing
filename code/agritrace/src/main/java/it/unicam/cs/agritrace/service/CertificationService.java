@@ -2,7 +2,7 @@ package it.unicam.cs.agritrace.service;
 
 import it.unicam.cs.agritrace.dtos.payloads.CertificationPayload;
 import it.unicam.cs.agritrace.dtos.payloads.DeletePayload;
-import it.unicam.cs.agritrace.dtos.responses.CertificationsResponse;
+import it.unicam.cs.agritrace.dtos.responses.CertificationResponse;
 import it.unicam.cs.agritrace.dtos.responses.OperationResponse;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.model.Certification;
@@ -38,11 +38,11 @@ public class CertificationService {
         this.userService = userService;
     }
 
-    public List<CertificationsResponse> getCertifications(){
+    public List<CertificationResponse> getCertifications(){
         List<Certification> AllCert = certificationRepository.findAllByIsActiveTrue();
 
-        List<CertificationsResponse> AllCertResponse = AllCert.stream().map(
-                Item -> new CertificationsResponse( Item.getId(),
+        List<CertificationResponse> AllCertResponse = AllCert.stream().map(
+                Item -> new CertificationResponse( Item.getId(),
                         Item.getName(),
                         Item.getDescription(),
                         Item.getIssuingBody())
@@ -53,12 +53,12 @@ public class CertificationService {
 
     }
 
-    public CertificationsResponse getCertificationsById(int id) {
+    public CertificationResponse getCertificationsById(int id) {
 
         Certification cert = certificationRepository.findByIdAndIsActiveTrue(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Certificazione non trovata: " + id));
 
-        return new CertificationsResponse(
+        return new CertificationResponse(
                 cert.getId(),
                 cert.getName(),
                 cert.getDescription(),

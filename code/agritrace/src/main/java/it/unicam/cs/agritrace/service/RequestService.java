@@ -1,18 +1,16 @@
 package it.unicam.cs.agritrace.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import it.unicam.cs.agritrace.dtos.common.ReviewRequestDTO;
 import it.unicam.cs.agritrace.dtos.responses.RequestResponse;
 import it.unicam.cs.agritrace.enums.StatusType;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.mappers.RequestMapper;
-import it.unicam.cs.agritrace.model.Request;
-import it.unicam.cs.agritrace.model.RequestType;
-import it.unicam.cs.agritrace.model.Status;
-import it.unicam.cs.agritrace.model.User;
-import it.unicam.cs.agritrace.repository.*;
+import it.unicam.cs.agritrace.model.*;
+import it.unicam.cs.agritrace.repository.RequestRepository;
+import it.unicam.cs.agritrace.repository.RequestTypeRepository;
 import it.unicam.cs.agritrace.service.factory.RequestHandlerFactory;
 import it.unicam.cs.agritrace.service.handler.RequestHandler;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -75,6 +73,7 @@ public class RequestService {
     @Transactional
     public void reviewRequest(ReviewRequestDTO reviewRequestDTO) {
         Request request = getRequestById(reviewRequestDTO.requestId());
+        // Pending status per confronto
         Status pendingStatus = statusService.getStatusByName("pending");
 
         // Se lo status non è pending non va bene, non puoi usare quella richiesta, lancia un errore
@@ -82,17 +81,41 @@ public class RequestService {
             throw new IllegalArgumentException("Selezionare una Request non in pending non si può fare");
         }
 
+        // Tipo di richiesta che è stata fatta
+        RequestType requesterType = request.getRequestType();
+        // Tipo di richiesta ADD_COMPANY
+        RequestType addCompanyType = getRequestTypeByName("ADD_COMPANY");
+
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName(); // email dall’utente loggato
 
-        User curator = userService.getUserByEmail(email);
+        User reviewer = userService.getUserByEmail(email);
+
+
+        UserRole curatorRole = userService.getUserRoleByName("CURATORE");
+        UserRole gestoreRole = userService.getUserRoleByName("GESTORE_DELLA_PIATTAFORMA");
+
+        // Se la richiesta era di tipo ADD_COMPANY
+        if (requesterType.equals(addCompanyType)) {
+            // E il ruolo non è quello del gestore
+            if (!reviewer.getRole().equals(gestoreRole)) {
+                throw new AccessDeniedException("Solo un GESTORE può approvare richieste di tipo ADD_COMPANY");
+            }
+            //Se la richiesta è tutto tranne ADD_COMPANY
+        } else {
+            // E il ruolo non è il curatore
+            if (!reviewer.getRole().equals(curatorRole)) {
+                throw new AccessDeniedException("Solo un CURATORE può approvare questo tipo di richiesta");
+            }
+        }
 
         // Se la action è reject → chiudo subito la richiesta
         if (StatusType.REJECTED.equals(reviewRequestDTO.action())) {
-            Status rejectedStatus = statusService.getStatusByName("pending");
+            Status rejectedStatus = statusService.getStatusByName("rejected");
             request.setStatus(rejectedStatus);
             request.setReviewedAt(Instant.now());
-            request.setCurator(curator);
+            request.setCurator(reviewer);
             if(reviewRequestDTO.decisionNotes() != null) {
                 request.setDecisionNotes(reviewRequestDTO.decisionNotes());
             }
@@ -114,7 +137,7 @@ public class RequestService {
         // Aggiorno lo status della request ad ACCEPTED
         Status acceptedStatus = statusService.getStatusById(StatusType.ACCEPTED.getId());
         request.setStatus(acceptedStatus);
-        request.setCurator(curator);
+        request.setCurator(reviewer);
         request.setReviewedAt(Instant.now());
         requestRepository.save(request);
     }
@@ -129,5 +152,9 @@ public class RequestService {
 
     public RequestType getRequestTypeByName(String name) {
         return requestTypeRepository.findByName(name).orElseThrow(() -> new ResourceNotFoundException("Request non trovata con nome=" + name));
+    }
+
+    public Request saveRequest(Request request) {
+        return requestRepository.save(request);
     }
 }

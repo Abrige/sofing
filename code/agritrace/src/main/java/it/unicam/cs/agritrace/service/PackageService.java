@@ -27,18 +27,21 @@ public class PackageService {
     private final RequestFactory requestFactory;
     private final ProductService productService;
     private final UserService userService;
+    private final RequestService requestService;
 
     public PackageService(
             RequestRepository requestRepository,
             TypicalPackageRepository typicalPackageRepository1,
             RequestFactory requestFactory,
             ProductService productService,
-            UserService userService) {
+            UserService userService,
+            RequestService requestService) {
         this.requestRepository = requestRepository;
         this.typicalPackageRepository = typicalPackageRepository1;
         this.requestFactory = requestFactory;
         this.productService = productService;
         this.userService = userService;
+        this.requestService = requestService;
     }
 
     // crea una richiesta di creazione di un pacchetto
@@ -65,7 +68,7 @@ public class PackageService {
                 requester
         );
 
-        Request savedRequest = requestRepository.save(request);
+        Request savedRequest = requestService.saveRequest(request);
 
         return new OperationResponse(savedRequest.getId(), "PACKAGE", "CREATE", savedRequest.getCreatedAt());
     }

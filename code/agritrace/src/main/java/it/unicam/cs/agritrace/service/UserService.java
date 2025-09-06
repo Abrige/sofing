@@ -33,4 +33,8 @@ public class UserService {
         return userRoleRepository.findByNameAndIsActiveTrue("ACQUIRENTE")
                 .orElseThrow(() -> new ResourceNotFoundException("Ruolo non trovato: ACQUIRENTE"));
     }
+
+    public UserRole getUserRoleByName(String name) {
+        return userRoleRepository.findByNameAndIsActiveTrue(name).orElseThrow(() -> new ResourceNotFoundException("Ruolo non trovato: " + name));
+    }
 }

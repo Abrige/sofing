@@ -7,7 +7,7 @@ import it.unicam.cs.agritrace.model.Request;
 import it.unicam.cs.agritrace.model.RequestType;
 import it.unicam.cs.agritrace.model.TypicalPackage;
 import it.unicam.cs.agritrace.repository.RequestTypeRepository;
-import it.unicam.cs.agritrace.service.PackageService;
+import it.unicam.cs.agritrace.repository.TypicalPackageRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,15 +16,15 @@ public class DeletePackageRequestHandler implements RequestHandler {
 
     private final RequestType requestType;
     private final PayloadMapper payloadMapper;
-    private final PackageService packageService;
+    private final TypicalPackageRepository typicalPackageRepository;
 
     public DeletePackageRequestHandler(RequestTypeRepository requestTypeRepository,
                                        PayloadMapper payloadMapper,
-                                       PackageService packageService) {
+                                       TypicalPackageRepository typicalPackageRepository) {
         this.requestType = requestTypeRepository.findByName("DELETE_PACKAGE")
                 .orElseThrow(() -> new ResourceNotFoundException("RequestType DELETE_PACKAGE non trovato"));
         this.payloadMapper = payloadMapper;
-        this.packageService = packageService;
+        this.typicalPackageRepository = typicalPackageRepository;
     }
 
     @Override
@@ -37,9 +37,10 @@ public class DeletePackageRequestHandler implements RequestHandler {
     public void handle(Request request) {
         DeletePayload payload = payloadMapper.mapPayload(request, DeletePayload.class);
 
-        TypicalPackage pkg = packageService.getPackageById(payload.targetId());
+        TypicalPackage pkg = typicalPackageRepository.findByIdAndIsActiveTrue(payload.targetId())
+                .orElseThrow(() -> new ResourceNotFoundException("Typical package non trovato"));
         pkg.setIsActive(false); // soft delete
-        TypicalPackage saved = packageService.savePackage(pkg);
+        TypicalPackage saved = typicalPackageRepository.save(pkg);
 
         request.setTargetId(saved.getId());
     }

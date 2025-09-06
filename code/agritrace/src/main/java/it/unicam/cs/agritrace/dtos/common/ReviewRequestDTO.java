@@ -5,6 +5,15 @@ import it.unicam.cs.agritrace.enums.StatusType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
+/*
+        JSON DI ESEMPIO:
+        {
+            "request_id":48,
+            "action": "accept",
+            "decision_notes": "prova prova"
+        }
+*/
+
 public record ReviewRequestDTO(
         @JsonProperty("request_id")
         @NotNull

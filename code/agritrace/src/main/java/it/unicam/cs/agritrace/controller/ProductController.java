@@ -10,6 +10,7 @@ import it.unicam.cs.agritrace.validators.update.ValidProductUpdate;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,14 +26,18 @@ public class ProductController {
         this.productService = productService;
     }
 
-    // POST /api/products/{id}
+    // –––––––––––––––––––––––––– Get Product By Id ––––––––––––––––––––––––––
+    // GET /api/products/{id}
+    @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE', 'DISTRIBUTORE_DI_TIPICITA')")
     @GetMapping(value="/{id}")
     public ResponseEntity<ProductDTO> getProduct(@PathVariable int id) {
         ProductDTO product = productService.getProductById(id); // delega al service
         return ResponseEntity.ok(product);
     }
 
+    // –––––––––––––––––––––––––– Get All Products ––––––––––––––––––––––––––
     // GET /api/products
+    @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE', 'DISTRIBUTORE_DI_TIPICITA')")
     @GetMapping
     public ResponseEntity<List<ProductDTO>> getProducts(){
         List<ProductDTO> products = productService.getAllProducts();
@@ -44,6 +49,7 @@ public class ProductController {
 
     // –––––––––––––––––––––––––– CREATE PRODUCT ––––––––––––––––––––––––––
     // POST /api/products
+    @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE')")
     @PostMapping
     public ResponseEntity<OperationResponse> createProduct(
             @Valid @ValidProductCreate @RequestBody ProductPayload payload) {
@@ -53,6 +59,7 @@ public class ProductController {
 
     // –––––––––––––––––––––––––– UPDATE PRODUCT ––––––––––––––––––––––––––
     // PUT /api/products
+    @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE')")
     @PutMapping
     public ResponseEntity<OperationResponse> updateProduct(
             @Valid @ValidProductUpdate @RequestBody ProductPayload productPayload) {
@@ -63,6 +70,7 @@ public class ProductController {
 
     // –––––––––––––––––––––––––– DELETE PRODUCT ––––––––––––––––––––––––––
     // DELETE /api/products/{id}
+    @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE')")
     @DeleteMapping("/{id}")
     public ResponseEntity<OperationResponse> deleteProduct(@PathVariable int id) {
         OperationResponse operationResponse = productService.deleteProductRequest(new DeletePayload(id));
