@@ -4,6 +4,7 @@ import it.unicam.cs.agritrace.dtos.common.PackageDTO;
 import it.unicam.cs.agritrace.dtos.payloads.DeletePayload;
 import it.unicam.cs.agritrace.dtos.payloads.PackagePayload;
 import it.unicam.cs.agritrace.dtos.responses.OperationResponse;
+import it.unicam.cs.agritrace.model.TypicalPackage;
 import it.unicam.cs.agritrace.service.PackageService;
 import it.unicam.cs.agritrace.validators.create.ValidPackageCreate;
 import it.unicam.cs.agritrace.validators.update.ValidPackageUpdate;
@@ -28,6 +29,11 @@ public class PackageController {
     @GetMapping
     public ResponseEntity<List<PackageDTO>> getAllPackages() {
         return ResponseEntity.ok(packageService.getPackages());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PackageDTO> getPackageById(@PathVariable int   id){
+        return ResponseEntity.ok(packageService.getPackageDTOById(id));
     }
 
     // –––––––––––––––––––––––––– CREATE PACKAGE ––––––––––––––––––––––––––

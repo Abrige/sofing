@@ -160,11 +160,11 @@ public class OrderService {
                 order.getStatus(),
                 order.getOrderedAt(),
                 order.getDeliveryDate(),
-                order.getDeliveryLocation()
-                //, order.getOrderItems()
+                order.getDeliveryLocation(),
+                order.getOrderItems()
         );
     }
 
 
-
 }
+

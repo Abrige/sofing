@@ -10,5 +10,4 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     List<Order> findByStatus_Id(Integer id);
     // Trova un ordine in base al nome dello status
     List<Order> findByStatus_Name(String name);
-
 }

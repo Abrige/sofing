@@ -22,8 +22,8 @@ public record OrderResponse(
         @JsonProperty("delivery_date")
         LocalDate deliveryDate,
         @JsonProperty("delivery_location")
-        Location DeliveryLocation
-        //,@JsonProperty("order_items")
-        //Set<OrderItem> OrderItems
+        Location DeliveryLocation,
+        @JsonProperty("order_items")
+        Set<OrderItem> OrderItems
 
 ) { }
