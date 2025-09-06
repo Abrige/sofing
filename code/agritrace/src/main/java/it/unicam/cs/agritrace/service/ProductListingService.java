@@ -1,5 +1,6 @@
 package it.unicam.cs.agritrace.service;
 
+import it.unicam.cs.agritrace.dtos.common.ProductListingDTO;
 import it.unicam.cs.agritrace.dtos.requests.AddProductToListing;
 import it.unicam.cs.agritrace.dtos.responses.ProductListingResponse;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
@@ -8,6 +9,7 @@ import it.unicam.cs.agritrace.model.Product;
 import it.unicam.cs.agritrace.model.ProductListing;
 import it.unicam.cs.agritrace.repository.ProductListingRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -22,6 +24,7 @@ public class ProductListingService {
     public ProductListingService(ProductService productService, ProductListingRepository productListingRepository) {
         this.productService = productService;
         this.productListingRepository = productListingRepository;
+
     }
 
     @Transactional
@@ -75,6 +78,21 @@ public class ProductListingService {
                         productListing.getUnitOfMeasure()
                 ))
                 .toList();
+    }
+
+    public ProductListingResponse getListingbyId(int id){
+        ProductListing productListing = productListingRepository.findProductById(id);
+
+        return new ProductListingResponse(
+                productListing.getId(),
+                productListing.getProduct().getName(),
+                productListing.getSeller().getName(),
+                productListing.getPrice(),
+                productListing.getQuantityAvailable(),
+                productListing.getUnitOfMeasure()
+        );
+
+
     }
 
     public ProductListing getProductListingById(int id) {

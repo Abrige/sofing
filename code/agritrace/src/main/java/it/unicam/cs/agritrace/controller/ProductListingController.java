@@ -1,5 +1,6 @@
 package it.unicam.cs.agritrace.controller;
 
+import it.unicam.cs.agritrace.dtos.common.ProductListingDTO;
 import it.unicam.cs.agritrace.dtos.requests.AddProductToListing;
 import it.unicam.cs.agritrace.dtos.responses.ProductListingResponse;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
@@ -52,5 +53,12 @@ public class ProductListingController {
         List<ProductListingResponse> productListingResponses = productListingService.getAllListing();
         return ResponseEntity.ok(productListingResponses);
     }
+@GetMapping("/{id}")
+    public ResponseEntity<ProductListingResponse> getProductById(@PathVariable int id){
+        ProductListingResponse productListingResponse = productListingService.getListingbyId(id);
+
+        return ResponseEntity.ok(productListingResponse);
+}
+
 
 }
