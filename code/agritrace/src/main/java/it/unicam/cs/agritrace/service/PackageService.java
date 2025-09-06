@@ -131,6 +131,13 @@ public class PackageService {
                 .toList();
     }
 
+    public PackageDTO getPackageDTOById(Integer id) {
+        TypicalPackage pkg = typicalPackageRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Il package con id=" + id + " non è stato trovato"));
+
+        return PackageMapper.toDTO(pkg);
+    }
+
 
     public TypicalPackage savePackage(TypicalPackage pkg) {
         return typicalPackageRepository.save(pkg);
