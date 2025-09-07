@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
 
-public record ProductListingResponse (@JsonProperty("product_id") int productId,
+public record   ProductListingResponse (@JsonProperty("product_id") int productId,
                                       String name,
                                      String seller,
                                      BigDecimal price,
