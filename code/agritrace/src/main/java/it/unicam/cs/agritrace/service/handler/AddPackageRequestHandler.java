@@ -1,13 +1,10 @@
 package it.unicam.cs.agritrace.service.handler;
 
-import it.unicam.cs.agritrace.dtos.payloads.PackagePayload;
+import it.unicam.cs.agritrace.dtos.payloads.PackageCreateUpdatePayload;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.mappers.PayloadMapper;
 import it.unicam.cs.agritrace.model.*;
-import it.unicam.cs.agritrace.repository.CompanyRepository;
-import it.unicam.cs.agritrace.repository.ProductRepository;
-import it.unicam.cs.agritrace.repository.RequestTypeRepository;
-import it.unicam.cs.agritrace.repository.TypicalPackageRepository;
+import it.unicam.cs.agritrace.repository.*;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,13 +19,15 @@ public class AddPackageRequestHandler implements RequestHandler {
     private final ProductRepository productRepository;
     private final CompanyRepository companyRepository;
     private final TypicalPackageRepository typicalPackageRepository;
+    private final UserRepository userRepository;
 
     public AddPackageRequestHandler(
             PayloadMapper payloadMapper,
             RequestTypeRepository requestTypeRepository,
             ProductRepository productRepository,
             CompanyRepository companyRepository,
-            TypicalPackageRepository typicalPackageRepository) {
+            TypicalPackageRepository typicalPackageRepository,
+            UserRepository userRepository) {
 
         this.payloadMapper = payloadMapper;
         this.supportedRequestType = requestTypeRepository.findByName("ADD_PACKAGE")
@@ -36,6 +35,7 @@ public class AddPackageRequestHandler implements RequestHandler {
         this.productRepository = productRepository;
         this.companyRepository = companyRepository;
         this.typicalPackageRepository = typicalPackageRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -46,17 +46,15 @@ public class AddPackageRequestHandler implements RequestHandler {
     @Override
     @Transactional
     public void handle(Request request) {
-        PackagePayload payload = payloadMapper.mapPayload(request, PackagePayload.class);
+        PackageCreateUpdatePayload payload = payloadMapper.mapPayload(request, PackageCreateUpdatePayload.class);
 
         TypicalPackage pkg = new TypicalPackage();
         pkg.setName(payload.name());
         pkg.setDescription(payload.description());
         pkg.setPrice(payload.price());
         pkg.setIsActive(true);
-
-        // produttore
-        Company producer = companyRepository.findById(payload.producerId())
-                .orElseThrow(() -> new ResourceNotFoundException("Company con id=" + payload.producerId() + " non trovato"));
+        Company producer = companyRepository.findByOwnerAndIsDeletedFalse(request.getRequester())
+                .orElseThrow(() -> new ResourceNotFoundException("Owner non trovato"));
         pkg.setProducer(producer);
 
         // items

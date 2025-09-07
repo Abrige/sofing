@@ -2,7 +2,6 @@ package it.unicam.cs.agritrace.service;
 
 import it.unicam.cs.agritrace.dtos.common.OrderDTO;
 import it.unicam.cs.agritrace.dtos.requests.UpdateOrderStatusRequest;
-import it.unicam.cs.agritrace.dtos.responses.OrderResponse;
 import it.unicam.cs.agritrace.enums.StatusType;
 import it.unicam.cs.agritrace.exceptions.OrderStatusInvalidException;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
@@ -17,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,13 +51,6 @@ public class OrderService {
         return orders.stream()
                 .map(OrderMapper::toDto)  // usa il mapper
                 .collect(Collectors.toList());
-    }
-
-    // Recupera un ordine per id e lo mappa a DTO
-    public OrderDTO getOrderById(Integer id) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Ordine non trovato con id " + id));
-        return OrderMapper.toDto(order);
     }
 
     // Recupera tutti gli ordini in base allo status e li mappa a DTO
@@ -104,65 +97,72 @@ public class OrderService {
 
     @Transactional
     public OrderDTO createOrderFromCart(int cartId) {
-        ShoppingCart cartEntity = shoppingCartService.getCartById(cartId);
-
-        Set<ShoppingCartItem> items = cartEntity.getShoppingCartItems();
+        // 1. Recupera il carrello
+        ShoppingCart cart = shoppingCartService.getCartById(cartId);
+        Set<ShoppingCartItem> items = cart.getShoppingCartItems();
 
         if (items.isEmpty()) {
             throw new IllegalArgumentException("Il carrello è vuoto");
         }
 
-        // Calcola totale
-        BigDecimal totalAmount = items.stream()
-                .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        // Crea ordine
+        // 2. Crea l'ordine
         Order order = new Order();
-        User buyer = cartEntity.getUser();
+        User buyer = cart.getUser();
         order.setBuyer(buyer);
-        order.setTotalAmount(totalAmount);
-        // La delivery date verrà messa quando il fornitore aggiorna lo stato dell'ordine
-        order.setStatus(statusService.getStatusByName("new")); // STATUS = NEW
+        order.setStatus(statusService.getStatusByName("new"));
         order.setOrderedAt(Instant.now());
-        // La delivery location la prende dall'utente
         order.setDeliveryLocation(buyer.getLocation());
 
-        orderRepository.save(order);
+        BigDecimal totalAmount = BigDecimal.ZERO;
 
-        // Aggiungi gli items all'ordine
-        for (ShoppingCartItem cartItem : items) {
-            OrderItem item = new OrderItem();
-            item.setOrder(order);
-            item.setProductListing(cartItem.getProduct());
-            item.setQuantity(cartItem.getQuantity());
-            item.setUnitPrice(cartItem.getProduct().getPrice());
-            item.setTotalPrice(cartItem.getProduct().getPrice()
-                    .multiply(BigDecimal.valueOf(cartItem.getQuantity())));
-            orderItemRepository.save(item);
-            // Rimuovi la riga dal carrello. Grazie a orphanRemoval=true, verrà cancellata dal DB.
-            cartEntity.getShoppingCartItems().remove(cartItem);
+        // 3. Itera sugli item del carrello usando una copia per evitare ConcurrentModificationException
+        List<ShoppingCartItem> itemsCopy = new ArrayList<>(items);
+
+        for (ShoppingCartItem cartItem : itemsCopy) {
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrder(order);
+            orderItem.setQuantity(cartItem.getQuantity());
+
+            BigDecimal unitPrice;
+
+            if (cartItem.getProductListing() != null) {
+                unitPrice = cartItem.getProductListing().getPrice();
+                orderItem.setProductListing(cartItem.getProductListing());
+            } else if (cartItem.getTypicalPackage() != null) {
+                unitPrice = cartItem.getTypicalPackage().getPrice();
+                orderItem.setTypicalPackage(cartItem.getTypicalPackage());
+            } else {
+                throw new IllegalStateException("ShoppingCartItem senza prodotto né pacchetto!");
+            }
+
+            orderItem.setUnitPrice(unitPrice);
+            orderItem.setTotalPrice(unitPrice.multiply(BigDecimal.valueOf(cartItem.getQuantity())));
+            totalAmount = totalAmount.add(orderItem.getTotalPrice());
+
+            // Aggiungi l'item all'ordine (CascadeType.ALL si occuperà del salvataggio)
+            order.getOrderItems().add(orderItem);
+
+            // Rimuovi l'item dal carrello
+            cart.getShoppingCartItems().remove(cartItem);
         }
 
-        // Svuota il carrello, le righe vengono fisicamente eliminate dal DB
-        shoppingCartRepository.save(cartEntity); // persiste lo svuotamento
+        order.setTotalAmount(totalAmount);
 
+        // 4. Salva l'ordine (gli OrderItem vengono salvati automaticamente grazie a CascadeType.ALL)
+        orderRepository.save(order);
+
+        // 5. Salva il carrello svuotato
+        shoppingCartRepository.save(cart);
+
+        // 6. Mappa l'ordine in DTO e restituiscilo
         return OrderMapper.toDto(order);
     }
 
-    public OrderResponse GetOrderById(Integer id){
-        Order order = orderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Ordine non trovato: " + id));
+    public OrderDTO getOrderById(Integer id){
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Ordine non trovato: " + id));
 
-        return new OrderResponse(
-                order.getId(),
-                order.getBuyer(),
-                order.getTotalAmount(),
-                order.getStatus(),
-                order.getOrderedAt(),
-                order.getDeliveryDate(),
-                order.getDeliveryLocation(),
-                order.getOrderItems()
-        );
+        return OrderMapper.toDto(order);
     }
 
 

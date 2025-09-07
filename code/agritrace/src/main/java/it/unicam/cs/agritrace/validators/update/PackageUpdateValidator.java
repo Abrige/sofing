@@ -1,13 +1,13 @@
 package it.unicam.cs.agritrace.validators.update;
 
-import it.unicam.cs.agritrace.dtos.payloads.PackagePayload;
+import it.unicam.cs.agritrace.dtos.payloads.PackageCreateUpdatePayload;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class PackageUpdateValidator implements ConstraintValidator<ValidPackageUpdate, PackagePayload> {
+public class PackageUpdateValidator implements ConstraintValidator<ValidPackageUpdate, PackageCreateUpdatePayload> {
 
     @Override
-    public boolean isValid(PackagePayload payload, ConstraintValidatorContext context) {
+    public boolean isValid(PackageCreateUpdatePayload payload, ConstraintValidatorContext context) {
         if (payload == null) return false;
         context.disableDefaultConstraintViolation();
 
@@ -25,7 +25,6 @@ public class PackageUpdateValidator implements ConstraintValidator<ValidPackageU
                 payload.name() != null ||
                         payload.description() != null ||
                         payload.price() != null ||
-                        payload.producerId() != null ||
                         (payload.items() != null && !payload.items().isEmpty());
 
         if (!anyOtherPresent) {

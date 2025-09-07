@@ -30,8 +30,7 @@ public class Order {
     @JoinColumn(name = "BUYER_ID", nullable = false)
     private User buyer;
 
-    @NotNull
-    @Column(name = "TOTAL_AMOUNT", nullable = false, precision = 19)
+    @Column(name = "TOTAL_AMOUNT", precision = 19)
     private BigDecimal totalAmount;
 
     @NotNull

@@ -8,8 +8,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import it.unicam.cs.agritrace.dtos.common.ReviewRequestDTO;
 import it.unicam.cs.agritrace.dtos.responses.RequestResponse;
 import it.unicam.cs.agritrace.enums.StatusType;
-import it.unicam.cs.agritrace.model.User;
-import it.unicam.cs.agritrace.repository.UserRepository;
 import it.unicam.cs.agritrace.service.RequestService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -46,18 +44,6 @@ public class RequestController {
             response = requestService.getAllRequests();
         }
         return ResponseEntity.ok(response);
-    }
-
-    //Ritorna le richieste che hanno statusName : pending
-    @GetMapping("/pending")
-    @Operation(
-            summary = "Richieste in attesa",
-            description = "Ritorna tutte le richieste che hanno stato 'PENDING' e sono in attesa di revisione"
-    )
-    @ApiResponse(responseCode = "200", description = "Richieste pending recuperate con successo")
-    public ResponseEntity<List<RequestResponse>> getPendingApproval() {
-        List<RequestResponse> pendingRequests = requestService.getAllPendingRequests();
-        return ResponseEntity.ok(pendingRequests);
     }
 
     //Approvazione richiesta

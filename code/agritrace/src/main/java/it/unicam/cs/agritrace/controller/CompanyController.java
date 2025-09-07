@@ -26,11 +26,13 @@ public class CompanyController {
         this.requestService = requestService;
     }
 
+    @PreAuthorize("hasRole('GESTORE_DELLA_PIATTAFORMA')")
     @GetMapping
     public ResponseEntity<List<CompanyDTO>> getCompanies() {
         return ResponseEntity.ok().body(companyService.getAllCompanies());
     }
 
+    @PreAuthorize("hasRole('GESTORE_DELLA_PIATTAFORMA')")
     @GetMapping("/{id}")
     public ResponseEntity<CompanyDTO> getCompany(@PathVariable int id) {
         return ResponseEntity.ok().body(companyService.getCompanyByIdDto(id));

@@ -1,13 +1,13 @@
 package it.unicam.cs.agritrace.validators.create;
 
-import it.unicam.cs.agritrace.dtos.payloads.ProductPayload;
+import it.unicam.cs.agritrace.dtos.payloads.ProductCreateUpdatePayload;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class ProductCreateValidator implements ConstraintValidator<ValidProductCreate, ProductPayload> {
+public class ProductCreateValidator implements ConstraintValidator<ValidProductCreate, ProductCreateUpdatePayload> {
 
     @Override
-    public boolean isValid(ProductPayload payload, ConstraintValidatorContext context) {
+    public boolean isValid(ProductCreateUpdatePayload payload, ConstraintValidatorContext context) {
         if (payload == null) return false;
         context.disableDefaultConstraintViolation();
 
@@ -44,11 +44,6 @@ public class ProductCreateValidator implements ConstraintValidator<ValidProductC
         if (payload.harvestSeasonId() == null) {
             context.buildConstraintViolationWithTemplate("harvestSeasonId è obbligatorio")
                     .addPropertyNode("harvestSeasonId").addConstraintViolation();
-            valid = false;
-        }
-        if (payload.producerId() == null) {
-            context.buildConstraintViolationWithTemplate("producerId è obbligatorio")
-                    .addPropertyNode("producerId").addConstraintViolation();
             valid = false;
         }
 

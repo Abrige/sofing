@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 
 public record OrderItemDTO(
-        ProductListingDTO product,
+        ProductListingDTO product,     // null se è un pacchetto
+        PackageDTO typicalPackage,     // null se è un prodotto singolo
         int quantity,
         @JsonProperty("unit_price")
         BigDecimal unitPrice,

@@ -1,7 +1,6 @@
 package it.unicam.cs.agritrace.service.handler;
 
 import it.unicam.cs.agritrace.dtos.payloads.CertificationPayload;
-import it.unicam.cs.agritrace.dtos.payloads.PackagePayload;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.mappers.PayloadMapper;
 import it.unicam.cs.agritrace.model.Certification;

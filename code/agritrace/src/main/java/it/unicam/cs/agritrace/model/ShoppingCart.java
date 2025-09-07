@@ -26,7 +26,7 @@ public class ShoppingCart {
     @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "cart")
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ShoppingCartItem> shoppingCartItems = new LinkedHashSet<>();
 
 }

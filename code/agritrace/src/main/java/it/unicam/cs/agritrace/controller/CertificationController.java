@@ -8,13 +8,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.unicam.cs.agritrace.dtos.payloads.CertificationPayload;
 import it.unicam.cs.agritrace.dtos.payloads.DeletePayload;
+import it.unicam.cs.agritrace.dtos.requests.AddProductCertificationRequest;
 import it.unicam.cs.agritrace.dtos.responses.CertificationResponse;
 import it.unicam.cs.agritrace.dtos.responses.OperationResponse;
 import it.unicam.cs.agritrace.service.CertificationService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,16 +31,27 @@ public class CertificationController {
         this.certificationService = certificationService;
     }
 
+
+    /**
+     * 
+     * @return
+     */
     @GetMapping("/list")
     @Operation(
             summary = "Lista certificazioni",
             description = "Ritorna tutte le certificazioni registrate nel sistema."
     )
     @ApiResponse(responseCode = "200", description = "Certificazioni recuperate con successo")
+    @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE', 'DISTRIBUTORE_DI_TIPICITA')")
     public ResponseEntity<List<CertificationResponse>> getAllCertifications(){
         return ResponseEntity.ok(certificationService.getCertifications());
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
     @Operation(
             summary = "Recupera certificazione per ID",
@@ -47,6 +59,7 @@ public class CertificationController {
     )
     @ApiResponse(responseCode = "200", description = "Certificazione recuperata con successo")
     @ApiResponse(responseCode = "404", description = "Certificazione non trovata")
+    @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE', 'DISTRIBUTORE_DI_TIPICITA')")
     public ResponseEntity<CertificationResponse> getCertificationById(@PathVariable int id){
         return ResponseEntity.ok(certificationService.getCertificationsById(id));
     }
@@ -76,6 +89,7 @@ public class CertificationController {
     )
     @ApiResponse(responseCode = "201", description = "Certificazione creata con successo")
     @ApiResponse(responseCode = "400", description = "Richiesta non valida")
+    @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE', 'DISTRIBUTORE_DI_TIPICITA')")
     public ResponseEntity<OperationResponse> createCertification(@Valid @RequestBody CertificationPayload certification){
         OperationResponse operationResponse = certificationService.createCertificationRequest(certification);
         return ResponseEntity.status(HttpStatus.CREATED).body(operationResponse);
@@ -88,20 +102,22 @@ public class CertificationController {
     )
     @ApiResponse(responseCode = "200", description = "Certificazione eliminata con successo")
     @ApiResponse(responseCode = "404", description = "Certificazione non trovata")
+    @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE', 'DISTRIBUTORE_DI_TIPICITA')")
     public ResponseEntity<OperationResponse> deleteCertificationById(@PathVariable int id){
         OperationResponse response =  certificationService.deleteCertificationRequest(new DeletePayload(id));
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{certificationId}/product/{productId}")
+    @PostMapping("/add")
     @Operation(
             summary = "Associa una certificazione a un prodotto",
             description = "Aggiunge una certificazione esistente a un prodotto specificato."
     )
     @ApiResponse(responseCode = "200", description = "Certificazione aggiunta con successo")
     @ApiResponse(responseCode = "404", description = "Certificazione o prodotto non trovato")
-    public ResponseEntity<String> addCertificationToProduct(@PathVariable @Min(1) int certificationId, @PathVariable @Min(1) int productId){
-        certificationService.addCertificationToProduct(certificationId, productId);
+    @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE', 'DISTRIBUTORE_DI_TIPICITA')")
+    public ResponseEntity<String> addCertificationToProduct(@RequestBody AddProductCertificationRequest request){
+        certificationService.addCertificationToProduct(request);
         return ResponseEntity.ok("Certificazione aggiunta al prodotto con successo");
     }
 }
