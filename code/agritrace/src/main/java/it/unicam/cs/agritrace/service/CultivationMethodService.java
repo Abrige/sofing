@@ -18,7 +18,7 @@ public class CultivationMethodService {
     }
 
     public List<CultivationMethodResponse> getCultivationMethodAll(){
-        List<CultivationMethod> cultivationMethods = cultivationMethodRepository.findAllByIdAndIsActiveTrue();
+        List<CultivationMethod> cultivationMethods = cultivationMethodRepository.findAllByIsActiveTrue();
 
         List<CultivationMethodResponse> cultivationMethodResponse = cultivationMethods.stream().map(
         cMR -> new CultivationMethodResponse(

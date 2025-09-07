@@ -38,6 +38,7 @@ public class OrderController {
             description = "Ritorna la lista di tutti gli ordini. Se specificato, è possibile filtrare per stato."
     )
     @ApiResponse(responseCode = "200", description = "Lista ordini recuperata con successo")
+    @PreAuthorize("hasRole('GESTORE_DELLA_PIATTAFORMA')")
     public ResponseEntity<List<OrderDTO>> getOrders(
             @RequestParam(name = "status", required = false) String statusParam) {
         List<OrderDTO> orders;
@@ -63,6 +64,7 @@ public class OrderController {
     )
     @ApiResponse(responseCode = "200", description = "Ordine recuperato con successo")
     @ApiResponse(responseCode = "404", description = "Ordine non trovato")
+    @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE', 'DISTRIBUTORE_DI_TIPICITA')")
     public ResponseEntity<OrderResponse> getOrderById(@PathVariable Integer id){
         return ResponseEntity.ok(orderService.GetOrderById(id));
         /*
@@ -78,7 +80,6 @@ public class OrderController {
     /**
      * Aggiorna lo stato di un ordine. Richiede un ruolo autorizzato.
      */
-    @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE', 'DISTRIBUTORE')")
     @PatchMapping("/update-status")
     @Operation(
             summary = "Aggiorna lo stato di un ordine",
@@ -104,6 +105,7 @@ public class OrderController {
     )
     @ApiResponse(responseCode = "200", description = "Ordine aggiornato con successo")
     @ApiResponse(responseCode = "400", description = "Richiesta non valida")
+    @PreAuthorize("hasRole('GESTORE_DELLA_PIATTAFORMA')")
     public ResponseEntity<OrderDTO> updateStatus(@RequestBody @Valid UpdateOrderStatusRequest request) {
         // Ritorna l'ordine aggiornato
         return ResponseEntity.ok(orderService.updateOrderStatus(request));
@@ -119,6 +121,7 @@ public class OrderController {
     )
     @ApiResponse(responseCode = "201", description = "Ordine creato con successo")
     @ApiResponse(responseCode = "404", description = "Carrello non trovato")
+    @PreAuthorize("hasRole('ACQUIRENTE')")
     public ResponseEntity<OrderDTO> createOrderFromCart(@PathVariable Integer cartId) {
         OrderDTO orderDTO = orderService.createOrderFromCart(cartId);
         // Risposta con l'ordine creato

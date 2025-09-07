@@ -15,12 +15,10 @@ import java.util.List;
 @RequestMapping("/api/product-category")
 public class ProductCategoryController {
     private final ProductCategoryService productCategoryService;
-    private final RequestService requestService;
 
 
     public ProductCategoryController(ProductCategoryService productCategoryService, RequestService requestService) {
         this.productCategoryService = productCategoryService;
-        this.requestService = requestService;
     }
 
     @GetMapping("/list")

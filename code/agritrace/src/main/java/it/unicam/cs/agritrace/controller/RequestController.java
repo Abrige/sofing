@@ -8,8 +8,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import it.unicam.cs.agritrace.dtos.common.ReviewRequestDTO;
 import it.unicam.cs.agritrace.dtos.responses.RequestResponse;
 import it.unicam.cs.agritrace.enums.StatusType;
-import it.unicam.cs.agritrace.model.User;
-import it.unicam.cs.agritrace.repository.UserRepository;
 import it.unicam.cs.agritrace.service.RequestService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

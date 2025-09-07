@@ -14,6 +14,7 @@ import it.unicam.cs.agritrace.repository.CompanyRepository;
 import it.unicam.cs.agritrace.repository.ProductRepository;
 import it.unicam.cs.agritrace.service.ProductListingService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,12 +24,10 @@ import java.util.List;
 @Tag(name = "Listino Prodotti", description = "Gestione del listino prodotti per le aziende")
 public class ProductListingController {
 
-    private final ProductRepository productRepository;
     private final ProductListingService productListingService;
     private final CompanyRepository companyRepository;
 
-    public ProductListingController(ProductRepository productRepository, ProductListingService productListingService, CompanyRepository companyRepository) {
-        this.productRepository = productRepository;
+    public ProductListingController(ProductListingService productListingService, CompanyRepository companyRepository) {
         this.productListingService = productListingService;
         this.companyRepository = companyRepository;
     }
@@ -58,7 +57,9 @@ public class ProductListingController {
     )
     @ApiResponse(responseCode = "200", description = "Prodotto aggiunto al listino con successo")
     @ApiResponse(responseCode = "400", description = "Errore: prodotto non trovato o richiesta non valida")
-    public ResponseEntity<?> addProductToListing(@RequestBody AddProductToListing productToList) {
+    @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE')")
+
+    public ResponseEntity<String> addProductToListing(@RequestBody AddProductToListing productToList) {
         Company company = companyRepository.findById(1).orElseThrow();
         try{
             productListingService.addProductToListing(productToList, company);
@@ -77,6 +78,7 @@ public class ProductListingController {
     )
     @ApiResponse(responseCode = "204", description = "Prodotto rimosso dal listino con successo (No Content)")
     @ApiResponse(responseCode = "404", description = "Prodotto o azienda non trovati")
+    @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE')")
     public ResponseEntity<?> removeProductToListing(@PathVariable int productId, @PathVariable int companyId) {
         //TODO uso la Company id nel mapping ma puo essere migliorata
         Company company = companyRepository.findById(companyId).orElseThrow();
@@ -90,17 +92,20 @@ public class ProductListingController {
             description = "Ritorna la lista completa dei prodotti presenti nel listino"
     )
     @ApiResponse(responseCode = "200", description = "Lista prodotti recuperata con successo")
+    @PreAuthorize("hasRole('ACQUIRENTE')")
     public ResponseEntity<List<ProductListingResponse>> getAllProducts() {
         List<ProductListingResponse> productListingResponses = productListingService.getAllListing();
         return ResponseEntity.ok(productListingResponses);
     }
-@GetMapping("/{id}")
-@Operation(
-        summary = "Recupera un prodotto del listino per ID",
-        description = "Ritorna le informazioni di un prodotto specifico presente nel listino tramite il suo ID"
-)
-@ApiResponse(responseCode = "200", description = "Prodotto del listino recuperato con successo")
-@ApiResponse(responseCode = "404", description = "Prodotto non trovato")
+
+    @GetMapping("/{id}")
+    @Operation(
+            summary = "Recupera un prodotto del listino per ID",
+            description = "Ritorna le informazioni di un prodotto specifico presente nel listino tramite il suo ID"
+    )
+    @ApiResponse(responseCode = "200", description = "Prodotto del listino recuperato con successo")
+    @ApiResponse(responseCode = "404", description = "Prodotto non trovato")
+    @PreAuthorize("hasRole('ACQUIRENTE')")
     public ResponseEntity<ProductListingResponse> getProductById(@PathVariable int id){
         ProductListingResponse productListingResponse = productListingService.getListingbyId(id);
 
