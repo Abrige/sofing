@@ -32,14 +32,11 @@ public class CertificationController {
     }
 
 
-    /**
-     * 
-     * @return
-     */
     @GetMapping("/list")
     @Operation(
-            summary = "Lista certificazioni",
-            description = "Ritorna tutte le certificazioni registrate nel sistema."
+            summary = "Lista delle Certificazioni registrate",
+            description = "Ritorna tutte le certificazioni registrate nel sistema. " +
+                    "Può essere utlizzato solo da Produttore, Trsaformatore, Distributore di Tipicità"
     )
     @ApiResponse(responseCode = "200", description = "Certificazioni recuperate con successo")
     @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE', 'DISTRIBUTORE_DI_TIPICITA')")
@@ -47,15 +44,12 @@ public class CertificationController {
         return ResponseEntity.ok(certificationService.getCertifications());
     }
 
-    /**
-     *
-     * @param id
-     * @return
-     */
+
     @GetMapping("/{id}")
     @Operation(
-            summary = "Recupera certificazione per ID",
-            description = "Restituisce i dettagli di una certificazione specifica."
+            summary = "Recupera certificazione per ID dato",
+            description = "Restituisce i dettagli di una certificazione specifica." +
+                    "Può essere utlizzato solo da Produttore, Trsaformatore, Distributore di Tipicità"
     )
     @ApiResponse(responseCode = "200", description = "Certificazione recuperata con successo")
     @ApiResponse(responseCode = "404", description = "Certificazione non trovata")
@@ -64,10 +58,12 @@ public class CertificationController {
         return ResponseEntity.ok(certificationService.getCertificationsById(id));
     }
 
+
     @PostMapping("/create")
     @Operation(
             summary = "Crea una nuova certificazione",
-            description = "Crea una richiesta di certificazione nel sistema.",
+            description = "Crea una richiesta di certificazione nel sistema." +
+                    "Può essere utlizzato solo da Produttore, Trsaformatore, Distributore di Tipicità",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Dati della certificazione da creare",
                     required = true,
@@ -88,17 +84,19 @@ public class CertificationController {
             )
     )
     @ApiResponse(responseCode = "201", description = "Certificazione creata con successo")
-    @ApiResponse(responseCode = "400", description = "Richiesta non valida")
+        @ApiResponse(responseCode = "400", description = "Richiesta non valida")
     @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE', 'DISTRIBUTORE_DI_TIPICITA')")
     public ResponseEntity<OperationResponse> createCertification(@Valid @RequestBody CertificationPayload certification){
         OperationResponse operationResponse = certificationService.createCertificationRequest(certification);
         return ResponseEntity.status(HttpStatus.CREATED).body(operationResponse);
     }
 
+
     @DeleteMapping("/delete/{id}")
     @Operation(
             summary = "Elimina una certificazione",
-            description = "Elimina una certificazione dato il suo ID."
+            description = "Elimina una certificazione dato il suo ID." +
+                    "Può essere utlizzato solo da Produttore, Trsaformatore, Distributore di Tipicità"
     )
     @ApiResponse(responseCode = "200", description = "Certificazione eliminata con successo")
     @ApiResponse(responseCode = "404", description = "Certificazione non trovata")
@@ -108,10 +106,12 @@ public class CertificationController {
         return ResponseEntity.ok(response);
     }
 
+
     @PostMapping("/add")
     @Operation(
             summary = "Associa una certificazione a un prodotto",
-            description = "Aggiunge una certificazione esistente a un prodotto specificato."
+            description = "Aggiunge una certificazione esistente a un prodotto specificato." +
+                    "Può essere utlizzato solo da Produttore, Trsaformatore, Distributore di Tipicità"
     )
     @ApiResponse(responseCode = "200", description = "Certificazione aggiunta con successo")
     @ApiResponse(responseCode = "404", description = "Certificazione o prodotto non trovato")
