@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface CultivationMethodRepository extends JpaRepository<CultivationMethod, Integer> {
     Optional<CultivationMethod> findByIdAndIsActiveTrue(Integer id);
 
-    List<CultivationMethod> findAllByIdAndIsActiveTrue();
+    List<CultivationMethod> findAllByIsActiveTrue();
 }

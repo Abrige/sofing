@@ -1,6 +1,5 @@
 package it.unicam.cs.agritrace.repository;
 
-import it.unicam.cs.agritrace.dtos.common.ProductCategoryDTO;
 import it.unicam.cs.agritrace.model.ProductCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 

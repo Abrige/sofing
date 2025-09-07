@@ -2,6 +2,7 @@ package it.unicam.cs.agritrace.service;
 
 
 import it.unicam.cs.agritrace.dtos.responses.CultivationMethodResponse;
+import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.model.CultivationMethod;
 import it.unicam.cs.agritrace.repository.CultivationMethodRepository;
 import it.unicam.cs.agritrace.repository.ProductCategoryRepository;
@@ -18,7 +19,7 @@ public class CultivationMethodService {
     }
 
     public List<CultivationMethodResponse> getCultivationMethodAll(){
-        List<CultivationMethod> cultivationMethods = cultivationMethodRepository.findAllByIdAndIsActiveTrue();
+        List<CultivationMethod> cultivationMethods = cultivationMethodRepository.findAllByIsActiveTrue();
 
         List<CultivationMethodResponse> cultivationMethodResponse = cultivationMethods.stream().map(
         cMR -> new CultivationMethodResponse(
@@ -29,5 +30,17 @@ public class CultivationMethodService {
                 ).toList();
 
         return cultivationMethodResponse;
+    }
+
+    public CultivationMethodResponse getCultivationMethodById(Integer id){
+
+        CultivationMethod cultivationMethod = cultivationMethodRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Metodo di coltivazione non trovato" + id));
+
+        return new CultivationMethodResponse(
+                cultivationMethod.getId(),
+                cultivationMethod.getName(),
+                cultivationMethod.getDescription()
+        );
     }
 }
