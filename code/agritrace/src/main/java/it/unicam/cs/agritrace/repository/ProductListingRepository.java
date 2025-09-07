@@ -12,7 +12,7 @@ public interface ProductListingRepository extends JpaRepository<ProductListing, 
     Optional<ProductListing> findByProductIdAndSellerId(Integer productId, Integer sellerId);
 
     //Trova il prodotto attivo nel listino
-    Optional<ProductListing> findByProductIdAndIsActive(Integer productId, Boolean isActive);
+    Optional<ProductListing> findByProductIdAndIsActiveTrue(Integer productId);
 
     ProductListing findProductById(Integer productId );
 }

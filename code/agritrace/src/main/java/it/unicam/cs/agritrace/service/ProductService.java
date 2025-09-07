@@ -2,6 +2,7 @@ package it.unicam.cs.agritrace.service;
 
 import it.unicam.cs.agritrace.dtos.common.ProductDTO;
 import it.unicam.cs.agritrace.dtos.payloads.DeletePayload;
+import it.unicam.cs.agritrace.dtos.payloads.ProductCreateUpdatePayload;
 import it.unicam.cs.agritrace.dtos.payloads.ProductPayload;
 import it.unicam.cs.agritrace.dtos.responses.OperationResponse;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
@@ -75,10 +76,12 @@ public class ProductService {
         String email = authentication.getName();
         User requester = userService.getUserByEmail(email);
 
-        // Controllo che il prodotto appartenga alla company dell'utente
+        // Prende la company dell'utente
         Company company = companyRepository.findByOwnerIdAndIsDeletedFalse(requester.getId())
                 .orElseThrow(() -> new AccessDeniedException("L'utente non ha nessuna azienda associata"));
 
+        // Se il produttore di quel prodotto non è uguale al produttore che si sta cercando di modificare cioè quello
+        // per cui si fa la richiesta di modifica
         if (!product.getProducer().getId().equals(company.getId())) {
             throw new AccessDeniedException("Non puoi eliminare prodotti che non appartengono alla tua azienda");
         }
@@ -94,11 +97,7 @@ public class ProductService {
         return new OperationResponse(savedRequest.getId(), "PRODUCT", "DELETE", savedRequest.getCreatedAt());
     }
 
-    public OperationResponse updateProductRequest(ProductPayload payload) {
-        // Recupero il prodotto esistente
-        Product existing = productRepository.findById(payload.productId())
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id=" + payload.productId()));
-
+    public OperationResponse updateProductRequest(ProductCreateUpdatePayload payload) {
         // Recupero l'utente loggato
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -108,38 +107,38 @@ public class ProductService {
         Company company = companyRepository.findByOwnerIdAndIsDeletedFalse(requester.getId())
                 .orElseThrow(() -> new AccessDeniedException("L'utente non ha nessuna azienda associata"));
 
+        // Recupero il prodotto esistente
+        Product existing = productRepository.findById(payload.productId())
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id=" + payload.productId()));
+
+
         // Controllo che il prodotto appartenga alla company dell'utente
         if (!existing.getProducer().getId().equals(company.getId())) {
             throw new AccessDeniedException("Non puoi modificare prodotti che non appartengono alla tua azienda");
         }
 
         // Aggiorno solo i campi presenti nel payload
-        if (payload.name() != null) existing.setName(payload.name());
-        if (payload.description() != null) existing.setDescription(payload.description());
         if (payload.categoryId() != null) {
-            ProductCategory category = productCategoryRepository.findById(payload.categoryId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Product category not found with id=" + payload.categoryId()));
-            existing.setCategory(category);
+            if(!productCategoryRepository.existsById(payload.categoryId())){
+                    throw new ResourceNotFoundException("Product category not found with id=" + payload.categoryId());
+            }
         }
         if (payload.cultivationMethodId() != null) {
-            CultivationMethod method = cultivationMethodRepository.findByIdAndIsActiveTrue(payload.cultivationMethodId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Cultivation category not found with id=" + payload.cultivationMethodId()));
-            existing.setCultivationMethod(method);
+            if(!cultivationMethodRepository.existsById(payload.cultivationMethodId())){
+                    throw  new ResourceNotFoundException("Cultivation category not found with id=" + payload.cultivationMethodId());
+            }
         }
         if (payload.harvestSeasonId() != null) {
-            HarvestSeason season = harvestSeasonRepository.findById(payload.harvestSeasonId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Harvest season not found with id=" + payload.harvestSeasonId()));
-            existing.setHarvestSeason(season);
+            if(!harvestSeasonRepository.existsById(payload.harvestSeasonId())) {
+                    throw new ResourceNotFoundException("Harvest season not found with id=" + payload.harvestSeasonId());
+            }
         }
-
-        // Salvo il prodotto aggiornato
-        Product savedProduct = productRepository.save(existing);
 
         // Creo la request per tracciare l'update
         Request request = requestFactory.createRequest(
                 "PRODUCTS",
                 "UPDATE_PRODUCT",
-                savedProduct, // puoi salvare l’entità o un DTO parziale se vuoi
+                payload,
                 requester
         );
 
@@ -148,7 +147,7 @@ public class ProductService {
         return new OperationResponse(savedRequest.getId(), "PRODUCT", "UPDATE", savedRequest.getCreatedAt());
     }
 
-    public OperationResponse createProductRequest(ProductPayload payload) {
+    public OperationResponse createProductRequest(ProductCreateUpdatePayload payload) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         User requester = userService.getUserByEmail(email);

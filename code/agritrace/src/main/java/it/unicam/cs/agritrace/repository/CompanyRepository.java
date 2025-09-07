@@ -1,6 +1,7 @@
 package it.unicam.cs.agritrace.repository;
 
 import it.unicam.cs.agritrace.model.Company;
+import it.unicam.cs.agritrace.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -10,4 +11,5 @@ public interface CompanyRepository extends JpaRepository<Company, Integer> {
     Optional<Company> findByIdAndIsDeletedFalse(Integer id);
     List<Company> findAllByIsDeletedFalse();
     Optional<Company> findByOwnerIdAndIsDeletedFalse(Integer id);
+    Optional<Company> findByOwnerAndIsDeletedFalse(User owner);
 }

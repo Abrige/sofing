@@ -48,6 +48,7 @@ public class RequestController {
         return ResponseEntity.ok(response);
     }
 
+<<<<<<< Updated upstream
     //Ritorna le richieste che hanno statusName : pending
     @GetMapping("/pending")
     @Operation(
@@ -60,6 +61,8 @@ public class RequestController {
         return ResponseEntity.ok(pendingRequests);
     }
 
+=======
+>>>>>>> Stashed changes
     //Approvazione richiesta
     @PostMapping("/review")
     @Operation(

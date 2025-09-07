@@ -7,9 +7,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.unicam.cs.agritrace.dtos.common.PackageDTO;
 import it.unicam.cs.agritrace.dtos.payloads.DeletePayload;
-import it.unicam.cs.agritrace.dtos.payloads.PackagePayload;
+import it.unicam.cs.agritrace.dtos.payloads.PackageCreateUpdatePayload;
 import it.unicam.cs.agritrace.dtos.responses.OperationResponse;
-import it.unicam.cs.agritrace.model.TypicalPackage;
 import it.unicam.cs.agritrace.service.PackageService;
 import it.unicam.cs.agritrace.validators.create.ValidPackageCreate;
 import it.unicam.cs.agritrace.validators.update.ValidPackageUpdate;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@PreAuthorize("hasRole('DISTRIBUTORE_DI_TIPICITA')")
 @RestController
 @RequestMapping("/api/packages")
 @Tag(name = "Pacchetti tipici", description = "Gestione dei pacchetti tipici nel sistema")
@@ -32,6 +30,7 @@ public class PackageController {
         this.packageService = packageService;
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     @Operation(
             summary = "Lista pacchetti tipici",
@@ -42,6 +41,7 @@ public class PackageController {
         return ResponseEntity.ok(packageService.getPackages());
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     @Operation(
             summary = "Recupera pacchetto per ID",
@@ -53,6 +53,12 @@ public class PackageController {
         return ResponseEntity.ok(packageService.getPackageDTOById(id));
     }
 
+<<<<<<< Updated upstream
+=======
+    // –––––––––––––––––––––––––– CREATE PACKAGE ––––––––––––––––––––––––––
+    // POST /api/packages
+    @PreAuthorize("hasRole('DISTRIBUTORE_DI_TIPICITA')")
+>>>>>>> Stashed changes
     @PostMapping()
     @Operation(
             summary = "Crea un nuovo pacchetto tipico",
@@ -85,7 +91,7 @@ public class PackageController {
     @ApiResponse(responseCode = "201", description = "Pacchetto creato con successo")
     @ApiResponse(responseCode = "400", description = "Richiesta non valida")
     public ResponseEntity<OperationResponse> createPackage(
-            @Valid @ValidPackageCreate @RequestBody PackagePayload request) {
+            @Valid @ValidPackageCreate @RequestBody PackageCreateUpdatePayload request) {
         OperationResponse operationResponse = packageService.createPackageRequest(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(operationResponse);
     }
@@ -94,6 +100,7 @@ public class PackageController {
 
     // –––––––––––––––––––––––––– DELETE PACKAGE ––––––––––––––––––––––––––
     // DELETE /api/packages/{id}
+    @PreAuthorize("hasRole('DISTRIBUTORE_DI_TIPICITA')")
     @DeleteMapping("/{id}")
     @Operation(
             summary = "Elimina un pacchetto tipico",
@@ -109,6 +116,7 @@ public class PackageController {
 
     // –––––––––––––––––––––––––– UPDATE PACKAGE ––––––––––––––––––––––––––
     // PUT /api/packages
+    @PreAuthorize("hasRole('DISTRIBUTORE_DI_TIPICITA')")
     @PutMapping
     @Operation(
             summary = "Aggiorna un pacchetto tipico",
@@ -134,8 +142,8 @@ public class PackageController {
     @ApiResponse(responseCode = "200", description = "Pacchetto aggiornato con successo")
     @ApiResponse(responseCode = "400", description = "Richiesta non valida")
     public ResponseEntity<OperationResponse> updatePackage(
-            @Valid @ValidPackageUpdate @RequestBody PackagePayload packagePayload) {
-        OperationResponse operationResponse = packageService.updatePackageRequest(packagePayload);
+            @Valid @ValidPackageUpdate @RequestBody PackageCreateUpdatePayload packageCreateUpdatePayload) {
+        OperationResponse operationResponse = packageService.updatePackageRequest(packageCreateUpdatePayload);
         return ResponseEntity.ok(operationResponse);
     }
 }

@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.unicam.cs.agritrace.dtos.common.ProductDTO;
 import it.unicam.cs.agritrace.dtos.payloads.DeletePayload;
-import it.unicam.cs.agritrace.dtos.payloads.ProductPayload;
+import it.unicam.cs.agritrace.dtos.payloads.ProductCreateUpdatePayload;
 import it.unicam.cs.agritrace.dtos.responses.OperationResponse;
 import it.unicam.cs.agritrace.service.ProductService;
 import it.unicam.cs.agritrace.validators.create.ValidProductCreate;
@@ -97,7 +97,7 @@ public class ProductController {
     @ApiResponse(responseCode = "201", description = "Prodotto creato con successo")
     @ApiResponse(responseCode = "400", description = "Richiesta non valida")
     public ResponseEntity<OperationResponse> createProduct(
-            @Valid @ValidProductCreate @RequestBody ProductPayload payload) {
+            @Valid @ValidProductCreate @RequestBody ProductCreateUpdatePayload payload) {
         OperationResponse operationResponse = productService.createProductRequest(payload);
         return ResponseEntity.status(HttpStatus.CREATED).body(operationResponse);
     }
@@ -131,9 +131,9 @@ public class ProductController {
     @ApiResponse(responseCode = "200", description = "Prodotto aggiornato con successo")
     @ApiResponse(responseCode = "400", description = "Richiesta non valida")
     public ResponseEntity<OperationResponse> updateProduct(
-            @Valid @ValidProductUpdate @RequestBody ProductPayload productPayload) {
+            @Valid @ValidProductUpdate @RequestBody ProductCreateUpdatePayload productCreateUpdatePayload) {
 
-        OperationResponse operationResponse = productService.updateProductRequest(productPayload);
+        OperationResponse operationResponse = productService.updateProductRequest(productCreateUpdatePayload);
         return ResponseEntity.ok(operationResponse);
     }
 
