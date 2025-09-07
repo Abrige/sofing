@@ -8,10 +8,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import it.unicam.cs.agritrace.dtos.common.PackageDTO;
 import it.unicam.cs.agritrace.dtos.payloads.DeletePayload;
 import it.unicam.cs.agritrace.dtos.payloads.PackageCreateUpdatePayload;
-<<<<<<< Updated upstream
-import it.unicam.cs.agritrace.dtos.payloads.PackagePayload;
-=======
->>>>>>> Stashed changes
 import it.unicam.cs.agritrace.dtos.responses.OperationResponse;
 import it.unicam.cs.agritrace.service.PackageService;
 import it.unicam.cs.agritrace.validators.create.ValidPackageCreate;
