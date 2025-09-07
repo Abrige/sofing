@@ -2,11 +2,6 @@ package it.unicam.cs.agritrace.controller;
 
 import it.unicam.cs.agritrace.dtos.requests.AddShCaPackage;
 import it.unicam.cs.agritrace.dtos.requests.AddShCaProduct;
-<<<<<<< Updated upstream
-import it.unicam.cs.agritrace.dtos.requests.AddShCaPackage;
-import it.unicam.cs.agritrace.dtos.requests.AddShCaProduct;
-=======
->>>>>>> Stashed changes
 import it.unicam.cs.agritrace.dtos.responses.ShoppingCartResponse;
 import it.unicam.cs.agritrace.service.ShoppingCartService;
 import org.springframework.http.ResponseEntity;
