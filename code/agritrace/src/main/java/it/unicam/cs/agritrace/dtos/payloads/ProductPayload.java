@@ -35,6 +35,6 @@ public record ProductPayload(
         @JsonProperty("harvest_season_id")
         Integer harvestSeasonId,
 
-        @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+        @JsonProperty("producer_id")
         Integer producerId
 ){}
