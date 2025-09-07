@@ -31,31 +31,23 @@ public class CertificationController {
     }
 
     @GetMapping("/list")
-<<<<<<< Updated upstream
-    public ResponseEntity<List<CertificationResponse>> getAllCertifications(){
-=======
     @Operation(
             summary = "Lista certificazioni",
             description = "Ritorna tutte le certificazioni registrate nel sistema."
     )
     @ApiResponse(responseCode = "200", description = "Certificazioni recuperate con successo")
-    public ResponseEntity<List<CertificationsResponse>> getAllCertifications(){
->>>>>>> Stashed changes
+    public ResponseEntity<List<CertificationResponse>> getAllCertifications(){
         return ResponseEntity.ok(certificationService.getCertifications());
     }
 
     @GetMapping("/{id}")
-<<<<<<< Updated upstream
-    public ResponseEntity<CertificationResponse> getCertificationById(@PathVariable int id){
-=======
     @Operation(
             summary = "Recupera certificazione per ID",
             description = "Restituisce i dettagli di una certificazione specifica."
     )
     @ApiResponse(responseCode = "200", description = "Certificazione recuperata con successo")
     @ApiResponse(responseCode = "404", description = "Certificazione non trovata")
-    public ResponseEntity<CertificationsResponse> getCertificationById(@PathVariable int id){
->>>>>>> Stashed changes
+    public ResponseEntity<CertificationResponse> getCertificationById(@PathVariable int id){
         return ResponseEntity.ok(certificationService.getCertificationsById(id));
     }
 

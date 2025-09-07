@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
-@Tag(name = "Ordini", description = "Gestione degli ordini nel sistema") // Gruppo in Swagger UI
+@Tag(name = "Ordini", description = "Gestione degli ordini nel sistema")
 public class OrderController {
     private final OrderService orderService;
 
