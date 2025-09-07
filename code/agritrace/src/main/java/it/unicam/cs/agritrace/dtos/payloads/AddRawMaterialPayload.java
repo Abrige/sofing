@@ -5,7 +5,5 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public record AddRawMaterialPayload(
         @JsonProperty("product_id")
         int productId,
-        String description,
-        @JsonProperty("step_type")
-        String stepType
+        String description
 ){}

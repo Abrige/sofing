@@ -31,6 +31,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ApiError> handleIllegalState(IllegalStateException ex, HttpServletRequest request) {
+        log.warn("Illegal state at {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage(), ex);
+        ApiError error = new ApiError(
+                HttpStatus.BAD_REQUEST,
+                ex.getMessage()
+        );
+        return ResponseEntity.badRequest().body(error);
+    }
+
     // Handler per payload parsing e altre eccezioni di richiesta errata
     @ExceptionHandler({InvalidPackageRequestException.class, PayloadParsingException.class})
     public ResponseEntity<ApiError> handleBadRequest(RuntimeException ex, HttpServletRequest request) {

@@ -27,8 +27,8 @@ public class SupplyChainService {
     }
 
     //Crea un oggetto Production Step
-    // input : prodotto scelto (rawMaterial)
-    // output : prodotto trasformato creato dal trasformatore già esistente
+    // input: prodotto scelto (rawMaterial)
+    // output: prodotto trasformato creato dal trasformatore già esistente
     @Transactional
     public void addRawMaterials(int productId, List<AddRawMaterialPayload> payloads) {
         Product product = productService.getProductObjById(productId);

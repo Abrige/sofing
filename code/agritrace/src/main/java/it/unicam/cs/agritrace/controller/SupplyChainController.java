@@ -7,18 +7,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import it.unicam.cs.agritrace.dtos.common.ProductDTO;
 import it.unicam.cs.agritrace.dtos.payloads.AddRawMaterialPayload;
-import it.unicam.cs.agritrace.mappers.ProductMapper;
-import it.unicam.cs.agritrace.repository.CompanyRepository;
-import it.unicam.cs.agritrace.repository.ProductRepository;
 import it.unicam.cs.agritrace.service.ProductService;
 import it.unicam.cs.agritrace.service.SupplyChainService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/supplychain")
 @Tag(name = "Filiera produttiva", description = "Gestione della filiera: prodotti, materie prime e ingredienti")
 public class SupplyChainController {
@@ -31,18 +28,6 @@ public class SupplyChainController {
                                  SupplyChainService supplyChainService) {
         this.productService = productService;
         this.supplyChainService = supplyChainService;
-    }
-
-    @GetMapping("/getproducts")
-    @Operation(
-            summary = "Ottieni i prodotti di un'azienda",
-            description = "Restituisce la lista di tutti i prodotti registrati da una specifica azienda identificata tramite companyId"
-    )
-    @ApiResponse(responseCode = "200", description = "Lista dei prodotti recuperata con successo")
-    @ApiResponse(responseCode = "404", description = "Azienda non trovata")
-    public ResponseEntity<List<ProductDTO>> getProducts(@RequestParam int companyId) {
-        List<ProductDTO> productDTOS = productService.getAllCompanyProductById(companyId);
-        return ResponseEntity.ok(productDTOS);
     }
 
     @PostMapping("/products/{productId}/ingredients")
@@ -59,15 +44,12 @@ public class SupplyChainController {
                                     value = """
                     [
                       { "production_id": 1,
-                       "step_type": "produzione",
                        "description": "Lattuga"
                        },
                       { "production_id": 2,
-                       "step_type": "produzione",
-                       "description": "Pomodori ROssi"
+                       "description": "Pomodori Rossi"
                        },
                        { "production_id": 15,
-                       "step_type": "produzione",
                        "description": "Mozzarella"
                        }
                     ]
@@ -79,6 +61,7 @@ public class SupplyChainController {
     @ApiResponse(responseCode = "200", description = "Materie prime aggiunte con successo")
     @ApiResponse(responseCode = "400", description = "Richiesta non valida")
     @ApiResponse(responseCode = "404", description = "Prodotto non trovato")
+    @PreAuthorize("hasRole('TRASFORMATORE')")
     public ResponseEntity<Void> addRawMaterial(@PathVariable int productId,
                                                @RequestBody List<AddRawMaterialPayload> payloads) {
         supplyChainService.addRawMaterials(productId, payloads);
@@ -92,8 +75,10 @@ public class SupplyChainController {
     )
     @ApiResponse(responseCode = "200", description = "Materia prima rimossa con successo")
     @ApiResponse(responseCode = "404", description = "Prodotto o materia prima non trovati")
+    @PreAuthorize("hasRole('TRASFORMATORE')")
     public ResponseEntity<Void> removeRawMaterial(@PathVariable int productId,
                                                   @PathVariable int ingredientId) {
+        // TODO ognuno dovrebbe poterlo fare solo sui propri prodotti
         supplyChainService.removeRawMaterial(productId, ingredientId);
         return ResponseEntity.ok().build();
     }
@@ -105,6 +90,7 @@ public class SupplyChainController {
     )
     @ApiResponse(responseCode = "200", description = "Lista materie prime recuperata con successo")
     @ApiResponse(responseCode = "404", description = "Prodotto non trovato")
+    @PreAuthorize("hasRole('TRASFORMATORE')")
     public ResponseEntity<List<ProductDTO>> getRawMaterialsByOutputProduct(@PathVariable int productId) {
         return ResponseEntity.ok(supplyChainService.getRawMaterialsByOutputProduct(productId));
 
