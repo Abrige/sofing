@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import it.unicam.cs.agritrace.dtos.responses.HarvestSeasonResponse;
 import it.unicam.cs.agritrace.service.HarvestSeasonService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE')")
 @RestController
 @RequestMapping("/api/harvestseason")
 @Tag(name = "Stagioni di raccolta", description = "Gestione delle stagioni di raccolta")

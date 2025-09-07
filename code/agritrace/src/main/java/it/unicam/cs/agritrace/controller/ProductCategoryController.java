@@ -5,12 +5,14 @@ import it.unicam.cs.agritrace.dtos.responses.ProductCategoryResponse;
 import it.unicam.cs.agritrace.service.ProductCategoryService;
 import it.unicam.cs.agritrace.service.RequestService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+@PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE')")
 @RestController
 @RequestMapping("/api/product-category")
 public class ProductCategoryController {
