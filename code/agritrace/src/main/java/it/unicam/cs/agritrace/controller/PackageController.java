@@ -8,7 +8,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import it.unicam.cs.agritrace.dtos.common.PackageDTO;
 import it.unicam.cs.agritrace.dtos.payloads.DeletePayload;
 import it.unicam.cs.agritrace.dtos.payloads.PackageCreateUpdatePayload;
+import it.unicam.cs.agritrace.dtos.payloads.PackagePayload;
 import it.unicam.cs.agritrace.dtos.responses.OperationResponse;
+import it.unicam.cs.agritrace.model.TypicalPackage;
 import it.unicam.cs.agritrace.service.PackageService;
 import it.unicam.cs.agritrace.validators.create.ValidPackageCreate;
 import it.unicam.cs.agritrace.validators.update.ValidPackageUpdate;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@PreAuthorize("hasRole('DISTRIBUTORE_DI_TIPICITA')")
 @RestController
 @RequestMapping("/api/packages")
 @Tag(name = "Pacchetti tipici", description = "Gestione dei pacchetti tipici nel sistema")
@@ -53,12 +56,9 @@ public class PackageController {
         return ResponseEntity.ok(packageService.getPackageDTOById(id));
     }
 
-<<<<<<< Updated upstream
-=======
     // –––––––––––––––––––––––––– CREATE PACKAGE ––––––––––––––––––––––––––
     // POST /api/packages
     @PreAuthorize("hasRole('DISTRIBUTORE_DI_TIPICITA')")
->>>>>>> Stashed changes
     @PostMapping()
     @Operation(
             summary = "Crea un nuovo pacchetto tipico",

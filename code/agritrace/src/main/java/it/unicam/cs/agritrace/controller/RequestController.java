@@ -48,21 +48,6 @@ public class RequestController {
         return ResponseEntity.ok(response);
     }
 
-<<<<<<< Updated upstream
-    //Ritorna le richieste che hanno statusName : pending
-    @GetMapping("/pending")
-    @Operation(
-            summary = "Richieste in attesa",
-            description = "Ritorna tutte le richieste che hanno stato 'PENDING' e sono in attesa di revisione"
-    )
-    @ApiResponse(responseCode = "200", description = "Richieste pending recuperate con successo")
-    public ResponseEntity<List<RequestResponse>> getPendingApproval() {
-        List<RequestResponse> pendingRequests = requestService.getAllPendingRequests();
-        return ResponseEntity.ok(pendingRequests);
-    }
-
-=======
->>>>>>> Stashed changes
     //Approvazione richiesta
     @PostMapping("/review")
     @Operation(
