@@ -2,8 +2,11 @@ package it.unicam.cs.agritrace.controller;
 
 import it.unicam.cs.agritrace.dtos.requests.AddShCaPackage;
 import it.unicam.cs.agritrace.dtos.requests.AddShCaProduct;
+<<<<<<< Updated upstream
 import it.unicam.cs.agritrace.dtos.requests.AddShCaPackage;
 import it.unicam.cs.agritrace.dtos.requests.AddShCaProduct;
+=======
+>>>>>>> Stashed changes
 import it.unicam.cs.agritrace.dtos.responses.ShoppingCartResponse;
 import it.unicam.cs.agritrace.service.ShoppingCartService;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +42,6 @@ public class ShoppingCartController {
     @DeleteMapping("/items/product/{productId}")
     public ResponseEntity<Void> removeProductFromCart(@PathVariable int productId) {
         shoppingCartService.removeProductFromCart(productId);
-        // HTTP 204 No Content è lo standard per una cancellazione riuscita
         return ResponseEntity.noContent().build();
     }
 
