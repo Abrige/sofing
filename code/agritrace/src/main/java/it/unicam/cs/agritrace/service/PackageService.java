@@ -165,7 +165,7 @@ public class PackageService {
     }
 
     public PackageDTO getPackageDTOById(Integer id) {
-        TypicalPackage pkg = typicalPackageRepository.findById(id)
+        TypicalPackage pkg = typicalPackageRepository.findByIdAndIsActiveTrue(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Il package con id=" + id + " non è stato trovato"));
 
         return PackageMapper.toDTO(pkg);
