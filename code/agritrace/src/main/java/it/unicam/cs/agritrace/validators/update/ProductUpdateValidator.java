@@ -1,13 +1,13 @@
 package it.unicam.cs.agritrace.validators.update;
 
-import it.unicam.cs.agritrace.dtos.payloads.ProductPayload;
+import it.unicam.cs.agritrace.dtos.payloads.ProductCreateUpdatePayload;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class ProductUpdateValidator implements ConstraintValidator<ValidProductUpdate, ProductPayload> {
+public class ProductUpdateValidator implements ConstraintValidator<ValidProductUpdate, ProductCreateUpdatePayload> {
 
     @Override
-    public boolean isValid(ProductPayload payload, ConstraintValidatorContext context) {
+    public boolean isValid(ProductCreateUpdatePayload payload, ConstraintValidatorContext context) {
         if (payload == null) return false;
         context.disableDefaultConstraintViolation();
 
@@ -26,8 +26,7 @@ public class ProductUpdateValidator implements ConstraintValidator<ValidProductU
                         payload.description() != null ||
                         payload.categoryId() != null ||
                         payload.cultivationMethodId() != null ||
-                        payload.harvestSeasonId() != null ||
-                        payload.producerId() != null;
+                        payload.harvestSeasonId() != null;
 
         if (!anyOtherPresent) {
             context.buildConstraintViolationWithTemplate("Almeno un campo oltre productId deve essere valorizzato")

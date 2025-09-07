@@ -1,6 +1,6 @@
 package it.unicam.cs.agritrace.service.handler;
 
-import it.unicam.cs.agritrace.dtos.payloads.PackagePayload;
+import it.unicam.cs.agritrace.dtos.payloads.PackageCreateUpdatePayload;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.mappers.PayloadMapper;
 import it.unicam.cs.agritrace.model.*;
@@ -8,8 +8,6 @@ import it.unicam.cs.agritrace.repository.ProductRepository;
 import it.unicam.cs.agritrace.repository.RequestTypeRepository;
 import it.unicam.cs.agritrace.repository.TypicalPackageRepository;
 import it.unicam.cs.agritrace.service.CompanyService;
-import it.unicam.cs.agritrace.service.PackageService;
-import it.unicam.cs.agritrace.service.ProductService;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +44,7 @@ public class UpdatePackageRequestHandler implements RequestHandler {
     @Transactional
     @Override
     public void handle(Request request) {
-        PackagePayload payload = payloadMapper.mapPayload(request, PackagePayload.class);
+        PackageCreateUpdatePayload payload = payloadMapper.mapPayload(request, PackageCreateUpdatePayload.class);
 
         if (payload.packageId() == null) {
             throw new IllegalArgumentException("Per aggiornare un pacchetto, l'ID deve essere specificato.");
@@ -58,9 +56,6 @@ public class UpdatePackageRequestHandler implements RequestHandler {
         if (payload.name() != null) pkg.setName(payload.name());
         if (payload.description() != null) pkg.setDescription(payload.description());
         if (payload.price() != null) pkg.setPrice(payload.price());
-        if (payload.producerId() != null) {
-            pkg.setProducer(companyService.getCompanyById(payload.producerId()));
-        }
 
         if (payload.items() != null && payload.items().size() >= 3) {
             Set<TypicalPackageItem> items = payload.items().stream()
