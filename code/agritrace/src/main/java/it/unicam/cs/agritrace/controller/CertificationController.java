@@ -31,6 +31,11 @@ public class CertificationController {
         this.certificationService = certificationService;
     }
 
+
+    /**
+     * 
+     * @return
+     */
     @GetMapping("/list")
     @Operation(
             summary = "Lista certificazioni",
@@ -42,6 +47,11 @@ public class CertificationController {
         return ResponseEntity.ok(certificationService.getCertifications());
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
     @Operation(
             summary = "Recupera certificazione per ID",
