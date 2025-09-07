@@ -6,6 +6,7 @@ import it.unicam.cs.agritrace.dtos.requests.AddCompanyRequest;
 import it.unicam.cs.agritrace.dtos.responses.OperationResponse;
 import it.unicam.cs.agritrace.service.CompanyService;
 import it.unicam.cs.agritrace.service.RequestService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,7 +43,7 @@ public class CompanyController {
     @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE')")
     @PostMapping
     public ResponseEntity<OperationResponse> addCompany(
-            @RequestBody AddCompanyRequest addCompanyRequest) {
+            @RequestBody @Valid AddCompanyRequest addCompanyRequest) {
 
         OperationResponse response = companyService.addCompanyRequest(addCompanyRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);

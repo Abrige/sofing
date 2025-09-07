@@ -5,6 +5,8 @@ import it.unicam.cs.agritrace.dtos.responses.EventResponse;
 import it.unicam.cs.agritrace.exceptions.ResourceNotFoundException;
 import it.unicam.cs.agritrace.model.*;
 import it.unicam.cs.agritrace.repository.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -21,10 +23,12 @@ public class EventService {
     private final CompanyRepository companyRepository;
     private final EventPartecipantRepository eventPartecipantRepository;
     private final StatusRepository statusRepository;
+    private final UserService userService;
 
     public EventService(EventRepository eventRepository,
                         EventTypeRepository eventTypeRepository, LocationRepository locationRepository, UserRepository userRepository, CompanyRepository companyRepository,
-                        EventPartecipantRepository eventPartecipantRepository, StatusRepository statusRepository) {
+                        EventPartecipantRepository eventPartecipantRepository, StatusRepository statusRepository,
+                        UserService userService) {
         this.eventRepository = eventRepository;
         this.eventTypeRepository = eventTypeRepository;
         this.locationRepository = locationRepository;
@@ -32,6 +36,7 @@ public class EventService {
         this.companyRepository = companyRepository;
         this.eventPartecipantRepository = eventPartecipantRepository;
         this.statusRepository = statusRepository;
+        this.userService = userService;
     }
 
     public List<EventResponse> getAllEvents(){
@@ -48,9 +53,12 @@ public class EventService {
     }
 
     public EventResponse getEventById(int id) {
-        Event event = eventRepository.findByIdAndIsActiveTrue(id).orElseThrow(() -> new ResourceNotFoundException("Evento non trovato: " + id));
+        Event event = eventRepository.findByIdAndIsActiveTrue(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Evento non trovato: " + id));
+
         if (event.getEndDate().isBefore(LocalDate.now()))
             throw new ResourceNotFoundException("Evento passato: " + id);
+
         return new EventResponse(
                 event.getId(),
                 event.getTitle(),
@@ -79,17 +87,26 @@ public class EventService {
 
     //public void deleteEventById(int id) {}
 
-    public void addCompanyToEvent(int eventId, int companyId) {
-        Event event = eventRepository.findByIdAndIsActiveTrue(eventId).orElseThrow(() -> new ResourceNotFoundException("Evento non trovato"));
+    public void addPartecipantToEvent(int eventId) {
+
+        User partecipantUser = getAuthenticatedUser();
+
+        Event event = eventRepository.findByIdAndIsActiveTrue(eventId)
+                .orElseThrow(() -> new ResourceNotFoundException("Evento non trovato"));
         if(event.getEndDate().isBefore(LocalDate.now())){
             throw new ResourceNotFoundException("Evento già concluso");
         }
-        if(event.getStartDate().isBefore(LocalDate.now())){
+        if(event.getStartDate().isAfter(LocalDate.now())){
             throw new ResourceNotFoundException("Evento già iniziato");
         }
-        Company company = companyRepository.findById(companyId).orElseThrow(() ->new ResourceNotFoundException("Azienda non trovata"));
+
+        Company company = companyRepository.findByOwnerAndIsDeletedFalse(partecipantUser)
+                .orElseThrow(() ->new ResourceNotFoundException("Azienda non trovata"));
+
         //LO STATUS VA SETTATO, PERCHE' PRESENTE NEL DB. QUI LO SETTO A 1 (NEW).
-        Status status = statusRepository.findById(1).orElseThrow(() ->new ResourceNotFoundException("Status non trovato"));
+        Status status = statusRepository.findByName("new")
+                .orElseThrow(() ->new ResourceNotFoundException("Status non trovato"));
+
         //Creo la partecipazione all'evento
         EventPartecipant partecipant = new EventPartecipant();
         partecipant.setEvent(event);
@@ -101,5 +118,11 @@ public class EventService {
         eventPartecipantRepository.save(partecipant);
         event.getEventPartecipants().add(partecipant);
         eventRepository.save(event);
+    }
+
+    private User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        return userService.getUserByEmail(email);
     }
 }
