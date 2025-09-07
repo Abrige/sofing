@@ -84,7 +84,7 @@ public class ProductController {
                     {
                       "name": "Pomodoro senza nichel",
                       "description": "Pomodoro sicuro per allergie al nichel",
-                      "categoryId": 1,
+                      "category_Id": 1,
                       "cultivation_method_id": 1,
                       "harvest_season_id": 1,
                       "producer_id": 2
