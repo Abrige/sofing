@@ -26,8 +26,7 @@ public class CultivationMethodService {
                 cMR.getId(),
                 cMR.getName(),
                 cMR.getDescription()
-        )
-                ).toList();
+        )).toList();
 
         return cultivationMethodResponse;
     }
