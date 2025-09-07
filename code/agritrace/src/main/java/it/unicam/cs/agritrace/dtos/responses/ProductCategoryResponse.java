@@ -1,0 +1,10 @@
+package it.unicam.cs.agritrace.dtos.responses;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record ProductCategoryResponse(
+        @JsonProperty("category_id")
+        Integer categoryId,
+        String name,
+        String description
+) {}
