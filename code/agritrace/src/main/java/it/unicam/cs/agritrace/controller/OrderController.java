@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import it.unicam.cs.agritrace.dtos.common.OrderDTO;
 import it.unicam.cs.agritrace.dtos.requests.UpdateOrderStatusRequest;
-import it.unicam.cs.agritrace.dtos.responses.OrderResponse;
 import it.unicam.cs.agritrace.enums.StatusType;
 import it.unicam.cs.agritrace.service.OrderService;
 import jakarta.validation.Valid;
@@ -65,16 +64,8 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "Ordine recuperato con successo")
     @ApiResponse(responseCode = "404", description = "Ordine non trovato")
     @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE', 'DISTRIBUTORE_DI_TIPICITA')")
-    public ResponseEntity<OrderResponse> getOrderById(@PathVariable Integer id){
-        return ResponseEntity.ok(orderService.GetOrderById(id));
-        /*
-        {
-    "status": 500,
-    "error": "Unexpected server error at /api/orders/4",
-    "timestamp": "2025-09-06T01:11:34.4606588",
-    "details": "Type definiti
-         */
-
+    public ResponseEntity<OrderDTO> getOrderById(@PathVariable Integer id){
+        return ResponseEntity.ok(orderService.getOrderById(id));
     }
 
     /**
