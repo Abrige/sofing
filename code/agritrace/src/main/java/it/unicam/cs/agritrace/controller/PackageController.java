@@ -55,11 +55,11 @@ public class PackageController {
 
     // –––––––––––––––––––––––––– CREATE PACKAGE ––––––––––––––––––––––––––
     // POST /api/packages
-    @PreAuthorize("hasRole('DISTRIBUTORE_DI_TIPICITA')")
     @PostMapping()
     @Operation(
             summary = "Crea un nuovo pacchetto tipico",
-            description = "Crea un pacchetto tipico nel sistema",
+            description = "Crea un pacchetto tipico nel sistema" +
+                    "Può essere utilizzato solo da Distributore di tipicità",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Dati del pacchetto da creare",
                     required = true,
@@ -86,7 +86,9 @@ public class PackageController {
             )
     )
     @ApiResponse(responseCode = "201", description = "Pacchetto creato con successo")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @ApiResponse(responseCode = "400", description = "Richiesta non valida")
+    @PreAuthorize("hasRole('DISTRIBUTORE_DI_TIPICITA')")
     public ResponseEntity<OperationResponse> createPackage(
             @Valid @ValidPackageCreate @RequestBody PackageCreateUpdatePayload request) {
         OperationResponse operationResponse = packageService.createPackageRequest(request);
@@ -97,14 +99,16 @@ public class PackageController {
 
     // –––––––––––––––––––––––––– DELETE PACKAGE ––––––––––––––––––––––––––
     // DELETE /api/packages/{id}
-    @PreAuthorize("hasRole('DISTRIBUTORE_DI_TIPICITA')")
     @DeleteMapping("/{id}")
     @Operation(
             summary = "Elimina un pacchetto tipico",
-            description = "Elimina un pacchetto dato il suo ID"
+            description = "Elimina un pacchetto dato il suo ID" +
+                    "Può essere utilizzato solo da Distributore di tipicità"
     )
     @ApiResponse(responseCode = "200", description = "Pacchetto eliminato con successo")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @ApiResponse(responseCode = "404", description = "Pacchetto non trovato")
+    @PreAuthorize("hasRole('DISTRIBUTORE_DI_TIPICITA')")
     public ResponseEntity<OperationResponse> deletePackage(@PathVariable int id) {
         OperationResponse operationResponse = packageService.deletePackageRequest(new DeletePayload(id));
         // si ritorna questo stato in caso di delete andata a buon fine
@@ -113,11 +117,11 @@ public class PackageController {
 
     // –––––––––––––––––––––––––– UPDATE PACKAGE ––––––––––––––––––––––––––
     // PUT /api/packages
-    @PreAuthorize("hasRole('DISTRIBUTORE_DI_TIPICITA')")
     @PutMapping
     @Operation(
             summary = "Aggiorna un pacchetto tipico",
-            description = "Aggiorna i dati di un pacchetto tipico esistente",
+            description = "Aggiorna i dati di un pacchetto tipico esistente" +
+                    "Può essere utilizzato solo da Distributore di tipicità",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Dati del pacchetto da aggiornare",
                     required = true,
@@ -137,7 +141,9 @@ public class PackageController {
             )
     )
     @ApiResponse(responseCode = "200", description = "Pacchetto aggiornato con successo")
-    @ApiResponse(responseCode = "400", description = "Richiesta non valida")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
+    @ApiResponse(responseCode = "404", description = "Richiesta non valida")
+    @PreAuthorize("hasRole('DISTRIBUTORE_DI_TIPICITA')")
     public ResponseEntity<OperationResponse> updatePackage(
             @Valid @ValidPackageUpdate @RequestBody PackageCreateUpdatePayload packageCreateUpdatePayload) {
         OperationResponse operationResponse = packageService.updatePackageRequest(packageCreateUpdatePayload);

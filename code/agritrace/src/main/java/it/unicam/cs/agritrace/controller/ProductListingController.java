@@ -35,7 +35,8 @@ public class ProductListingController {
     @PostMapping("/products")
     @Operation(
             summary = "Aggiungi un prodotto al listino",
-            description = "Permette di aggiungere un nuovo prodotto al listino di un'azienda",
+            description = "Permette di aggiungere un nuovo prodotto al listino di un'azienda" +
+                    "Può essere utilizzato da Produttore, Trasformatore",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Dettagli del prodotto da aggiungere al listino",
                     required = true,
@@ -56,6 +57,7 @@ public class ProductListingController {
             )
     )
     @ApiResponse(responseCode = "200", description = "Prodotto aggiunto al listino con successo")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @ApiResponse(responseCode = "400", description = "Errore: prodotto non trovato o richiesta non valida")
     @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE')")
 
@@ -74,9 +76,11 @@ public class ProductListingController {
     @DeleteMapping("/{productId}/products/{companyId}")
     @Operation(
             summary = "Rimuovi un prodotto dal listino",
-            description = "Permette di rimuovere un prodotto dal listino di un'azienda utilizzando l'ID del prodotto e dell'azienda"
+            description = "Permette di rimuovere un prodotto dal listino di un'azienda utilizzando l'ID del prodotto e dell'azienda" +
+                    "Può essere utilizzato da Produttore, Trasformatore"
     )
     @ApiResponse(responseCode = "204", description = "Prodotto rimosso dal listino con successo (No Content)")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @ApiResponse(responseCode = "404", description = "Prodotto o azienda non trovati")
     @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE')")
     public ResponseEntity<?> removeProductToListing(@PathVariable int productId, @PathVariable int companyId) {
@@ -89,9 +93,11 @@ public class ProductListingController {
     @GetMapping("/products")
     @Operation(
             summary = "Recupera tutti i prodotti del listino",
-            description = "Ritorna la lista completa dei prodotti presenti nel listino"
+            description = "Ritorna la lista completa dei prodotti presenti nel listino" +
+                    "Può essere utilizzato da Acquirente"
     )
     @ApiResponse(responseCode = "200", description = "Lista prodotti recuperata con successo")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @PreAuthorize("hasRole('ACQUIRENTE')")
     public ResponseEntity<List<ProductListingResponse>> getAllProducts() {
         List<ProductListingResponse> productListingResponses = productListingService.getAllListing();
@@ -101,9 +107,11 @@ public class ProductListingController {
     @GetMapping("/{id}")
     @Operation(
             summary = "Recupera un prodotto del listino per ID",
-            description = "Ritorna le informazioni di un prodotto specifico presente nel listino tramite il suo ID"
+            description = "Ritorna le informazioni di un prodotto specifico presente nel listino tramite il suo ID" +
+                    "Può essere utilizzato da Acquirente"
     )
     @ApiResponse(responseCode = "200", description = "Prodotto del listino recuperato con successo")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @ApiResponse(responseCode = "404", description = "Prodotto non trovato")
     @PreAuthorize("hasRole('ACQUIRENTE')")
     public ResponseEntity<ProductListingResponse> getProductById(@PathVariable int id){

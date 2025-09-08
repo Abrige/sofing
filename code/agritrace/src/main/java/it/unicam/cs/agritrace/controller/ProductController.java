@@ -38,9 +38,11 @@ public class ProductController {
     @GetMapping(value="/{id}")
     @Operation(
             summary = "Recupera prodotto per ID",
-            description = "Ritorna i dettagli di un prodotto dato il suo ID"
+            description = "Ritorna i dettagli di un prodotto dato il suo ID" +
+                    "Richiede uno dei ruoli: PRODUTTORE, TRASFORMATORE, DISTRIBUTORE."
     )
     @ApiResponse(responseCode = "200", description = "Prodotto recuperato con successo")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @ApiResponse(responseCode = "404", description = "Prodotto non trovato")
     public ResponseEntity<ProductDTO> getProduct(@PathVariable int id) {
         ProductDTO product = productService.getProductById(id); // delega al service
@@ -53,9 +55,11 @@ public class ProductController {
     @GetMapping
     @Operation(
             summary = "Lista prodotti",
-            description = "Ritorna tutti i prodotti registrati nel sistema"
+            description = "Ritorna tutti i prodotti registrati nel sistema" +
+                    "Richiede uno dei ruoli: PRODUTTORE, TRASFORMATORE, DISTRIBUTORE."
     )
     @ApiResponse(responseCode = "200", description = "Prodotti recuperati con successo")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @ApiResponse(responseCode = "204", description = "Nessun prodotto disponibile")
     public ResponseEntity<List<ProductDTO>> getProducts(){
         List<ProductDTO> products = productService.getAllProducts();
@@ -71,7 +75,8 @@ public class ProductController {
     @PostMapping
     @Operation(
             summary = "Crea un nuovo prodotto",
-            description = "Crea un prodotto nel sistema",
+            description = "Crea un prodotto nel sistema" +
+                    "Richiede uno dei ruoli: PRODUTTORE, TRASFORMATORE, DISTRIBUTORE.",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Dati del prodotto da creare",
                     required = true,
@@ -95,6 +100,7 @@ public class ProductController {
             )
     )
     @ApiResponse(responseCode = "201", description = "Prodotto creato con successo")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @ApiResponse(responseCode = "400", description = "Richiesta non valida")
     public ResponseEntity<OperationResponse> createProduct(
             @Valid @ValidProductCreate @RequestBody ProductCreateUpdatePayload payload) {
@@ -102,13 +108,15 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(operationResponse);
     }
 
+
     // –––––––––––––––––––––––––– UPDATE PRODUCT ––––––––––––––––––––––––––
     // PUT /api/products
     @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE')")
     @PutMapping
     @Operation(
             summary = "Aggiorna un prodotto esistente",
-            description = "Aggiorna i dati di un prodotto già registrato",
+            description = "Aggiorna i dati di un prodotto già registrato" +
+                    "Richiede uno dei ruoli: PRODUTTORE, TRASFORMATORE, DISTRIBUTORE.",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Dati del prodotto da aggiornare",
                     required = true,
@@ -129,6 +137,7 @@ public class ProductController {
             )
     )
     @ApiResponse(responseCode = "200", description = "Prodotto aggiornato con successo")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @ApiResponse(responseCode = "400", description = "Richiesta non valida")
     public ResponseEntity<OperationResponse> updateProduct(
             @Valid @ValidProductUpdate @RequestBody ProductCreateUpdatePayload productCreateUpdatePayload) {
@@ -137,15 +146,18 @@ public class ProductController {
         return ResponseEntity.ok(operationResponse);
     }
 
+
     // –––––––––––––––––––––––––– DELETE PRODUCT ––––––––––––––––––––––––––
     // DELETE /api/products/{id}
     @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE')")
     @DeleteMapping("/{id}")
     @Operation(
             summary = "Elimina un prodotto",
-            description = "Elimina un prodotto dato il suo ID"
+            description = "Elimina un prodotto dato il suo ID" +
+                    "Richiede uno dei ruoli: PRODUTTORE, TRASFORMATORE, DISTRIBUTORE."
     )
     @ApiResponse(responseCode = "200", description = "Prodotto eliminato con successo")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @ApiResponse(responseCode = "404", description = "Prodotto non trovato")
     public ResponseEntity<OperationResponse> deleteProduct(@PathVariable int id) {
         OperationResponse operationResponse = productService.deleteProductRequest(new DeletePayload(id));

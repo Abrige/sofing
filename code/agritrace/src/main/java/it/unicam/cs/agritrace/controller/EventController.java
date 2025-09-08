@@ -33,9 +33,11 @@ public class EventController {
     @GetMapping("/list")
     @Operation(
             summary = "Lista eventi attivi",
-            description = "Ritorna tutti gli eventi attivi e non ancora passati."
+            description = "Ritorna tutti gli eventi attivi e non ancora passati." +
+                    "Può essere utilizzato solo da Produttore, Trasformatore, Distributore di tipicità"
     )
     @ApiResponse(responseCode = "200", description = "Eventi recuperati con successo")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE', 'DISTRIBUTORE_DI_TIPICITA')")
     public ResponseEntity<List<EventResponse>> getAllEvents(){
         return ResponseEntity.ok(eventService.getAllEvents());
@@ -47,9 +49,11 @@ public class EventController {
     @GetMapping("/{id}")
     @Operation(
             summary = "Recupera un evento per ID",
-            description = "Restituisce i dettagli di un evento specifico, se attivo e non passato."
+            description = "Restituisce i dettagli di un evento specifico, se attivo e non passato." +
+                    "Può essere utilizzato solo da Produttore, Trasformatore, Distributore di tipicità"
     )
     @ApiResponse(responseCode = "200", description = "Evento recuperato con successo")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @ApiResponse(responseCode = "404", description = "Evento non trovato")
     @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE', 'DISTRIBUTORE_DI_TIPICITA')")
     public ResponseEntity<EventResponse> getEventById(@PathVariable int id){
@@ -62,7 +66,8 @@ public class EventController {
     @PostMapping("/list")
     @Operation(
             summary = "Crea un nuovo evento",
-            description = "Crea un evento nel sistema. Richiede ruolo Gestore della Piattaforma.",
+            description = "Crea un evento nel sistema. Richiede ruolo Gestore della Piattaforma." +
+                    "Può essere utilizzato solo da Animatore della filiera",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Dati del nuovo evento",
                     required = true,
@@ -88,6 +93,7 @@ public class EventController {
             )
     )
     @ApiResponse(responseCode = "200", description = "Evento creato con successo")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @PreAuthorize("hasRole('ANIMATORE_DELLA_FILIERA')")
     public ResponseEntity<Void> createEvent(@RequestBody AddEventRequest event){
         //Utente fittizio con id 19 (nel db GESTORE DELLA PIATTAFORMA)
@@ -101,9 +107,11 @@ public class EventController {
     @PostMapping("/partecipate/{id}")
     @Operation(
             summary = "Aggiunge un'azienda a un evento",
-            description = "Associa un'azienda esistente a un evento specificato tramite ID."
+            description = "Associa un'azienda esistente a un evento specificato tramite ID." +
+                    "Può essere utilizzato solo da Produttore, Trasformatore, Distributore di tipicità"
     )
     @ApiResponse(responseCode = "200", description = "Azienda aggiunta all'evento con successo")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @ApiResponse(responseCode = "404", description = "Evento o azienda non trovato")
     @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE', 'DISTRIBUTORE_DI_TIPICITA')")
     public ResponseEntity<EventResponse> addCompanyToEvent(@PathVariable int id){
@@ -114,5 +122,3 @@ public class EventController {
 
 }
 
-
-//Quale DTO usa questo controller?

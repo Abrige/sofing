@@ -71,7 +71,7 @@ public class RequestController {
             )
     )
     @ApiResponse(responseCode = "200", description = "Richiesta revisionata con successo")
-    @ApiResponse(responseCode = "400", description = "Input non valido")
+    @ApiResponse(responseCode = "404", description = "Input non valido")
     public ResponseEntity<Void> reviewRequest(@Valid @RequestBody ReviewRequestDTO reviewRequestDTO)  {
         requestService.reviewRequest(reviewRequestDTO);
         return ResponseEntity.ok().build();

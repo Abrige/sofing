@@ -33,7 +33,8 @@ public class SupplyChainController {
     @PostMapping("/products/{productId}/ingredients")
     @Operation(
             summary = "Aggiungi materie prime a un prodotto",
-            description = "Permette di associare una o più materie prime (ingredienti) a un prodotto esistente",
+            description = "Permette di associare una o più materie prime (ingredienti) a un prodotto esistente" +
+                    "Può essere utilizzato da Trasformatore",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Lista di materie prime da aggiungere al prodotto",
                     required = true,
@@ -59,7 +60,7 @@ public class SupplyChainController {
             )
     )
     @ApiResponse(responseCode = "200", description = "Materie prime aggiunte con successo")
-    @ApiResponse(responseCode = "400", description = "Richiesta non valida")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @ApiResponse(responseCode = "404", description = "Prodotto non trovato")
     @PreAuthorize("hasRole('TRASFORMATORE')")
     public ResponseEntity<Void> addRawMaterial(@PathVariable int productId,
@@ -71,9 +72,11 @@ public class SupplyChainController {
     @DeleteMapping("/products/{productId}/ingredients/{ingredientId}")
     @Operation(
             summary = "Rimuovi una materia prima da un prodotto",
-            description = "Rimuove una materia prima associata a un prodotto tramite i rispettivi ID"
+            description = "Rimuove una materia prima associata a un prodotto tramite i rispettivi ID" +
+                    "Può essere utilizzato da Trasformatore"
     )
     @ApiResponse(responseCode = "200", description = "Materia prima rimossa con successo")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @ApiResponse(responseCode = "404", description = "Prodotto o materia prima non trovati")
     @PreAuthorize("hasRole('TRASFORMATORE')")
     public ResponseEntity<Void> removeRawMaterial(@PathVariable int productId,
@@ -86,9 +89,11 @@ public class SupplyChainController {
     @GetMapping("/products/{productId}/ingredients")
     @Operation(
             summary = "Recupera materie prime di un prodotto",
-            description = "Restituisce la lista delle materie prime (ingredienti) utilizzate per realizzare un prodotto"
+            description = "Restituisce la lista delle materie prime (ingredienti) utilizzate per realizzare un prodotto" +
+                    "Può essere utilizzato da Trasformatore"
     )
     @ApiResponse(responseCode = "200", description = "Lista materie prime recuperata con successo")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @ApiResponse(responseCode = "404", description = "Prodotto non trovato")
     @PreAuthorize("hasRole('TRASFORMATORE')")
     public ResponseEntity<List<ProductDTO>> getRawMaterialsByOutputProduct(@PathVariable int productId) {

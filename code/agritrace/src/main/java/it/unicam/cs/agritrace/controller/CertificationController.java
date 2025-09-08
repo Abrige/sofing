@@ -39,6 +39,7 @@ public class CertificationController {
                     "Può essere utlizzato solo da Produttore, Trsaformatore, Distributore di Tipicità"
     )
     @ApiResponse(responseCode = "200", description = "Certificazioni recuperate con successo")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE', 'DISTRIBUTORE_DI_TIPICITA')")
     public ResponseEntity<List<CertificationResponse>> getAllCertifications(){
         return ResponseEntity.ok(certificationService.getCertifications());
@@ -52,6 +53,7 @@ public class CertificationController {
                     "Può essere utlizzato solo da Produttore, Trsaformatore, Distributore di Tipicità"
     )
     @ApiResponse(responseCode = "200", description = "Certificazione recuperata con successo")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @ApiResponse(responseCode = "404", description = "Certificazione non trovata")
     @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE', 'DISTRIBUTORE_DI_TIPICITA')")
     public ResponseEntity<CertificationResponse> getCertificationById(@PathVariable int id){
@@ -84,7 +86,8 @@ public class CertificationController {
             )
     )
     @ApiResponse(responseCode = "201", description = "Certificazione creata con successo")
-        @ApiResponse(responseCode = "400", description = "Richiesta non valida")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
+    @ApiResponse(responseCode = "400", description = "Richiesta non valida")
     @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE', 'DISTRIBUTORE_DI_TIPICITA')")
     public ResponseEntity<OperationResponse> createCertification(@Valid @RequestBody CertificationPayload certification){
         OperationResponse operationResponse = certificationService.createCertificationRequest(certification);
@@ -99,6 +102,7 @@ public class CertificationController {
                     "Può essere utlizzato solo da Produttore, Trsaformatore, Distributore di Tipicità"
     )
     @ApiResponse(responseCode = "200", description = "Certificazione eliminata con successo")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @ApiResponse(responseCode = "404", description = "Certificazione non trovata")
     @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE', 'DISTRIBUTORE_DI_TIPICITA')")
     public ResponseEntity<OperationResponse> deleteCertificationById(@PathVariable int id){
@@ -114,6 +118,8 @@ public class CertificationController {
                     "Può essere utlizzato solo da Produttore, Trsaformatore, Distributore di Tipicità"
     )
     @ApiResponse(responseCode = "200", description = "Certificazione aggiunta con successo")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
+    @ApiResponse(responseCode = "403", description = "Azienda non associata")
     @ApiResponse(responseCode = "404", description = "Certificazione o prodotto non trovato")
     @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE', 'DISTRIBUTORE_DI_TIPICITA')")
     public ResponseEntity<String> addCertificationToProduct(@RequestBody AddProductCertificationRequest request){

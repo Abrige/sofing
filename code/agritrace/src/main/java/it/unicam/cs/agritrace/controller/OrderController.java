@@ -37,6 +37,7 @@ public class OrderController {
             description = "Ritorna la lista di tutti gli ordini. Se specificato, è possibile filtrare per stato."
     )
     @ApiResponse(responseCode = "200", description = "Lista ordini recuperata con successo")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @PreAuthorize("hasRole('GESTORE_DELLA_PIATTAFORMA')")
     public ResponseEntity<List<OrderDTO>> getOrders(
             @RequestParam(name = "status", required = false) String statusParam) {
@@ -62,6 +63,7 @@ public class OrderController {
             description = "Restituisce i dettagli di un ordine dato il suo identificativo."
     )
     @ApiResponse(responseCode = "200", description = "Ordine recuperato con successo")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @ApiResponse(responseCode = "404", description = "Ordine non trovato")
     @PreAuthorize("hasAnyRole('PRODUTTORE','TRASFORMATORE', 'DISTRIBUTORE_DI_TIPICITA')")
     public ResponseEntity<OrderDTO> getOrderById(@PathVariable Integer id){
@@ -95,7 +97,8 @@ public class OrderController {
             )
     )
     @ApiResponse(responseCode = "200", description = "Ordine aggiornato con successo")
-    @ApiResponse(responseCode = "400", description = "Richiesta non valida")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
+    @ApiResponse(responseCode = "404", description = "Richiesta non valida")
     @PreAuthorize("hasRole('GESTORE_DELLA_PIATTAFORMA')")
     public ResponseEntity<OrderDTO> updateStatus(@RequestBody @Valid UpdateOrderStatusRequest request) {
         // Ritorna l'ordine aggiornato
@@ -111,6 +114,7 @@ public class OrderController {
             description = "Genera un nuovo ordine a partire dal contenuto di un carrello esistente, identificato dal suo ID."
     )
     @ApiResponse(responseCode = "201", description = "Ordine creato con successo")
+    @ApiResponse(responseCode = "401", description = "Accesso non consentito")
     @ApiResponse(responseCode = "404", description = "Carrello non trovato")
     @PreAuthorize("hasRole('ACQUIRENTE')")
     public ResponseEntity<OrderDTO> createOrderFromCart(@PathVariable Integer cartId) {
