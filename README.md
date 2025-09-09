@@ -63,7 +63,71 @@ sofing/
 └── scripts/                # Script SQL per il database
     ├── schema.sql          # Definizione delle tabelle e vincoli del DB
     └── data.sql            # Dati iniziali per popolare il DB
+
 ```
+---
+
+## 📥 Clona la Repository
+```sh
+$ git clone https://github.com/Abrige/sofing.git
+$ cd sofing/code/agrichain
+```
+
+---
+
+## 🛠️ Configura il Database
+Modifica il file `src/main/resources/application.properties` per impostare la connessione al database H2:
+```properties
+# H2 Database (modalità server, file persistente)
+spring.datasource.url=jdbc:h2:tcp://localhost:9092/filiera-db
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=admin
+spring.datasource.password=admin
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+
+# H2 Console (accessibile su /h2-console)
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2-console
+```
+
+> ⚠️ Nota: Se usi la modalità `tcp://`, il server H2 deve essere in esecuzione.  
+> In alternativa, puoi usare la modalità `file:` per una singola connessione.
+
+---
+
+## 🔧 Compilare e Avviare l'Applicazione
+Compila e avvia l'applicazione utilizzando Gradle:
+```sh
+$ ./gradlew clean build
+$ ./gradlew bootRun
+```
+
+---
+
+## 🌍 Accesso all'Applicazione
+Una volta avviata, l'applicazione sarà raggiungibile all'indirizzo:
+
+```
+http://localhost:8080
+```
+
+A questo indirizzo sarà possibile effettuare chiamate alle API aggiungendo i percorsi dei vari endpoint (`base_url/.../...`).
+
+---
+
+## 📦 Dipendenze principali
+Il progetto utilizza le seguenti dipendenze principali:
+
+- **Spring Boot Starter Web** - `3.5.3`
+- **Spring Boot Starter Data JPA** - `3.5.3` (Hibernate 6.6.x)
+- **H2 Database** - `2.3.232`
+- **Spring Boot Starter Validation** - `3.5.3`
+- **Spring Boot Starter Security** - `3.5.3`
+- **JWT (io.jsonwebtoken)** - `0.11.5`
+- **SpringDoc OpenAPI Starter WebMVC UI** - `2.8.12`
+- **Lombok** - `1.18.38`
+- **MapStruct** - `1.5.5.Final`
+- **Spring Boot DevTools** - `3.5.3` (facoltativo, per il reload automatico in sviluppo)
 
 ---
 
