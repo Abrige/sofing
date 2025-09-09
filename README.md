@@ -11,8 +11,7 @@ La web application consente di caricare, consultare e condividere informazioni s
 ## 🚜 Funzionalità principali
 
 - 📦 Caricamento e gestione dei contenuti lungo la filiera agricola  
-- 🔍 Tracciabilità completa del ciclo di vita dei prodotti  
-- 🗺️ Visualizzazione geolocalizzata su una **mappa interattiva**  
+- 🔍 Tracciabilità completa del ciclo di vita dei prodotti   
 - 🧾 Inserimento di **certificazioni**, **metodi di coltivazione** e **processi di trasformazione**  
 - 🛒 Vendita diretta tramite un **marketplace**  
 - 🎪 Organizzazione e promozione di eventi locali (fiere, tour, degustazioni)
@@ -37,33 +36,23 @@ La web application consente di caricare, consultare e condividere informazioni s
 ```text
 sofing/
 │
-├── README.md               # Questo file: descrizione del progetto e struttura
-├── .gitignore              # File per escludere cartelle e file non tracciati
+├── README.md               # Documentazione principale del progetto (descrizione e guida)
+├── LICENSE                 # Licenza del progetto
 │
-├── model/                  # Modello concettuale e progettuale
-│   └── visual-paradigm/    # Contiene il file .vpp e altri file generati/esportati
-│       ├── ProvaPush.vpp
-│       └── diagrammi/, immagini/, ecc.
+├── code/                   # Codice sorgente dell'applicazione
+│   └── agritrace/          # Implementazione principale (backend)
 │
-├── code/                   # Codice applicativo completo
-│   ├── backend/            # Backend realizzato con Spring Boot e Gradle
-│   │   ├── build.gradle
-│   │   └── src/...         # Codice Java e risorse
-│   └── frontend/           # Frontend (React, Vue, o altro)
-│       └── (placeholder iniziale o progetto completo)
+├── docs/                   # Documentazione tecnica e report
+│   └── testo_progetto.pdf  # Documento descrittivo del progetto
 │
-├── postman/                # Collezioni Postman per testare le API
-│   ├── sofing-collection.json
-│   └── sofing-environment.json
+├── model/                  # Modelli e diagrammi di progettazione
+│   └── visual-paradigm/    # Diagrammi UML e modelli creati con Visual Paradigm
 │
-├── docs/                   # Documentazione tecnica e funzionale
-│   ├── requisiti.md
-│   ├── API-docs.md
-│   └── schema-db.png
+├── postman/                # Collezioni Postman per testare e documentare le API
 │
-└── scripts/                # Script utili (es. per inizializzazione DB)
-    ├── init-db.sql
-    └── populate-sample-data.sql
+└── scripts/                # Script SQL per il database
+    ├── schema.sql          # Definizione delle tabelle e vincoli del DB
+    └── data.sql            # Dati iniziali per popolare il DB
 ```
 
 ---
