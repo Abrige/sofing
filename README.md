@@ -1,6 +1,16 @@
-# 🌾 Piattaforma Filiera Agricola Locale
+# 🌿 Agritrace
 
 > **Web application per la gestione, tracciabilità e valorizzazione dei prodotti agricoli territoriali**
+
+![Java](https://img.shields.io/badge/Java-21-blue?logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.3-brightgreen?logo=spring)
+![Gradle](https://img.shields.io/badge/Gradle-8.3-blue?logo=gradle)
+![H2 Database](https://img.shields.io/badge/Database-H2-lightgrey?logo=h2)
+![Hibernate](https://img.shields.io/badge/Hibernate-6.6.18-orange?logo=hibernate)
+![Lombok](https://img.shields.io/badge/Lombok-1.18.38-pink?logo=lombok)
+![MapStruct](https://img.shields.io/badge/MapStruct-1.5.5-blueviolet?logo=mapstruct)
+![SpringDoc OpenAPI](https://img.shields.io/badge/SpringDoc%20OpenAPI-2.8.12-green?logo=swagger)
+![License](https://img.shields.io/badge/License-MIT-yellow)
 
 Progetto sviluppato per il corso di **Ingegneria del Software – A.A. 2024/2025**
 
@@ -11,8 +21,7 @@ La web application consente di caricare, consultare e condividere informazioni s
 ## 🚜 Funzionalità principali
 
 - 📦 Caricamento e gestione dei contenuti lungo la filiera agricola  
-- 🔍 Tracciabilità completa del ciclo di vita dei prodotti  
-- 🗺️ Visualizzazione geolocalizzata su una **mappa interattiva**  
+- 🔍 Tracciabilità completa del ciclo di vita dei prodotti   
 - 🧾 Inserimento di **certificazioni**, **metodi di coltivazione** e **processi di trasformazione**  
 - 🛒 Vendita diretta tramite un **marketplace**  
 - 🎪 Organizzazione e promozione di eventi locali (fiere, tour, degustazioni)
@@ -37,34 +46,88 @@ La web application consente di caricare, consultare e condividere informazioni s
 ```text
 sofing/
 │
-├── README.md               # Questo file: descrizione del progetto e struttura
-├── .gitignore              # File per escludere cartelle e file non tracciati
+├── README.md               # Documentazione principale del progetto (descrizione e guida)
+├── LICENSE                 # Licenza del progetto
 │
-├── model/                  # Modello concettuale e progettuale
-│   └── visual-paradigm/    # Contiene il file .vpp e altri file generati/esportati
-│       ├── ProvaPush.vpp
-│       └── diagrammi/, immagini/, ecc.
+├── code/                   # Codice sorgente dell'applicazione
+│   └── agritrace/          # Implementazione principale (backend)
 │
-├── code/                   # Codice applicativo completo
-│   ├── backend/            # Backend realizzato con Spring Boot e Gradle
-│   │   ├── build.gradle
-│   │   └── src/...         # Codice Java e risorse
-│   └── frontend/           # Frontend (React, Vue, o altro)
-│       └── (placeholder iniziale o progetto completo)
+├── docs/                   # Documentazione tecnica e report
+│   └── testo_progetto.pdf  # Documento descrittivo del progetto
 │
-├── postman/                # Collezioni Postman per testare le API
-│   ├── sofing-collection.json
-│   └── sofing-environment.json
+├── model/                  # Modelli e diagrammi di progettazione
+│   └── visual-paradigm/    # Diagrammi UML e modelli creati con Visual Paradigm
 │
-├── docs/                   # Documentazione tecnica e funzionale
-│   ├── requisiti.md
-│   ├── API-docs.md
-│   └── schema-db.png
+├── postman/                # Collezioni Postman per testare e documentare le API
 │
-└── scripts/                # Script utili (es. per inizializzazione DB)
-    ├── init-db.sql
-    └── populate-sample-data.sql
+└── scripts/                # Script SQL per il database
+    ├── schema.sql          # Definizione delle tabelle e vincoli del DB
+    └── data.sql            # Dati iniziali per popolare il DB
+
 ```
+---
+
+## 📥 Clona la Repository
+```sh
+$ git clone https://github.com/Abrige/sofing.git
+$ cd sofing/code/agrichain
+```
+
+---
+
+## 🛠️ Configura il Database
+Modifica il file `src/main/resources/application.properties` per impostare la connessione al database H2:
+```properties
+# H2 Database (modalità server, file persistente)
+spring.datasource.url=jdbc:h2:tcp://localhost:9092/filiera-db
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=admin
+spring.datasource.password=admin
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+
+# H2 Console (accessibile su /h2-console)
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2-console
+```
+
+> ⚠️ Nota: Se usi la modalità `tcp://`, il server H2 deve essere in esecuzione.  
+> In alternativa, puoi usare la modalità `file:` per una singola connessione.
+
+---
+
+## 🔧 Compilare e Avviare l'Applicazione
+Compila e avvia l'applicazione utilizzando Gradle:
+```sh
+$ ./gradlew clean build
+$ ./gradlew bootRun
+```
+
+---
+
+## 🌍 Accesso all'Applicazione
+Una volta avviata, l'applicazione sarà raggiungibile all'indirizzo:
+
+```
+http://localhost:8080
+```
+
+A questo indirizzo sarà possibile effettuare chiamate alle API aggiungendo i percorsi dei vari endpoint (`base_url/.../...`).
+
+---
+
+## 📦 Dipendenze principali
+Il progetto utilizza le seguenti dipendenze principali:
+
+- **Spring Boot Starter Web** - `3.5.3`
+- **Spring Boot Starter Data JPA** - `3.5.3` (Hibernate 6.6.x)
+- **H2 Database** - `2.3.232`
+- **Spring Boot Starter Validation** - `3.5.3`
+- **Spring Boot Starter Security** - `3.5.3`
+- **JWT (io.jsonwebtoken)** - `0.11.5`
+- **SpringDoc OpenAPI Starter WebMVC UI** - `2.8.12`
+- **Lombok** - `1.18.38`
+- **MapStruct** - `1.5.5.Final`
+- **Spring Boot DevTools** - `3.5.3` (facoltativo, per il reload automatico in sviluppo)
 
 ---
 
