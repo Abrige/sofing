@@ -1,3 +1,14 @@
+# 🌿 agritrace
+
+![Java](https://img.shields.io/badge/Java-21-blue?logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.3-brightgreen?logo=spring)
+![Maven](https://img.shields.io/badge/Maven-4.0.0-C71A36?logo=apachemaven)
+![H2 Database](https://img.shields.io/badge/Database-H2-lightgrey?logo=h2)
+![Hibernate](https://img.shields.io/badge/Hibernate-6.6.8.Final-orange?logo=hibernate)
+![Lombok](https://img.shields.io/badge/Lombok-1.18.36-pink?logo=lombok)
+![SpringDoc OpenAPI](https://img.shields.io/badge/SpringDoc%20OpenAPI-2.8.5-green?logo=swagger)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+
 # 🌾 Piattaforma Filiera Agricola Locale
 
 > **Web application per la gestione, tracciabilità e valorizzazione dei prodotti agricoli territoriali**
