@@ -1,0 +1,38 @@
+{
+	"info": {
+		"_postman_id": "7e371b9e-fec2-4cd4-976d-eb4acad031b0",
+		"name": "Product Category",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40496804",
+		"_collection_link": "https://springbootfeetlover.postman.co/workspace/Sofing-Team~bd96e039-0e44-434a-8923-0aff5f31adde/collection/47846404-7e371b9e-fec2-4cd4-976d-eb4acad031b0?action=share&source=collection_link&creator=40496804"
+	},
+	"item": [
+		{
+			"name": "Product Category All",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_URL}}/api/product-category/list",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"product-category",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Product Category By Id",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}

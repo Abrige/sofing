@@ -1,0 +1,135 @@
+{
+	"info": {
+		"_postman_id": "9e301605-f0e8-4b0f-b23a-cf876b9129d5",
+		"name": "Package",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40496804",
+		"_collection_link": "https://springbootfeetlover.postman.co/workspace/Sofing-Team~bd96e039-0e44-434a-8923-0aff5f31adde/collection/40496804-9e301605-f0e8-4b0f-b23a-cf876b9129d5?action=share&source=collection_link&creator=40496804"
+	},
+	"item": [
+		{
+			"name": "Get All Packages",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_URL}}/api/packages",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"packages"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Package (Local Distributor only)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY3F1aXJlbnRlQGdtYWlsLml0IiwiaWF0IjoxNzU3MDg2NDMxLCJleHAiOjQ5MTA2ODY0MzF9.8jwcmCpfwcS6SJKtUQS27l7XFU56r8eEwIbEFl6-KM0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "\n{\n  \"name\": \"Prova con utente\",\n  \"description\": \"prova utente\",\n  \"price\": 1,\n  \"producer_id\": 1,\n  \"items\": [\n    {\"product_id\": 1, \"quantity\": 1},\n    {\"product_id\": 2, \"quantity\": 2},\n    {\"product_id\": 3, \"quantity\": 3}\n  ]\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_URL}}/api/packages",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"packages"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Package",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"package_id\": 2,\n    \"name\": \"Jonny corporation\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_URL}}/api/packages",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"packages"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Package",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "\n{\n  \"name\": \"Prova aggiunta\",\n  \"description\": \"prova prova prova\",\n  \"price\": 2020,\n  \"producer_id\": 5,\n  \"items\": [\n    {\"product_id\": 1, \"quantity\": 1},\n    {\"product_id\": 2, \"quantity\": 2},\n    {\"product_id\": 3, \"quantity\": 3}\n  ]\n}\n"
+				},
+				"url": {
+					"raw": "{{base_URL}}/api/packages/1",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"packages",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Package by Id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_URL}}/api/packages/1",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"packages",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

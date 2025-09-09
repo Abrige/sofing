@@ -1,0 +1,99 @@
+{
+	"info": {
+		"_postman_id": "32feeb63-9dc7-4f94-9caf-61c05b3a862c",
+		"name": "Events",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40496804",
+		"_collection_link": "https://springbootfeetlover.postman.co/workspace/Sofing-Team~bd96e039-0e44-434a-8923-0aff5f31adde/collection/47847758-32feeb63-9dc7-4f94-9caf-61c05b3a862c?action=share&source=collection_link&creator=40496804"
+	},
+	"item": [
+		{
+			"name": "Get All Active or Future Events",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_URL}}/api/events/list",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"events",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Active or Future Event by Id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_URL}}/api/events/10",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"events",
+						"10"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Event",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"organizer_id\" : 1,\n    \"title\" : \"Evento di prova\",\n    \"description\" : \"prova prova\",\n    \"event_type_id\" : 1,\n    \"start_date\" : \"2025-07-07\",\n    \"end_date\" : \"2025-12-12\",\n    \"location_id\" : 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_URL}}/api/events/list",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"events",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Partecipate to an Event",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_URL}}/api/events/list/12/company/1",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"events",
+						"list",
+						"12",
+						"company",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,173 @@
+{
+	"info": {
+		"_postman_id": "79880b4f-9a66-4be6-9b44-7d948d2c5fc5",
+		"name": "Certifications",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40496804",
+		"_collection_link": "https://springbootfeetlover.postman.co/workspace/Sofing-Team~bd96e039-0e44-434a-8923-0aff5f31adde/collection/47846404-79880b4f-9a66-4be6-9b44-7d948d2c5fc5?action=share&source=collection_link&creator=40496804"
+	},
+	"item": [
+		{
+			"name": "Get All Certification",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdXR0b3JlQGdtYWlsLml0IiwiaWF0IjoxNzU3MjgyMTI4LCJleHAiOjQ5MTA4ODIxMjh9.LvImTdUlcoDvrmrVbxeyreQ3PnzAjj6V8bFmB3UUwzM",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_URL}}/api/certifications/list",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"certifications",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Certifications By Id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_URL}}/api/certifications/1",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"certifications",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Certification",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY3F1aXJlbnRlQGdtYWlsLml0IiwiaWF0IjoxNzU3MTg5MjkwLCJleHAiOjQ5MTA3ODkyOTB9.91vi5f-mjQ8aLwGQDJmQKPhGmeJdorIjxcBk1kVWvUo",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Certificazione di prova 3\",\n    \"description\": \"Certificazione di prova descrizione 3\",\n    \"issuing_body\": \"Issuing body di prova 3\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_URL}}/api/certifications/create",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"certifications",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Certification",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_URL}}/api/certifications/delete/13",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"certifications",
+						"delete",
+						"13"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Certificazione a un Prodotto",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhY3F1aXJlbnRlQGdtYWlsLml0IiwiaWF0IjoxNzU3MTg5MjkwLCJleHAiOjQ5MTA3ODkyOTB9.91vi5f-mjQ8aLwGQDJmQKPhGmeJdorIjxcBk1kVWvUo",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"certification_id\":1,\n    \"product_id\":2,\n    \"certificate_number\": \"ABABABA\",\n    \"issue_date\": \"2025-09-07\",\n    \"expiry_date\": \"2025-09-10\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_URL}}/api/certifications/add",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"certifications",
+						"add"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

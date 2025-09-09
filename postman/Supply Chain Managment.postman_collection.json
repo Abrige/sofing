@@ -1,0 +1,91 @@
+{
+	"info": {
+		"_postman_id": "bfe7d00a-11db-4997-a2ce-a6f85d016a67",
+		"name": "Supply Chain Managment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40496804",
+		"_collection_link": "https://springbootfeetlover.postman.co/workspace/Sofing-Team~bd96e039-0e44-434a-8923-0aff5f31adde/collection/47847758-bfe7d00a-11db-4997-a2ce-a6f85d016a67?action=share&source=collection_link&creator=40496804"
+	},
+	"item": [
+		{
+			"name": "Add Raw Material",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\n        \"product_id\":1,\n        \"description\": \"descrizione di prova\"\n    },\n    {\n        \"product_id\":2,\n        \"description\": \"descrizione di prova\"\n    }\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_URL}}/supplychain/products/20/ingredients",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"supplychain",
+						"products",
+						"20",
+						"ingredients"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Ingredient From Product",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_URL}}/supplychain/products/20/ingredients/2",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"supplychain",
+						"products",
+						"20",
+						"ingredients",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Ingredients By Product",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_URL}}/supplychain/products/20/ingredients",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"supplychain",
+						"products",
+						"20",
+						"ingredients"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_URL",
+			"value": "localhost:8080",
+			"type": "default"
+		}
+	]
+}

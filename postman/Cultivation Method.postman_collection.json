@@ -1,0 +1,49 @@
+{
+	"info": {
+		"_postman_id": "8f1332da-4293-47de-81c4-76765885ff49",
+		"name": "Cultivation Method",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40496804",
+		"_collection_link": "https://springbootfeetlover.postman.co/workspace/Sofing-Team~bd96e039-0e44-434a-8923-0aff5f31adde/collection/47846404-8f1332da-4293-47de-81c4-76765885ff49?action=share&source=collection_link&creator=40496804"
+	},
+	"item": [
+		{
+			"name": "Cultivation Method List",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_URL}}/api/cultivation-method/list",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"cultivation-method",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cultivation Method Id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_URL}}/api/cultivation-method/4",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"cultivation-method",
+						"4"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

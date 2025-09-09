@@ -1,0 +1,48 @@
+{
+	"info": {
+		"_postman_id": "f54be7fc-f25c-41fa-b498-8a19f9290cda",
+		"name": "Harvest Season",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40496804",
+		"_collection_link": "https://springbootfeetlover.postman.co/workspace/Sofing-Team~bd96e039-0e44-434a-8923-0aff5f31adde/collection/47846404-f54be7fc-f25c-41fa-b498-8a19f9290cda?action=share&source=collection_link&creator=40496804"
+	},
+	"item": [
+		{
+			"name": "Find All Harvest Season",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_URL}}/api/harvestseason/list",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"harvestseason",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find Harvest Season By Id",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}

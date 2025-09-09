@@ -1,0 +1,101 @@
+{
+	"info": {
+		"_postman_id": "b0aa5c4b-cd21-4e8e-858b-698bb4077bdc",
+		"name": "Request",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40496804",
+		"_collection_link": "https://springbootfeetlover.postman.co/workspace/Sofing-Team~bd96e039-0e44-434a-8923-0aff5f31adde/collection/40496804-b0aa5c4b-cd21-4e8e-858b-698bb4077bdc?action=share&source=collection_link&creator=40496804"
+	},
+	"item": [
+		{
+			"name": "Get Requests (status)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzZWNvbmRhcHJvdmFAZ21haWwuaXQiLCJpYXQiOjE3NTcwNjA2OTksImV4cCI6MTc1NzA5NjY5OX0.BQf8wny7uKdbwSl_XtU1USR-mjHrujcq4twMJaKIEBg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_URL}}/api/requests?status=pending",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"requests"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "pending"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Requests (all)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_URL}}/api/requests",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"requests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Review Request",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzZWNvbmRhcHJvdmFAZ21haWwuaXQiLCJpYXQiOjE3NTcwNjA2OTksImV4cCI6MTc1NzA5NjY5OX0.BQf8wny7uKdbwSl_XtU1USR-mjHrujcq4twMJaKIEBg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"request_id\":48,\n    \"action\": \"accept\",\n    \"decision_notes\": \"prova prova\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_URL}}/api/requests/review",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"requests",
+						"review"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

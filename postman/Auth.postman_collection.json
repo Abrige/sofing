@@ -1,0 +1,67 @@
+{
+	"info": {
+		"_postman_id": "54bad164-99a2-45d8-9f1a-0f6ca0609947",
+		"name": "Auth",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40496804",
+		"_collection_link": "https://springbootfeetlover.postman.co/workspace/Sofing-Team~bd96e039-0e44-434a-8923-0aff5f31adde/collection/40496804-54bad164-99a2-45d8-9f1a-0f6ca0609947?action=share&source=collection_link&creator=40496804"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"Trasformatore\",\n    \"email\": \"trasformatore@gmail.it\",\n    \"password\": \"ciao\",\n    \"first_name\": \"Mario\",\n    \"last_name\": \"Trasformatore\",\n    \"phone_number\": 12345678900,\n    \"location_id\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_URL}}/api/auth/register",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\":\"gestore@gmail.it\",\n    \"password\":\"ciao\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_URL}}/api/auth/login",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

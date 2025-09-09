@@ -1,0 +1,119 @@
+{
+	"info": {
+		"_postman_id": "bcae8137-926d-4daf-a259-a14663c7a379",
+		"name": "Order",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40496804",
+		"_collection_link": "https://springbootfeetlover.postman.co/workspace/Sofing-Team~bd96e039-0e44-434a-8923-0aff5f31adde/collection/40496804-bcae8137-926d-4daf-a259-a14663c7a379?action=share&source=collection_link&creator=40496804"
+	},
+	"item": [
+		{
+			"name": "Update Order Status",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "aaa",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"order_id\": 1,\n    \"status\": \"shipped\",\n    \"delivery_date\": \"2025-09-10\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_URL}}/api/orders/update-status",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"orders",
+						"update-status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Orders (status)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_URL}}/api/orders?status=new",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"orders"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "new"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Order From Cart",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_URL}}/api/orders/from-cart/1",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"orders",
+						"from-cart",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Orders By Id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\":\"gestore@gmail.it\",\n    \"password\":\"ciao\"\n}"
+				},
+				"url": {
+					"raw": "{{base_URL}}/api/orders/4",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"orders",
+						"4"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

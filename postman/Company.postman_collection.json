@@ -1,0 +1,140 @@
+{
+	"info": {
+		"_postman_id": "65603eac-c259-4864-820d-f848120628fd",
+		"name": "Company",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40496804",
+		"_collection_link": "https://springbootfeetlover.postman.co/workspace/Sofing-Team~bd96e039-0e44-434a-8923-0aff5f31adde/collection/40496804-65603eac-c259-4864-820d-f848120628fd?action=share&source=collection_link&creator=40496804"
+	},
+	"item": [
+		{
+			"name": "Create Company",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdXR0b3JlQGdtYWlsLml0IiwiaWF0IjoxNzU3MTc2MjU0LCJleHAiOjQ5MTA3NzYyNTR9.8anpMWBfW_KN837eOK_AMyRLf9CZRByNSJWsRCfY8AU",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"Company di prova\",\n    \"fiscal_code\": \"fiscalcodediprova\",\n    \"location_id\": 1,\n    \"description\": \"descrizione di prova\",\n    \"company_type_id\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_URL}}/api/company",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"company"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Review Company",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJnZXN0b3JlQGdtYWlsLml0IiwiaWF0IjoxNzU3MTc2NDA2LCJleHAiOjQ5MTA3NzY0MDZ9.ai9QjE3MHE4kUN43HQIT0BUfK3aQ70jH0XADHefNQMA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"request_id\":82,\n    \"action\": \"accept\",\n    \"decision_notes\": \"prova prova\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_URL}}/api/company/review",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"company",
+						"review"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Companies",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcm9kdXR0b3JlQGdtYWlsLml0IiwiaWF0IjoxNzU3MTc2MjU0LCJleHAiOjQ5MTA3NzYyNTR9.8anpMWBfW_KN837eOK_AMyRLf9CZRByNSJWsRCfY8AU",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_URL}}/api/company",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"company"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Company By Id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_URL}}/api/company/1",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"company",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

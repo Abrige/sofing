@@ -1,0 +1,79 @@
+{
+	"info": {
+		"_postman_id": "885c63c5-7c55-43aa-a776-c8f2cb4385f5",
+		"name": "Product Listing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40496804",
+		"_collection_link": "https://springbootfeetlover.postman.co/workspace/Sofing-Team~bd96e039-0e44-434a-8923-0aff5f31adde/collection/47847758-885c63c5-7c55-43aa-a776-c8f2cb4385f5?action=share&source=collection_link&creator=40496804"
+	},
+	"item": [
+		{
+			"name": "Add Product to Listing",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"product_id\" : 20,\n    \"price\" : 12,\n    \"quantity_available\" : 1,\n    \"unit_of_measure\" : \"kg\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_URL}}/api/listing/products",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"listing",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Product Listings",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_URL}}/api/listing/products",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"listing",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Product Listing",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_URL}}/api/listing/20/products/1",
+					"host": [
+						"{{base_URL}}"
+					],
+					"path": [
+						"api",
+						"listing",
+						"20",
+						"products",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
