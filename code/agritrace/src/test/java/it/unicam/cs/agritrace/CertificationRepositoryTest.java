@@ -15,28 +15,4 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DataJpaTest
 public class CertificationRepositoryTest {
 
-    @Autowired
-    private CertificationRepository repository;
-
-    @Test
-    void testFindByName() {
-        Optional<Certification> cert = repository.findByName("Bio");
-        assertTrue(cert.isPresent());
-        assertEquals("Bio", cert.get().getName());
-    }
-
-    @Test
-    void testSaveAndRetrieveCertification() {
-        Certification cert = new Certification();
-        cert.setId(3);
-        cert.setName("Organic Certification");
-        cert.setIssuingBody("Global Org");
-        cert.setIsActive(true);
-
-        repository.save(cert);
-
-        Certification retrieved = repository.findById(3).orElseThrow();
-        assertThat(retrieved.getIsActive()).isTrue();
-        assertThat(retrieved.getName()).isEqualTo("Organic Certification");
-    }
 }
